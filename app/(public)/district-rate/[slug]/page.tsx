@@ -65,14 +65,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export async function generateStaticParams() {
-  const rates = await prisma.districtRate.findMany({
-    where: { status: "PUBLISHED" },
-    select: { slug: true },
-  });
-  return rates.map((r: { slug: string }) => ({ slug: r.slug }));
-}
-
+export const dynamic = "force-dynamic";
 export const revalidate = 3600;
 
 export default async function DistrictRatePage({ params }: PageProps) {
