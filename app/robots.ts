@@ -1,6 +1,12 @@
+/**
+ * robots.ts — app/robots.ts
+ * Generates /robots.txt automatically.
+ * Configurable via NEXT_PUBLIC_SITE_URL environment variable.
+ */
+
 import { MetadataRoute } from "next";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://erg.com.np";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ergplatform.com";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -9,14 +15,25 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: "/",
         disallow: [
-          "/admin/",
-          "/api/",
-          "/auth/",
-          "/_next/",
+          "/admin/",        // admin dashboard
+          "/api/",          // API routes
+          "/_next/",        // Next.js internals
+          "/auth/",         // auth pages
         ],
       },
+      {
+        // Block AI scrapers if desired — remove if you want AI indexing
+        userAgent: [
+          "GPTBot",
+          "ChatGPT-User",
+          "CCBot",
+          "anthropic-ai",
+          "Claude-Web",
+        ],
+        disallow: "/",
+      },
     ],
-    sitemap: `${siteUrl}/sitemap.xml`,
-    host: siteUrl,
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   };
 }

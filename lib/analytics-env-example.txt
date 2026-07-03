@@ -1,0 +1,19 @@
+# ─── Analytics Environment Variables ─────────────────────────────────────────
+# Add these to your .env.local file
+# Never commit real values to git — add .env.local to .gitignore
+
+# Google Analytics 4 Measurement ID
+# Get from: analytics.google.com → Admin → Data Streams → Web Stream
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+
+# Microsoft Clarity Project ID
+# Get from: clarity.microsoft.com → New Project → Setup
+NEXT_PUBLIC_CLARITY_ID=xxxxxxxxxx
+
+# Google Search Console HTML verification tag content
+# Get from: search.google.com/search-console → Add Property → HTML tag
+# Only the content value, not the full <meta> tag
+NEXT_PUBLIC_GSC_VERIFICATION=xxxxxxxxxx
+
+# Your production domain (used for sitemap, canonical URLs, OG images)
+NEXT_PUBLIC_SITE_URL=https://ergplatform.com

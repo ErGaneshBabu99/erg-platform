@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 interface AuditLogData {
@@ -12,7 +13,17 @@ interface AuditLogData {
 
 export async function createAuditLog(data: AuditLogData): Promise<void> {
   try {
-    await prisma.auditLog.create({ data });
+    await prisma.auditLog.create({
+  data: {
+    action: data.action,
+    resource: data.resource,
+    resourceId: data.resourceId,
+    details: data.details as Prisma.InputJsonValue | undefined,
+    ipAddress: data.ipAddress,
+    userAgent: data.userAgent,
+    userId: data.userId ?? null,
+  },
+});
   } catch (error) {
     // Audit log failure should never break the application
     console.error("Failed to create audit log:", error);
