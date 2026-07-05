@@ -59,29 +59,56 @@ export function ChatWindow({ onClose }: ChatWindowProps) {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, isTyping]);
 
-  function sendMessage(text: string) {
+  async function sendMessage(text: string) {
     const trimmed = text.trim();
-    if (!trimmed) return;
+    if (!trimmed || isTyping) return;
 
     const userMessage: Message = { id: crypto.randomUUID(), role: "user", text: trimmed };
-    setMessages((prev) => [...prev, userMessage]);
+    const allMessages = [...messages, userMessage];
+    setMessages(allMessages);
     setInput("");
     setIsTyping(true);
 
-    // Placeholder response — wire to a real AI endpoint when ready.
-    // No backend logic was added here per project constraints.
-    setTimeout(() => {
+    // Build conversation history for the API (exclude the intro message)
+    const history = allMessages
+      .filter((m) => m.id !== "intro")
+      .map((m) => ({ role: m.role as "user" | "assistant", content: m.text }));
+
+    const assistantId = crypto.randomUUID();
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: history }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error ${response.status}`);
+      }
+
+      const data = await response.json();
+      const replyText =
+        data.text ??
+        "Sorry, I couldn't generate a response. Please try again.";
+
+      setIsTyping(false);
+      setMessages((prev) => [
+        ...prev,
+        { id: assistantId, role: "assistant", text: replyText },
+      ]);
+    } catch (err) {
+      console.error("AI chat error:", err);
       setIsTyping(false);
       setMessages((prev) => [
         ...prev,
         {
-          id: crypto.randomUUID(),
+          id: assistantId,
           role: "assistant",
-          text:
-            "Thanks for your question! This assistant is being connected to a live engineering knowledge base. In the meantime, feel free to reach out directly via the Contact page for a detailed answer.",
+          text: "Maaf garnu, kehi problem bhayo. Kripaya feri prayas garnuhos ya /contact bata directly sampark garnuhos.",
         },
       ]);
-    }, 1400);
+    }
   }
 
   return (
