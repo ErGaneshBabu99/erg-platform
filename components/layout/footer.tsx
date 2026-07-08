@@ -5,8 +5,10 @@ import Link from "next/link";
 import { Phone, Mail, MapPin, Send, Facebook, Linkedin, Youtube, MessageCircle } from "lucide-react";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
-const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "+977980XXXXXXX";
-const EMAIL = process.env.NEXT_PUBLIC_EMAIL ?? "info@erg.com.np";
+const WHATSAPP_NUMBER = "+9779847805353";
+const WHATSAPP_LINK = "https://wa.me/9779847805353";
+const PHONE_NUMBER = "+9779847805353";
+const EMAIL = "chapagainganeshutube98@gmail.com";
 
 const footerLinks = {
   platform: [
@@ -33,7 +35,7 @@ const footerLinks = {
 };
 
 const socials = [
-  { label: "WhatsApp", icon: MessageCircle, href: "https://wa.me/" + WHATSAPP.replace(/\D/g, "") },
+  { label: "WhatsApp", icon: MessageCircle, href: WHATSAPP_LINK },
   { label: "Facebook", icon: Facebook, href: "#" },
   { label: "LinkedIn", icon: Linkedin, href: "#" },
   { label: "YouTube", icon: Youtube, href: "#" },
@@ -114,13 +116,18 @@ export function Footer() {
               Official district rates, vacancies, and engineering resources — free for all professionals.
             </p>
             <div className="space-y-2 mb-6">
-              <a href={"https://wa.me/" + WHATSAPP.replace(/\D/g, "")} target="_blank" rel="noopener noreferrer"
+              <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm text-navy-400 hover:text-white transition-colors">
-                <Phone className="w-4 h-4 text-green-400 flex-shrink-0" />
-                {WHATSAPP}
+                <MessageCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
+                {WHATSAPP_NUMBER}
               </a>
-              <a href={"mailto:" + EMAIL} className="flex items-center gap-2 text-sm text-navy-400 hover:text-white transition-colors">
-                <Mail className="w-4 h-4 text-blue-400 flex-shrink-0" />
+              <a href={`tel:${PHONE_NUMBER}`}
+                className="flex items-center gap-2 text-sm text-navy-400 hover:text-white transition-colors">
+                <Phone className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                {PHONE_NUMBER}
+              </a>
+              <a href={`mailto:${EMAIL}`} className="flex items-center gap-2 text-sm text-navy-400 hover:text-white transition-colors">
+                <Mail className="w-4 h-4 text-accent flex-shrink-0" />
                 {EMAIL}
               </a>
               <div className="flex items-center gap-2 text-sm text-navy-400">

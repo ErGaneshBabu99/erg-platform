@@ -20,7 +20,7 @@ Important context:
 - District rates are published annually by the Government of Nepal for each district
 - Er G provides free PDF downloads of district rates at erg.com.np/district-rate
 - The current fiscal year is 2083/84 (Nepali) / 2026-27 (AD)
-- You can answer in both English and Nepali depending on what language the user writes in
+- You need to answer in English language
 
 Rules:
 - Answer concisely but completely
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
           },
           contents: geminiContents,
           generationConfig: {
-            maxOutputTokens: 1024,
+            maxOutputTokens: 200,
             temperature: 0.7,
           },
         }),
@@ -72,13 +72,17 @@ export async function POST(req: NextRequest) {
     );
 
     if (!response.ok) {
-      const error = await response.text();
-      console.error("Gemini API error:", error);
-      return NextResponse.json(
-        { error: "AI service error" },
-        { status: response.status }
-      );
-    }
+  const error = await response.text();
+
+  console.error("Gemini API error:", error);
+
+  return NextResponse.json(
+    {
+      error,
+    },
+    { status: response.status }
+  );
+}
 
     const data = await response.json();
     const text =
@@ -86,8 +90,15 @@ export async function POST(req: NextRequest) {
       "Sorry, could not generate a response.";
 
     return NextResponse.json({ text });
-  } catch (err) {
-    console.error("Chat route error:", err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  }
+  } catch (err: any) {
+  console.error("Chat route error:", err);
+
+  return NextResponse.json(
+    {
+      error: err?.message || String(err),
+      stack: process.env.NODE_ENV === "development" ? err?.stack : undefined,
+    },
+    { status: 500 }
+  );
+}
 }

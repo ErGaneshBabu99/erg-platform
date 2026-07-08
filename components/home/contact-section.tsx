@@ -9,9 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Reveal } from "@/components/ui/reveal";
 import { cn } from "@/lib/utils";
 
-const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "+977980XXXXXXX";
-const PHONE = process.env.NEXT_PUBLIC_PHONE_NUMBER ?? "+977980XXXXXXX";
-const EMAIL = process.env.NEXT_PUBLIC_EMAIL ?? "info@erg.com.np";
+const WHATSAPP = "+9779847805353";
+const WHATSAPP_LINK = "https://wa.me/9779847805353";
+const PHONE = "+9779847805353";
+const EMAIL = "chapagainganeshutube98@gmail.com";
 
 export function ContactSection() {
   const [submitted, setSubmitted] = useState(false);
@@ -60,7 +61,7 @@ export function ContactSection() {
 
             <div className="space-y-3">
               <a
-                href={"https://wa.me/" + WHATSAPP.replace(/\D/g, "") + "?text=Hello%20Er%20G%2C%20I%20need%20help%20with..."}
+                href={WHATSAPP_LINK + "?text=Hello%20Er%20G%2C%20I%20need%20help%20with..."}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover-lift flex items-center gap-3.5 p-4 border border-gray-100 dark:border-gray-800 rounded-xl hover:border-green-200 dark:hover:border-green-800 hover:bg-green-50/50 dark:hover:bg-green-900/10 hover:shadow-card transition-all duration-300 group"
