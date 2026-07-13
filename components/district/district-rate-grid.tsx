@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { FileText, Download, Eye, Calendar, ArrowRight } from "lucide-react";
+import { FileText, Download, Eye, Calendar, ArrowRight, SearchX } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/pagination";
 import { formatNumber, formatDate, formatFileSize } from "@/lib/utils";
@@ -30,13 +30,15 @@ interface Props {
 export function DistrictRateGrid({ rates, total, page, limit, currentParams }: Props) {
   if (rates.length === 0) {
     return (
-      <div className="text-center py-20">
-        <FileText className="w-16 h-16 text-gray-200 dark:text-gray-700 mx-auto mb-4" />
+      <div className="text-center py-20 opacity-0 animate-[fadeIn_0.4s_ease-out_forwards]">
+        <div className="w-16 h-16 rounded-full bg-gray-50 dark:bg-gray-800/50 flex items-center justify-center mx-auto mb-4">
+          <SearchX className="w-8 h-8 text-gray-300 dark:text-gray-600" />
+        </div>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
           No district rates found
         </h3>
         <p className="text-gray-500 dark:text-gray-400">
-          Try adjusting your search or filters
+          Try adjusting your search or clearing filters
         </p>
       </div>
     );
@@ -47,8 +49,12 @@ export function DistrictRateGrid({ rates, total, page, limit, currentParams }: P
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-        {rates.map((rate) => (
-          <article key={rate.id} className="card-base group hover:border-navy-200 dark:hover:border-navy-600 transition-all">
+        {rates.map((rate, index) => (
+          <article
+            key={rate.id}
+            style={{ animationDelay: `${Math.min(index, 11) * 40}ms` }}
+            className="card-base group hover:border-navy-200 dark:hover:border-navy-600 hover:shadow-md transition-all"
+          >
             <div className="p-5">
               {/* Header */}
               <div className="flex items-start gap-3 mb-4">

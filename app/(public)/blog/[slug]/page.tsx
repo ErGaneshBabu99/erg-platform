@@ -29,8 +29,8 @@ import ShareButtons from "@/components/blog/share-buttons";
 import ReadingProgress from "@/components/blog/reading-progress";
 import PrevNextNav from "@/components/blog/prev-next-nav";
 import { ArrowLeft, Clock, Calendar, Tag, ExternalLink, User, BookOpen } from "lucide-react";
+import { buildMetadata, SITE_URL } from "@/lib/seo";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ergplatform.com";
 
 // ─── Static Params ────────────────────────────────────────────────────────────
 
@@ -54,41 +54,33 @@ export async function generateMetadata({
   const post = await fetchBloggerPostBySlug(slug);
 
   if (!post) {
-    return {
-      title: "Article Not Found | TheGaneshPost",
+    return buildMetadata({
+      title: "Article Not Found",
       description: "The requested article could not be found.",
-    };
+      path: `/blog/${slug}`,
+      noIndex: true,
+    });
   }
 
-  const canonicalUrl = `${SITE_URL}/blog/${post.slug}`;
-  const ogImage = post.image.startsWith("/") ? `${SITE_URL}${post.image}` : post.image;
+  const ogImage = post.image.startsWith("/")
+    ? `${SITE_URL}${post.image}`
+    : post.image;
 
-  return {
-    title: `${post.title} | TheGaneshPost`,
+  return buildMetadata({
+    title: `${post.title} | The Ganesh Post`,
     description: post.excerpt,
-    authors: [{ name: post.author }],
-    keywords: post.tags,
-    alternates: { canonical: canonicalUrl },
-    openGraph: {
-      type: "article",
-      title: post.title,
-      description: post.excerpt,
-      url: canonicalUrl,
-      siteName: "TheGaneshPost — Er G Platform",
-      publishedTime: post.date,
-      authors: [post.author],
-      tags: post.tags,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: post.title,
-      description: post.excerpt,
-      images: [ogImage],
-    },
-  };
+    keywords: [
+      ...post.tags,
+      "civil engineering nepal",
+      "engineering blog nepal",
+      "nepal construction",
+    ],
+    path: `/blog/${post.slug}`,
+    ogType: "article",
+    ogImage,
+    publishedTime: post.date,
+  });
 }
-
 // ─── JSON-LD ──────────────────────────────────────────────────────────────────
 
 function ArticleJsonLd({

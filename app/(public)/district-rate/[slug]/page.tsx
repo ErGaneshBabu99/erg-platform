@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { buildMetadata, buildDistrictKeywords, SITE_URL } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
@@ -43,26 +44,37 @@ async function getRelatedRates(districtId: string, currentId: string) {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const rate = await getDistrictRate(slug);
-  if (!rate) return { title: "Not Found" };
 
-  const title = rate.seoTitle ??
-    `District Rate of ${rate.district.name} ${rate.fiscalYear.year} – Download PDF | Er G Nepal`;
-  const description = rate.seoDescription ??
-    `Download the official district rate of ${rate.district.name} for fiscal year ${rate.fiscalYear.year}. Free PDF download. ${rate.district.province.name}, Nepal.`;
-  const url = getAbsoluteUrl(`/district-rate/${slug}`);
+  if (!rate) {
+    return buildMetadata({
+      title: "District Rate Not Found",
+      description: "The requested district rate could not be found.",
+      path: `/district-rate/${slug}`,
+      noIndex: true,
+    });
+  }
 
-  return {
+  const districtName = rate.district.name;
+  const fiscalYear = rate.fiscalYear.year;
+  const provinceName = rate.district.province.name;
+  const nameNp = rate.district.nameNp ?? undefined;
+
+  const title =
+    rate.seoTitle ??
+    `District Rate of ${districtName} ${fiscalYear} PDF Download`;
+
+  const description =
+    rate.seoDescription ??
+    `Download the official district rate of ${districtName}, ${provinceName} for fiscal year ${fiscalYear}. Free PDF. Used for construction cost estimation and BOQ preparation in Nepal.`;
+
+  return buildMetadata({
     title,
     description,
-    alternates: { canonical: url },
-    openGraph: {
-      title,
-      description,
-      url,
-      type: "article",
-    },
-    twitter: { card: "summary", title, description },
-  };
+    keywords: buildDistrictKeywords(districtName, fiscalYear, provinceName, nameNp),
+    path: `/district-rate/${slug}`,
+    ogType: "article",
+    publishedTime: rate.publishedAt?.toISOString(),
+  });
 }
 
 export const dynamic = "force-dynamic";

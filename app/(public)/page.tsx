@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 import { Hero } from "@/components/home/hero";
 import { FounderSection } from "@/components/home/founder-section";
 import { AboutMe } from "@/components/home/about-me";
@@ -9,11 +10,25 @@ import { Features } from "@/components/home/features";
 import { ContactSection } from "@/components/home/contact-section";
 import { prisma } from "@/lib/prisma";
 
-export const metadata: Metadata = {
-  title: "Er G – Engineering Hub Nepal | District Rate Database",
+export const metadata: Metadata = buildMetadata({
+  title: "District Rate Nepal – All 77 Districts | ER G Platform",
   description:
-    "Download official district rates for all 77 districts of Nepal. Free PDF, engineering blog, job vacancies, and professional resources by Ganesh Chapagain.",
-};
+    "Download official district rates for all 77 districts of Nepal. Free PDF, updated for fiscal year 2083/84. Search by province, district, or fiscal year.",
+  keywords: [
+    "district rate nepal",
+    "district rate all 77 districts nepal",
+    "district rate pdf download nepal",
+    "official district rate nepal",
+    "jilla dar rate nepal",
+    "जिल्ला दररेट",
+    "जिल्ला दर रेट",
+    "जिल्ला दररेट PDF",
+    "district rate 2083 84",
+    "construction district rate nepal",
+    "district rate free download",
+  ],
+  path: "/",
+});
 
 export const revalidate = 3600;
 

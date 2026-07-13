@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "edge";
-
-const SYSTEM_PROMPT = `You are an AI assistant for Er G – Engineering Hub Nepal...`; // उही राख्नु होस्
+import { SYSTEM_PROMPT } from "@/lib/prompt";
 
 export async function POST(req: NextRequest) {
   try {

@@ -1,8 +1,13 @@
 import type { Metadata, Viewport } from "next";
+import { buildMetadata } from "@/lib/seo";
 import "./globals.css";
 import { Providers } from "./providers";
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://erg.com.np";
+import {
+  SITE_URL,
+  SITE_NAME_FULL,
+  DEFAULT_ROBOTS,
+  DEFAULT_OG_IMAGE,
+} from "@/lib/seo";
 
 export const viewport: Viewport = {
   themeColor: [
@@ -14,61 +19,58 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Er G – Engineering Hub Nepal | District Rate Database",
-    template: "%s | Er G Nepal",
+    default: "ER G Platform | District Rate Nepal",
+    template: "%s | ER G Platform",
   },
   description:
-    "Nepal's most comprehensive engineering resource platform. Download district rates, construction cost data, and engineering resources for all 77 districts across Nepal.",
+    "Nepal's most comprehensive district rate database. Download official district rates for all 77 districts as free PDF. Updated for fiscal year 2083/84.",
   keywords: [
     "district rate nepal",
     "district rate pdf nepal",
-    "construction district rate",
-    "nepal engineering hub",
+    "jilla dar rate nepal",
+    "जिल्ला दररेट",
+    "जिल्ला दर रेट",
+    "construction district rate nepal",
+    "district rate all 77 districts",
     "district rate 2083-84",
-    "building cost nepal",
-    "engineering consultancy nepal",
+    "engineering hub nepal",
   ],
-  authors: [{ name: "Er G – Engineering Hub Nepal" }],
-  creator: "Er G Nepal",
-  publisher: "Er G Nepal",
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
+  authors: [{ name: SITE_NAME_FULL }],
+  creator: "Ganesh Chapagain",
+  publisher: SITE_NAME_FULL,
+  robots: DEFAULT_ROBOTS,
   openGraph: {
     type: "website",
     locale: "en_NP",
-    url: siteUrl,
-    siteName: "Er G – Engineering Hub Nepal",
-    title: "Er G – Engineering Hub Nepal | District Rate Database",
+    url: SITE_URL,
+    siteName: SITE_NAME_FULL,
+    title: "ER G Platform | District Rate Nepal",
     description:
-      "Download district rates for all 77 districts of Nepal. Free PDF downloads, searchable database, and engineering resources.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Er G – Engineering Hub Nepal",
-      },
-    ],
+      "Download official district rates for all 77 districts of Nepal. Free PDF downloads, searchable database, updated 2083/84.",
+    ...(DEFAULT_OG_IMAGE
+      ? {
+          images: [
+            {
+              url: DEFAULT_OG_IMAGE,
+              width: 1200,
+              height: 630,
+              alt: SITE_NAME_FULL,
+            },
+          ],
+        }
+      : {}),
   },
   twitter: {
     card: "summary_large_image",
-    title: "Er G – Engineering Hub Nepal",
-    description: "Nepal's engineering resource platform. District rates, PDF downloads, engineering consultancy.",
-    images: ["/og-image.png"],
+    title: "ER G Platform | District Rate Nepal",
+    description:
+      "Nepal's district rate database. Free PDF downloads for all 77 districts. Updated 2083/84.",
+    ...(DEFAULT_OG_IMAGE ? { images: [DEFAULT_OG_IMAGE] } : {}),
   },
   alternates: {
-    canonical: siteUrl,
+    canonical: SITE_URL,
   },
   icons: {
     icon: [
@@ -83,6 +85,36 @@ export const metadata: Metadata = {
   },
 };
 
+// ---------------------------------------------------------------------------
+// Organisation JSON-LD
+// Optional fields are omitted when their env var is undefined or empty.
+// ---------------------------------------------------------------------------
+function buildOrganisationSchema() {
+  const phone = process.env.NEXT_PUBLIC_PHONE_NUMBER;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: SITE_NAME_FULL,
+    url: SITE_URL,
+    logo: `${SITE_URL}/logo.png`,
+    address: {
+      "@type": "PostalAddress",
+      addressCountry: "NP",
+      addressLocality: "Kathmandu",
+    },
+    ...(phone ? {
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: phone,
+        contactType: "customer service",
+        areaServed: "NP",
+        availableLanguage: ["Nepali", "English"],
+      },
+    } : {}),
+  };
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -92,35 +124,19 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
-        {/* Organization Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              name: "Er G – Engineering Hub Nepal",
-              url: siteUrl,
-              logo: `${siteUrl}/logo.png`,
-              contactPoint: {
-                "@type": "ContactPoint",
-                telephone: process.env.NEXT_PUBLIC_PHONE_NUMBER,
-                contactType: "customer service",
-                areaServed: "NP",
-                availableLanguage: ["Nepali", "English"],
-              },
-              address: {
-                "@type": "PostalAddress",
-                addressCountry: "NP",
-                addressLocality: "Kathmandu",
-              },
-              sameAs: [],
-            }),
+            __html: JSON.stringify(buildOrganisationSchema()),
           }}
         />
       </head>

@@ -18,6 +18,7 @@ import BlogSidebar from "@/components/blog/blog-sidebar";
 import { NewsletterCard } from "@/components/blog/newsletter-card";
 import { BlogCardSkeleton } from "@/components/blog/blog-card-skeleton";
 import { ExternalLink, Rss } from "lucide-react";
+import { buildMetadata, SITE_URL } from "@/lib/seo";
 
 // ─── Skeleton fallback ─────────────────────────────────────────────────────────
 

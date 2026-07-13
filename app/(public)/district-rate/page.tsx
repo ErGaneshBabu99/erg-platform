@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { searchDistrictRateSchema } from "@/lib/validations/district-rate";
@@ -6,12 +7,26 @@ import { DistrictRateGrid } from "@/components/district/district-rate-grid";
 import { SearchFilters } from "@/components/district/search-filters";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 
-export const metadata: Metadata = {
-  title: "District Rate Database Nepal – All 77 Districts",
+export const metadata: Metadata = buildMetadata({
+  title: "District Rate of Nepal – All 77 Districts Database",
   description:
-    "Search and download district rates for all 77 districts of Nepal. Free PDF downloads. Filter by province, fiscal year. Updated 2083-84.",
-  alternates: { canonical: "/district-rate" },
-};
+    "Search and download official district rates for all 77 districts of Nepal. Free PDF downloads. Filter by province or fiscal year. Jilla Dar Rate updated 2083/84.",
+  keywords: [
+    "district rate of nepal",
+    "district rate all 77 districts",
+    "district rate pdf nepal",
+    "jilla dar rate nepal",
+    "official district rate pdf",
+    "जिल्ला दररेट",
+    "जिल्ला दर रेट",
+    "जिल्ला दररेट PDF",
+    "district rate by province nepal",
+    "district rate 2083 84",
+    "nepal district rate database",
+    "district rate free download nepal",
+  ],
+  path: "/district-rate",
+});
 
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

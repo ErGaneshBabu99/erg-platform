@@ -6,7 +6,8 @@
 
 import { MetadataRoute } from "next";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ergplatform.com";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.erganesh.com.np";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -15,14 +16,13 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: "/",
         disallow: [
-          "/admin/",        // admin dashboard
-          "/api/",          // API routes
-          "/_next/",        // Next.js internals
-          "/auth/",         // auth pages
+          "/admin/", // admin dashboard
+          "/api/",   // API routes
+          "/auth/",  // auth pages
         ],
       },
       {
-        // Block AI scrapers if desired — remove if you want AI indexing
+        // Block AI scrapers — remove this rule if you want AI indexing
         userAgent: [
           "GPTBot",
           "ChatGPT-User",
