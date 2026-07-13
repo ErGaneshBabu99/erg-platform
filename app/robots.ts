@@ -21,18 +21,7 @@ export default function robots(): MetadataRoute.Robots {
           "/auth/",  // auth pages
         ],
       },
-      {
-        // Block AI scrapers — remove this rule if you want AI indexing
-        userAgent: [
-          "GPTBot",
-          "ChatGPT-User",
-          "CCBot",
-          "anthropic-ai",
-          "Claude-Web",
-        ],
-        disallow: "/",
-      },
-    ],
+          ],
     sitemap: `${SITE_URL}/sitemap.xml`,
     host: SITE_URL,
   };
