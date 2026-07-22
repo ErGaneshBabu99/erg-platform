@@ -78,7 +78,8 @@ interface LatestRatesProps {
 
 export function LatestRates({ rates, loading = false }: LatestRatesProps) {
   return (
-    <section className="py-20 bg-white dark:bg-gray-900">
+    <section className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">
+  <img src="/Banner3.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-[0.06] pointer-events-none select-none" />
       <div className="container-erg">
         <Reveal className="flex items-end justify-between gap-4 mb-10">
           <div>

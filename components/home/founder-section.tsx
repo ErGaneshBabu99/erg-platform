@@ -29,6 +29,7 @@ export function FounderSection() {
 
   return (
     <section className="py-20 md:py-28 bg-white dark:bg-gray-900 relative overflow-hidden">
+  <img src="/Banner1.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-[0.06] pointer-events-none select-none" />
       {/* Ambient accent */}
       <div className="absolute -top-32 -left-32 w-96 h-96 bg-navy-600/[0.03] dark:bg-navy-400/[0.04] rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-80 h-80 bg-accent/[0.04] rounded-full blur-3xl pointer-events-none" />

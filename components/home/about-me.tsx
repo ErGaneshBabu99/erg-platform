@@ -46,6 +46,7 @@ const aboutBlocks = [
 export function AboutMe() {
   return (
     <section className="py-20 bg-gray-50 dark:bg-gray-950/50 border-y border-gray-100 dark:border-gray-800/50 relative overflow-hidden">
+      <img src="/Banner2.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-[0.06] pointer-events-none select-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-navy-600/[0.025] dark:bg-navy-400/[0.025] rounded-full blur-3xl pointer-events-none" />
 
       <div className="container-erg relative">
