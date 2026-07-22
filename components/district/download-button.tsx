@@ -19,7 +19,7 @@ export function DownloadButton({ districtRateId, pdfUrl, fileName }: DownloadBut
     // Track download
     await fetch(`/api/district-rate/${districtRateId}/download`, {
       method: "POST",
-    }).catch(() {});
+    }).catch(() => {});
 
     // Fetch PDF as blob then download
     const response = await fetch(pdfUrl);
