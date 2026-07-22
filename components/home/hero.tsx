@@ -1,6 +1,6 @@
 "use client";
-
-import React, { useState } from "react";
+import Image from "next/image";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Search, ArrowRight, FileText, Download } from "lucide-react";
 import { ScrollIndicator } from "@/components/home/scroll-indicator";
@@ -26,6 +26,14 @@ export function Hero() {
   const [query, setQuery] = useState("");
   const [province, setProvince] = useState("");
   const router = useRouter();
+  const [currentBanner, setCurrentBanner] = useState(0);
+
+  useEffect(() => {
+  const timer = setInterval(() => {
+    setCurrentBanner((prev) => (prev + 1) % 4);
+  }, 3000);
+  return () => clearInterval(timer);
+}, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,8 +77,38 @@ export function Hero() {
         <div className="absolute top-[12%] right-[42%] w-12 h-12 border border-navy-300/15 rotate-45 animate-drift" />
       </div>
 
-      {/* Right side glow */}
-      <div className="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-navy-800/40 to-transparent pointer-events-none" />
+      {/* Banner Slideshow - Right Side */}
+<div className="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:block w-[420px] h-[280px] rounded-2xl overflow-hidden shadow-2xl">
+  {[1, 2, 3, 4].map((num) => (
+    <div
+      key={num}
+      className={`absolute inset-0 transition-opacity duration-1000 ${
+        currentBanner === num - 1 ? "opacity-100" : "opacity-0"
+      }`}
+    >
+      <Image
+        src={`/banner${num}.png`}
+        alt={`Er G Banner ${num}`}
+        fill
+        className="object-cover"
+        priority={num === 1}
+      />
+    </div>
+  ))}
+  {/* Dots indicator */}
+  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+    {[0, 1, 2, 3].map((i) => (
+      <button
+        key={i}
+        onClick={() => setCurrentBanner(i)}
+        className={`w-2 h-2 rounded-full transition-all duration-300 ${
+          currentBanner === i ? "bg-white w-5" : "bg-white/50"
+        }`}
+      />
+    ))}
+  </div>
+</div>
+
 
       <div className="container-erg relative">
         {/* Tag line */}
