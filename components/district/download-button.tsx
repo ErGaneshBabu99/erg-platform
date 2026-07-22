@@ -14,24 +14,28 @@ export function DownloadButton({ districtRateId, pdfUrl, fileName }: DownloadBut
   const [loading, setLoading] = useState(false);
 
   const handleDownload = async () => {
-    setLoading(true);
-    try {
-      // Log the download
-      await fetch(`/api/district-rate/${districtRateId}/download`, {
-        method: "POST",
-      }).catch(() => {}); // Non-blocking
+  setLoading(true);
+  try {
+    // Track download
+    await fetch(`/api/district-rate/${districtRateId}/download`, {
+      method: "POST",
+    }).catch(() {});
 
-      // Trigger download
-      const link = document.createElement("a");
-      link.href = pdfUrl;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Fetch PDF as blob then download
+    const response = await fetch(pdfUrl);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <Button
