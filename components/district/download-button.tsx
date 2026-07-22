@@ -24,7 +24,7 @@ export function DownloadButton({ districtRateId, pdfUrl, fileName }: DownloadBut
 
   return (
     <a
-      href={pdfUrl}
+      href={`/api/download-pdf?url=${encodeURIComponent(pdfUrl)}&name=${encodeURIComponent(fileName)}`}
       download={fileName}
       onClick={handleDownload}
       className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-navy-600 hover:bg-navy-700 text-white text-sm font-semibold rounded-lg transition-all"
