@@ -60,16 +60,11 @@ export function Navbar() {
 
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 flex-shrink-0 group">
-              <div
-                className={cn(
-                  "w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm font-display transition-all duration-300 group-hover:scale-105 group-hover:rotate-3",
-                  solid
-                    ? "bg-navy-600 text-white shadow-sm"
-                    : "bg-white/15 text-white border border-white/20"
-                )}
-              >
-                E
-              </div>
+              <img
+               src="/logo.png"
+                alt="Er G Logo"
+                className="w-9 h-9 rounded-lg object-contain group-hover:scale-105 transition-all duration-300"
+                />
               <div className="flex flex-col leading-none">
                 <span
                   className={cn(
@@ -225,9 +220,11 @@ export function Navbar() {
         {/* Panel header */}
         <div className="flex items-center justify-between h-16 px-5 border-b border-gray-100 dark:border-gray-800 flex-shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-navy-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm font-display">E</span>
-            </div>
+            <img
+            src="/logo.png"
+            alt="Er G Logo"
+            className="w-8 h-8 rounded-lg object-contain"
+            />
             <span className="font-display font-bold text-navy-700 dark:text-white text-base">Er G</span>
           </div>
           <button
