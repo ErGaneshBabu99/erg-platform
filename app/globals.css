@@ -562,3 +562,22 @@
   border-top: 1px solid hsl(var(--border));
   margin: 2.5em 0;
 }
+@keyframes fade-bg-1 {
+  0%, 45% { opacity: 0.08; }
+  50%, 95% { opacity: 0; }
+  100% { opacity: 0.08; }
+}
+
+@keyframes fade-bg-2 {
+  0%, 45% { opacity: 0; }
+  50%, 95% { opacity: 0.08; }
+  100% { opacity: 0; }
+}
+
+.animate-fade-bg-1 {
+  animation: fade-bg-1 8s ease-in-out infinite;
+}
+
+.animate-fade-bg-2 {
+  animation: fade-bg-2 8s ease-in-out infinite;
+}

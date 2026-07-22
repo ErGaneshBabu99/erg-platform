@@ -47,6 +47,19 @@ export function Hero() {
     <section className="relative overflow-hidden bg-navy-950 pt-16 pb-24 md:pt-24 md:pb-32 min-h-[88vh] flex flex-col justify-center">
       {/* Premium animated gradient mesh background */}
       <div className="absolute inset-0 mesh-gradient animate-gradient-shift pointer-events-none" />
+      {/* Hero Background Images - Fading */}
+<div className="absolute inset-0 pointer-events-none">
+  <img
+    src="/hero-bg1.png"
+    alt=""
+    className="absolute inset-0 w-full h-full object-cover opacity-[0.08] animate-fade-bg-1"
+  />
+  <img
+    src="/hero-bg2.png"
+    alt=""
+    className="absolute inset-0 w-full h-full object-cover opacity-0 animate-fade-bg-2"
+  />
+</div>
 
       {/* Subtle grid */}
       <div
