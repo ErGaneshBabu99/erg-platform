@@ -87,7 +87,7 @@ export function Hero() {
       }`}
     >
       <Image
-        src={`/banner${num}.png`}
+        src={`/Banner${num}.png`}
         alt={`Er G Banner ${num}`}
         fill
         className="object-cover"
