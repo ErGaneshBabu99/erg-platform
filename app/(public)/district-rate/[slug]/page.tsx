@@ -205,15 +205,46 @@ export default async function DistrictRatePage({ params }: PageProps) {
                   pdfUrl={rate.pdfUrl}
                   fileName={`district-rate-${rate.district.name.toLowerCase()}-${rate.fiscalYear.year}.pdf`}
                 />
-                <Link
-                  href={rate.pdfUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-secondary flex-1 text-center"
-                >
-                  <Eye className="w-4 h-4" />
-                  View PDF
-                </Link>
+                <button
+  onClick={() => {
+    const modal = document.getElementById("pdf-modal");
+    if (modal) modal.style.display = "flex";
+  }}
+  className="btn-secondary flex-1 text-center flex items-center justify-center gap-2"
+>
+  <Eye className="w-4 h-4" />
+  View PDF
+</button>
+
+{/* PDF Modal */}
+<div
+  id="pdf-modal"
+  style={{ display: "none" }}
+  className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+  onClick={(e) => {
+    if (e.target === e.currentTarget) e.currentTarget.style.display = "none";
+  }}
+>
+  <div className="bg-white rounded-xl w-full max-w-4xl h-[90vh] flex flex-col">
+    <div className="flex items-center justify-between p-3 border-b">
+      <span className="font-semibold text-gray-800">View PDF</span>
+      <button
+        onClick={() => {
+          const modal = document.getElementById("pdf-modal");
+          if (modal) modal.style.display = "none";
+        }}
+        className="text-gray-500 hover:text-gray-800 font-bold text-xl px-2"
+      >
+        ✕
+      </button>
+    </div>
+    <iframe
+      src={rate.pdfUrl}
+      className="flex-1 w-full rounded-b-xl"
+      title="PDF Viewer"
+    />
+  </div>
+</div>
               </div>
             </div>
 
