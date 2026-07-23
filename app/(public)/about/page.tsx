@@ -1,13 +1,34 @@
+// Existing imports mathi yei add gara
+import { buildPersonSchema, buildWebPageSchema } from "@/lib/schema";
 import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { FounderTimeline } from "@/components/home/founder-timeline";
 import { Target, Users, Award } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About – Er G Engineering Hub Nepal",
+  title: "About Er. Ganesh Chapagain — Civil Engineer | Er G Platform",
   description:
-    "Er G is Nepal's premier engineering resource platform providing district rates, consultancy, and professional resources for Nepal's engineers.",
+    "Ganesh Chapagain is a Registered Civil Engineer and founder of Er G Platform. Providing district rates, engineering consultancy, and construction resources across Nepal.",
   alternates: { canonical: "/about" },
+  keywords: [
+    "Ganesh Chapagain",
+    "Er Ganesh Chapagain",
+    "Er Ganesh",
+    "Engineer Ganesh Nepal",
+    "Ganesh Chapagain engineer",
+    "Ganesh Chapagain Kathmandu",
+    "Ganesh Chapagain Panchthar",
+    "Ganesh Chapagain Khwopa Engineering College",
+    "Nepali Engineer Ganesh Chapagain",
+    "best engineer Nepal",
+    "civil engineer Nepal Ganesh",
+    "Er G Platform founder",
+  ],
+  openGraph: {
+    title: "Er. Ganesh Chapagain — Registered Civil Engineer Nepal",
+    description: "Founder of Er G Platform. District rates, engineering consultancy, Nepal.",
+    images: [{ url: "/ganesh.jpg", width: 400, height: 400, alt: "Ganesh Chapagain" }],
+  },
 };
 
 const breadcrumbs = [
@@ -43,9 +64,23 @@ const roadmap = [
   { label: "AI Assistant", status: "soon" },
 ];
 
-export default function AboutPage() {
-  return (
+export default function AboutPage() { 
+  const personSchema = buildPersonSchema();
+  const pageSchema = buildWebPageSchema({
+    title: "About Er. Ganesh Chapagain",
+    description: "Registered Civil Engineer and founder of Er G Platform Nepal.",
+    path: "/about",
+  });
+  return ( 
     <>
+    <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }}
+      />
       <div className="bg-navy-950 py-12 px-4 border-b border-white/5">
         <div className="container-erg">
           <Breadcrumb items={breadcrumbs} className="mb-4 text-navy-400" />
