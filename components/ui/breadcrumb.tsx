@@ -21,7 +21,13 @@ export function Breadcrumb({ items, className }: BreadcrumbProps) {
       "@type": "ListItem",
       position: index + 1,
       name: item.label,
-      ...(item.href && { item: `${process.env.NEXT_PUBLIC_SITE_URL}${item.href}` }),
+      ...(item.href && {
+  item: {
+    "@id": item.href.startsWith("http")
+      ? item.href
+      : `${process.env.NEXT_PUBLIC_SITE_URL}${item.href}`,
+  },
+}),
     })),
   };
 
