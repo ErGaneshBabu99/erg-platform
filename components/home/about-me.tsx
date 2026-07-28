@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Compass, Target, Eye, Wrench, Heart, Route } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
 
@@ -48,6 +49,36 @@ export function AboutMe() {
     <section className="py-20 bg-gray-50 dark:bg-gray-950/50 border-y border-gray-100 dark:border-gray-800/50 relative overflow-hidden">
       <img src="/Banner2.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-[0.06] pointer-events-none select-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-navy-600/[0.025] dark:bg-navy-400/[0.025] rounded-full blur-3xl pointer-events-none" />
+
+      {/* Floating brand card — Er G logo watermark, matches Hero banner style */}
+      <div className="absolute top-8 right-8 hidden lg:block w-[220px] rounded-2xl overflow-hidden shadow-xl bg-navy-950 border border-white/10 pointer-events-none select-none">
+        <Image
+          src="/logo.png"
+          alt=""
+          width={140}
+          height={140}
+          className="absolute -right-6 -bottom-6 opacity-[0.08] object-contain"
+        />
+        <div className="relative p-4">
+          <div className="flex items-center gap-2 mb-2.5">
+            <div className="w-6 h-6 rounded-md bg-accent flex items-center justify-center text-navy-950 text-xs font-bold">G</div>
+            <span className="text-white text-xs font-semibold">Er G</span>
+          </div>
+          <p className="text-white/70 text-[11px] leading-relaxed mb-3">
+            Building Nepal&apos;s most trusted engineering platform, one district at a time.
+          </p>
+          <div className="flex gap-4 border-t border-white/10 pt-2.5">
+            <div>
+              <p className="text-accent text-sm font-bold leading-none">77</p>
+              <p className="text-white/40 text-[10px] mt-0.5">Districts</p>
+            </div>
+            <div>
+              <p className="text-accent text-sm font-bold leading-none">2082</p>
+              <p className="text-white/40 text-[10px] mt-0.5">B.S. founded</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="container-erg relative">
         <Reveal className="text-center max-w-xl mx-auto mb-14">

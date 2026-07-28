@@ -73,12 +73,9 @@ export const metadata: Metadata = {
     canonical: SITE_URL,
   },
   icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.svg", type: "image/svg+xml" },
-    ],
-    apple: "/apple-touch-icon.png",
-  },
+  icon: "/favicon.ico",
+  apple: "/apple-touch-icon.png",
+},
   manifest: "/site.webmanifest",
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION,

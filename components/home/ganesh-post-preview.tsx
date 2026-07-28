@@ -6,6 +6,7 @@
  */
 
 import Link from "next/link";
+import Image from "next/image";
 import { fetchLatestPosts, BlogPost } from "@/lib/blogger";
 import { ArrowRight, Clock, ExternalLink, Rss } from "lucide-react";
 
@@ -122,6 +123,31 @@ export default async function GaneshPostPreview() {
     <section className="relative py-16 sm:py-24 overflow-hidden">
       {/* Subtle background */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-950/8 to-transparent pointer-events-none" />
+
+      {/* Floating brand card — Er G logo watermark, matches Hero/About card style */}
+      <div className="absolute top-8 right-4 xl:right-8 hidden xl:block w-[220px] rounded-2xl overflow-hidden shadow-xl bg-navy-950 border border-white/10 pointer-events-none select-none z-10">
+        <Image
+          src="/logo.png"
+          alt=""
+          width={140}
+          height={140}
+          className="absolute -right-6 -bottom-6 opacity-[0.08] object-contain"
+        />
+        <div className="relative p-4">
+          <div className="flex items-center gap-1.5 mb-2.5">
+            <Rss className="w-3.5 h-3.5 text-blue-400" />
+            <span className="text-blue-400 text-[10px] font-bold uppercase tracking-widest">The Ganesh Post</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
+          </div>
+          <p className="text-white/70 text-[11px] leading-relaxed mb-3">
+            Engineering insights, synced live every hour from the field.
+          </p>
+          <div className="flex items-center justify-between border-t border-white/10 pt-2.5">
+            <span className="text-white/40 text-[10px]">Auto-synced</span>
+            <ArrowRight className="w-3.5 h-3.5 text-blue-400" />
+          </div>
+        </div>
+      </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
