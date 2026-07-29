@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { LucideIcon } from "lucide-react";
 import {
   LayoutDashboard, FileText, Upload, BarChart2,
   MessageSquare, Settings, ChevronLeft, ChevronRight,
@@ -13,7 +14,7 @@ import { cn } from "@/lib/utils";
 interface NavItem {
   label: string;
   href: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   roles?: string[];
   badge?: string;
 }
