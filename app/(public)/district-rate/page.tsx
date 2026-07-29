@@ -6,6 +6,9 @@ import { searchDistrictRateSchema } from "@/lib/validations/district-rate";
 import { DistrictRateGrid } from "@/components/district/district-rate-grid";
 import { SearchFilters } from "@/components/district/search-filters";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { Download, Eye } from "lucide-react";
+import { DownloadLiveScene } from "@/components/district-rate/download-live-scene";
+import { DownloadLiveScene3D } from "@/components/district-rate/download-live-scene-3d";
 
 export const metadata: Metadata = buildMetadata({
   title: "District Rate of Nepal – All 77 Districts Database",
@@ -86,6 +89,17 @@ async function getFilterData() {
   return { provinces: provinces.map((p: { name: string }) => p.name), fiscalYears: fiscalYears.map((f: { year: string }) => f.year) };
 }
 
+async function getStats() {
+  const agg = await prisma.districtRate.aggregate({
+    where: { status: "PUBLISHED" },
+    _sum: { downloadCount: true, viewCount: true },
+  });
+  return {
+    downloads: agg._sum.downloadCount ?? 0,
+    views: agg._sum.viewCount ?? 0,
+  };
+}
+
 export default async function DistrictRatePage({ searchParams }: PageProps) {
   const params = await searchParams;
   const flatParams: Record<string, string> = {};
@@ -94,9 +108,10 @@ export default async function DistrictRatePage({ searchParams }: PageProps) {
     else if (Array.isArray(v) && v.length > 0) flatParams[k] = v[0] as string;
   }
 
-  const [{ rates, total, page, limit }, { provinces, fiscalYears }] = await Promise.all([
+  const [{ rates, total, page, limit }, { provinces, fiscalYears }, stats] = await Promise.all([
     getDistrictRates(flatParams),
     getFilterData(),
+    getStats(),
   ]);
 
   const breadcrumbs = [
@@ -107,16 +122,55 @@ export default async function DistrictRatePage({ searchParams }: PageProps) {
   return (
     <>
       {/* Page Header */}
-      <div className="bg-gradient-to-br from-navy-950 to-navy-700 py-12 px-4">
-        <div className="container-erg">
-          <Breadcrumb items={breadcrumbs} className="mb-4 text-navy-300" />
-          <h1 className="text-3xl md:text-4xl font-display font-bold text-white mb-3">
-            District Rate Database
-          </h1>
-          <p className="text-navy-200 text-lg max-w-xl">
-            Official district rates for all 77 districts of Nepal.
-            Download PDF, search by province or fiscal year.
-          </p>
+      <div className="bg-gradient-to-br from-navy-950 to-navy-700 py-12 px-4 relative overflow-hidden">
+        <div className="container-erg relative flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+          <div>
+            <Breadcrumb items={breadcrumbs} className="mb-4 text-navy-300" />
+            <h1 className="text-3xl md:text-4xl font-display font-bold text-white mb-3">
+              District Rate Database
+            </h1>
+            <p className="text-navy-200 text-lg max-w-xl">
+              Official district rates for all 77 districts of Nepal.
+              Download PDF, search by province or fiscal year.
+            </p>
+          </div>
+
+          {/* Live platform stats */}
+          <div className="shrink-0">
+            <div className="flex items-center gap-1.5 mb-3 lg:justify-end">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-[11px] font-bold uppercase tracking-widest text-navy-300">
+                Live platform stats
+              </span>
+            </div>
+            <div className="flex gap-3">
+              <div className="flex items-center gap-3 bg-white/[0.06] backdrop-blur-sm border border-white/10 rounded-2xl px-5 py-4 hover:bg-white/[0.09] transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-accent/15 flex items-center justify-center shrink-0">
+                  <Download className="w-5 h-5 text-accent" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-white leading-none tabular-nums">
+                    {stats.downloads.toLocaleString()}
+                  </p>
+                  <p className="text-navy-300 text-xs mt-1 whitespace-nowrap">Total downloads</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 bg-white/[0.06] backdrop-blur-sm border border-white/10 rounded-2xl px-5 py-4 hover:bg-white/[0.09] transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-blue-400/15 flex items-center justify-center shrink-0">
+                  <Eye className="w-5 h-5 text-blue-300" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-white leading-none tabular-nums">
+                    {stats.views.toLocaleString()}
+                  </p>
+                  <p className="text-navy-300 text-xs mt-1 whitespace-nowrap">Total views</p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-2">
+              <DownloadLiveScene3D initialDownloads={stats.downloads} />
+            </div>
+          </div>
         </div>
       </div>
 

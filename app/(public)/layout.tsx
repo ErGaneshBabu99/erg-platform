@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { FloatingAssistant } from "@/components/ai-assistant/floating-assistant";
+import { AmbientBackground } from "@/components/layout/ambient-background";
 
 export default function PublicLayout({
   children,
@@ -9,6 +10,7 @@ export default function PublicLayout({
 }) {
   return (
     <>
+      <AmbientBackground />
       <Navbar />
       <main>{children}</main>
       <Footer />
@@ -16,3 +18,4 @@ export default function PublicLayout({
     </>
   );
 }
+
