@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "erg-platform",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  // Hyperdrive lets Workers connect to your existing Supabase Postgres
+  // over a pooled connection (raw TCP Postgres does not work in Workers).
+  // Create this in the Cloudflare dashboard: Workers & Pages > Hyperdrive
+  // pointing at your Supabase connection string, then paste its ID below.
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "REPLACE_WITH_HYPERDRIVE_ID"
+    }
+  ]
+}
