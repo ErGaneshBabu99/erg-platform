@@ -34,3 +34,11 @@ next-env.d.ts
 
 # Backups
 backups/
+ Updated upstream
+
+
+.dev.vars
+.dev.vars.*
+.open-next
+.wrangler
+ Stashed changes
