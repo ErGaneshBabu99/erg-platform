@@ -8,6 +8,7 @@ interface RelatedRate {
   id: string;
   slug: string;
   downloadCount: number;
+  viewCount: number;
   district: { name: string; province: { name: string } };
   fiscalYear: { year: string };
 }
@@ -39,7 +40,7 @@ export function RelatedRates({ rates, districtName }: RelatedRatesProps) {
               </div>
               <div className="flex items-center gap-2 mt-0.5">
                 <Badge variant="navy" className="text-xs">{rate.fiscalYear.year}</Badge>
-                <span className="text-xs text-gray-400">{formatNumber(rate.downloadCount)} downloads</span>
+                <span className="text-xs text-gray-400">{formatNumber(rate.downloadCount + rate.viewCount)} downloads</span>
               </div>
             </div>
             <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-navy-600 dark:group-hover:text-blue-400 transition-colors" />

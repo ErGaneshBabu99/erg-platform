@@ -58,7 +58,7 @@ async function getDistrictPages(): Promise<MetadataRoute.Sitemap> {
       orderBy: { updatedAt: "desc" },
     });
 
-    return districts.map((d) => ({
+    return districts.map((d: (typeof districts)[number]) => ({
       url: `${SITE_URL}/district-rate/${d.slug}`,
       lastModified: d.updatedAt,
       changeFrequency: "monthly" as const,

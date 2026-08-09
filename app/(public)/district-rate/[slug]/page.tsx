@@ -11,6 +11,7 @@ import { ContactBox } from "@/components/district/contact-box";
 import { RelatedRates } from "@/components/district/related-rates";
 import { formatNumber, formatDate, formatFileSize, getAbsoluteUrl } from "@/lib/utils";
 import { Download, Eye, Calendar, FileText, MapPin, ArrowLeft } from "lucide-react";
+import { getPlatformStats } from "@/lib/site-visits";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -87,6 +88,8 @@ export default async function DistrictRatePage({ params }: PageProps) {
   if (!rate) notFound();
 
   const related = await getRelatedRates(rate.districtId, rate.id);
+  const platformStats = await getPlatformStats();
+
 
   // Increment view count (async, non-blocking)
   prisma.districtRate.update({
@@ -141,40 +144,64 @@ export default async function DistrictRatePage({ params }: PageProps) {
 
       {/* Header */}
       <div className="bg-gradient-to-br from-navy-950 to-navy-700 py-12 px-4">
-        <div className="container-erg">
-          <Breadcrumb items={breadcrumbs} className="mb-5 text-navy-300" />
-          <div className="flex flex-wrap items-start gap-3 mb-3">
-            <Badge variant="navy" className="text-xs">{rate.district.province.name}</Badge>
-            <Badge variant="gold">{rate.fiscalYear.year}</Badge>
+        <div className="container-erg flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+          <div>
+            <Breadcrumb items={breadcrumbs} className="mb-5 text-navy-300" />
+            <div className="flex flex-wrap items-start gap-3 mb-3">
+              <Badge variant="navy" className="text-xs">{rate.district.province.name}</Badge>
+              <Badge variant="gold">{rate.fiscalYear.year}</Badge>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-display font-bold text-white mb-3">
+              District Rate of {rate.district.name}
+              <span className="block text-navy-200 text-2xl md:text-3xl font-semibold mt-1">
+                Fiscal Year {rate.fiscalYear.year}
+              </span>
+            </h1>
+            <div className="flex flex-wrap gap-6 text-navy-200 text-sm">
+              <span className="flex items-center gap-1.5">
+                <Download className="w-4 h-4" />
+                {formatNumber(rate.downloadCount + rate.viewCount)} downloads
+              </span>
+              {rate.publishedAt && (
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="w-4 h-4" />
+                  Published {formatDate(rate.publishedAt)}
+                </span>
+              )}
+              {rate.pdfSize && (
+                <span className="flex items-center gap-1.5">
+                  <FileText className="w-4 h-4" />
+                  {formatFileSize(rate.pdfSize)}
+                  {rate.pdfPages ? ` · ${rate.pdfPages} pages` : ""}
+                </span>
+              )}
+            </div>
           </div>
-          <h1 className="text-3xl md:text-4xl font-display font-bold text-white mb-3">
-            District Rate of {rate.district.name}
-            <span className="block text-navy-200 text-2xl md:text-3xl font-semibold mt-1">
-              Fiscal Year {rate.fiscalYear.year}
-            </span>
-          </h1>
-          <div className="flex flex-wrap gap-6 text-navy-200 text-sm">
-            <span className="flex items-center gap-1.5">
-              <Download className="w-4 h-4" />
-              {formatNumber(rate.downloadCount)} downloads
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Eye className="w-4 h-4" />
-              {formatNumber(rate.viewCount)} views
-            </span>
-            {rate.publishedAt && (
-              <span className="flex items-center gap-1.5">
-                <Calendar className="w-4 h-4" />
-                Published {formatDate(rate.publishedAt)}
-              </span>
-            )}
-            {rate.pdfSize && (
-              <span className="flex items-center gap-1.5">
-                <FileText className="w-4 h-4" />
-                {formatFileSize(rate.pdfSize)}
-                {rate.pdfPages ? ` · ${rate.pdfPages} pages` : ""}
-              </span>
-            )}
+
+          {/* Live platform stats (site-wide, same as listing page) — top right */}
+          <div className="shrink-0 flex gap-3">
+            <div className="flex items-center gap-3 bg-white/[0.06] backdrop-blur-sm border border-white/10 rounded-2xl px-4 py-3">
+              <div className="w-8 h-8 rounded-lg bg-accent/15 flex items-center justify-center shrink-0">
+                <Download className="w-4 h-4 text-accent" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-white leading-none tabular-nums">
+                  {platformStats.downloads.toLocaleString()}
+                </p>
+                <p className="text-navy-300 text-[11px] mt-0.5 whitespace-nowrap">Total downloads</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 bg-white/[0.06] backdrop-blur-sm border border-white/10 rounded-2xl px-4 py-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-400/15 flex items-center justify-center shrink-0">
+                <Eye className="w-4 h-4 text-blue-300" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-white leading-none tabular-nums">
+                  {platformStats.views.toLocaleString()}
+                </p>
+                <p className="text-navy-300 text-[11px] mt-0.5 whitespace-nowrap">Total views</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -273,7 +300,7 @@ export default async function DistrictRatePage({ params }: PageProps) {
                   { label: "District", value: rate.district.name },
                   { label: "Province", value: rate.district.province.name },
                   { label: "Fiscal Year", value: rate.fiscalYear.year },
-                  { label: "Downloads", value: formatNumber(rate.downloadCount) },
+                  { label: "Downloads", value: formatNumber(rate.downloadCount + rate.viewCount) },
                   rate.pdfPages ? { label: "Pages", value: String(rate.pdfPages) } : null,
                   rate.pdfSize ? { label: "File Size", value: formatFileSize(rate.pdfSize) } : null,
                   rate.publishedAt ? { label: "Published", value: formatDate(rate.publishedAt) } : null,

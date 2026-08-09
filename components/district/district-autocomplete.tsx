@@ -178,7 +178,7 @@ export function DistrictAutocomplete({ defaultValue = "", onCommit, isPending }:
         <ul
           id="district-suggestion-listbox"
           role="listbox"
-          className="absolute z-20 mt-2 w-full max-h-80 overflow-auto rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-lg opacity-0 animate-[fadeInUp_0.15s_ease-out_forwards]"
+          className="absolute z-20 mt-2 w-full max-h-80 overflow-auto rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-lg opacity-0 animate-[slideUp_0.15s_ease-out_forwards]"
         >
           {suggestions.map((s, i) => (
             <li
@@ -209,7 +209,7 @@ export function DistrictAutocomplete({ defaultValue = "", onCommit, isPending }:
       )}
 
       {isOpen && !isLoadingList && query.trim() && suggestions.length === 0 && (
-        <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-lg px-4 py-3 text-sm text-gray-400 opacity-0 animate-[fadeInUp_0.15s_ease-out_forwards]">
+        <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-lg px-4 py-3 text-sm text-gray-400 opacity-0 animate-[slideUp_0.15s_ease-out_forwards]">
           No matching districts
         </div>
       )}
