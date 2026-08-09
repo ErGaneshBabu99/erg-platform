@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { FileText, Download, Eye, Calendar, ArrowRight, SearchX } from "lucide-react";
+import { FileText, Download, Calendar, ArrowRight, SearchX } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/pagination";
 import { formatNumber, formatDate, formatFileSize } from "@/lib/utils";
@@ -79,11 +79,7 @@ export function DistrictRateGrid({ rates, total, page, limit, currentParams }: P
               <div className="flex items-center gap-4 text-xs text-gray-400 mb-4">
                 <span className="flex items-center gap-1.5">
                   <Download className="w-3.5 h-3.5" />
-                  {formatNumber(rate.downloadCount)} downloads
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Eye className="w-3.5 h-3.5" />
-                  {formatNumber(rate.viewCount)} views
+                  {formatNumber(rate.downloadCount + rate.viewCount)} downloads
                 </span>
                 {rate.pdfSize && (
                   <span className="ml-auto">{formatFileSize(rate.pdfSize)}</span>

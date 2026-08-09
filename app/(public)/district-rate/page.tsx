@@ -9,6 +9,7 @@ import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Download, Eye } from "lucide-react";
 import { DownloadLiveScene } from "@/components/district-rate/download-live-scene";
 import { DownloadLiveScene3D } from "@/components/district-rate/download-live-scene-3d";
+import { getPlatformStats } from "@/lib/site-visits";
 
 export const metadata: Metadata = buildMetadata({
   title: "District Rate of Nepal – All 77 Districts Database",
@@ -89,17 +90,6 @@ async function getFilterData() {
   return { provinces: provinces.map((p: { name: string }) => p.name), fiscalYears: fiscalYears.map((f: { year: string }) => f.year) };
 }
 
-async function getStats() {
-  const agg = await prisma.districtRate.aggregate({
-    where: { status: "PUBLISHED" },
-    _sum: { downloadCount: true, viewCount: true },
-  });
-  return {
-    downloads: agg._sum.downloadCount ?? 0,
-    views: agg._sum.viewCount ?? 0,
-  };
-}
-
 export default async function DistrictRatePage({ searchParams }: PageProps) {
   const params = await searchParams;
   const flatParams: Record<string, string> = {};
@@ -111,7 +101,7 @@ export default async function DistrictRatePage({ searchParams }: PageProps) {
   const [{ rates, total, page, limit }, { provinces, fiscalYears }, stats] = await Promise.all([
     getDistrictRates(flatParams),
     getFilterData(),
-    getStats(),
+    getPlatformStats(),
   ]);
 
   const breadcrumbs = [

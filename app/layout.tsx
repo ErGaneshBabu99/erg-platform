@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { buildMetadata } from "@/lib/seo";
 import "./globals.css";
 import { Providers } from "./providers";
+import { SiteVisitTracker } from "@/components/site-visit-tracker";
 import {
   SITE_URL,
   SITE_NAME_FULL,
@@ -138,6 +139,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <SiteVisitTracker />
         <Providers>{children}</Providers>
       </body>
     </html>

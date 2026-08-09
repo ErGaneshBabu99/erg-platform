@@ -34,7 +34,7 @@ async function getAllDistricts(): Promise<DistrictRow[]> {
     orderBy: { name: "asc" },
   });
 
-  const data = districts.map((d) => ({
+  const data = districts.map((d: (typeof districts)[number]) => ({
     name: d.name,
     slug: d.slug,
     province: d.province.name,
