@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -241,6 +242,24 @@ model Vacancy {
 
   @@map("vacancies")
 }
+
+model ReportCheckSession {
+  id               String   @id
+  createdAt        DateTime @default(now())
+  expiresAt        DateTime
+  fileName         String
+  fileType         String
+  pageCount        Int?
+  extracted        Json
+  reportedIssueIds Json     @default("[]")
+  nextIssueNumber  Int      @default(1)
+  completed        Boolean  @default(false)
+  issueQueue       Json     @default("[]")
+  fetchInProgress  Boolean  @default(false)
+  chunkIndex       Int      @default(0)
+
+  @@map("report_check_sessions")
+} 
 
 enum UserRole {
   SUPER_ADMIN

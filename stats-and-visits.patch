@@ -1,0 +1,210 @@
+diff --git a/app/(public)/district-rate/page.tsx b/app/(public)/district-rate/page.tsx
+index ad2a16c..9568f6c 100644
+--- a/app/(public)/district-rate/page.tsx
++++ b/app/(public)/district-rate/page.tsx
+@@ -9,6 +9,7 @@ import { Breadcrumb } from "@/components/ui/breadcrumb";
+ import { Download, Eye } from "lucide-react";
+ import { DownloadLiveScene } from "@/components/district-rate/download-live-scene";
+ import { DownloadLiveScene3D } from "@/components/district-rate/download-live-scene-3d";
++import { getSiteVisitCount } from "@/lib/site-visits";
+ 
+ export const metadata: Metadata = buildMetadata({
+   title: "District Rate of Nepal – All 77 Districts Database",
+@@ -90,13 +91,20 @@ async function getFilterData() {
+ }
+ 
+ async function getStats() {
+-  const agg = await prisma.districtRate.aggregate({
+-    where: { status: "PUBLISHED" },
+-    _sum: { downloadCount: true, viewCount: true },
+-  });
++  const [agg, siteVisits] = await Promise.all([
++    prisma.districtRate.aggregate({
++      where: { status: "PUBLISHED" },
++      _sum: { downloadCount: true, viewCount: true },
++    }),
++    getSiteVisitCount(),
++  ]);
+   return {
+-    downloads: agg._sum.downloadCount ?? 0,
+-    views: agg._sum.viewCount ?? 0,
++    // "Total downloads" card = combined district-rate engagement
++    // (views + downloads), and also feeds the live 3D animation.
++    downloads: (agg._sum.downloadCount ?? 0) + (agg._sum.viewCount ?? 0),
++    // "Total views" card = total website visitors (site-wide), not
++    // PDF view count.
++    views: siteVisits,
+   };
+ }
+ 
+diff --git a/app/api/district-rate/live-stats/route.ts b/app/api/district-rate/live-stats/route.ts
+index 028676e..8387bbc 100644
+--- a/app/api/district-rate/live-stats/route.ts
++++ b/app/api/district-rate/live-stats/route.ts
+@@ -4,8 +4,9 @@ import { prisma } from "@/lib/prisma";
+ export async function GET() {
+   const agg = await prisma.districtRate.aggregate({
+     where: { status: "PUBLISHED" },
+-    _sum: { downloadCount: true },
++    _sum: { downloadCount: true, viewCount: true },
+   });
+ 
+-  return NextResponse.json({ downloads: agg._sum.downloadCount ?? 0 });
++  const combined = (agg._sum.downloadCount ?? 0) + (agg._sum.viewCount ?? 0);
++  return NextResponse.json({ downloads: combined });
+ }
+\ No newline at end of file
+diff --git a/app/api/district-suggestions/route.ts b/app/api/district-suggestions/route.ts
+index b754b08..468bf1f 100644
+--- a/app/api/district-suggestions/route.ts
++++ b/app/api/district-suggestions/route.ts
+@@ -34,7 +34,7 @@ async function getAllDistricts(): Promise<DistrictRow[]> {
+     orderBy: { name: "asc" },
+   });
+ 
+-  const data = districts.map((d) => ({
++  const data = districts.map((d: (typeof districts)[number]) => ({
+     name: d.name,
+     slug: d.slug,
+     province: d.province.name,
+diff --git a/app/api/districts/route.ts b/app/api/districts/route.ts
+index fd8f081..3849206 100644
+--- a/app/api/districts/route.ts
++++ b/app/api/districts/route.ts
+@@ -33,7 +33,7 @@ export async function GET() {
+     orderBy: { name: "asc" },
+   });
+ 
+-  const data = districts.map((d) => ({
++  const data = districts.map((d: (typeof districts)[number]) => ({
+     name: d.name,
+     slug: d.slug,
+     province: d.province.name,
+diff --git a/app/api/track-visit/route.ts b/app/api/track-visit/route.ts
+new file mode 100644
+index 0000000..c9566a8
+--- /dev/null
++++ b/app/api/track-visit/route.ts
+@@ -0,0 +1,12 @@
++import { NextResponse } from "next/server";
++import { incrementSiteVisitCount } from "@/lib/site-visits";
++
++export async function POST() {
++  try {
++    const total = await incrementSiteVisitCount();
++    return NextResponse.json({ total });
++  } catch {
++    // Non-critical (decorative counter) -- fail silently.
++    return NextResponse.json({ ok: false }, { status: 200 });
++  }
++}
+diff --git a/app/layout.tsx b/app/layout.tsx
+index 080fb0d..ab49380 100644
+--- a/app/layout.tsx
++++ b/app/layout.tsx
+@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
+ import { buildMetadata } from "@/lib/seo";
+ import "./globals.css";
+ import { Providers } from "./providers";
++import { SiteVisitTracker } from "@/components/site-visit-tracker";
+ import {
+   SITE_URL,
+   SITE_NAME_FULL,
+@@ -138,6 +139,7 @@ export default function RootLayout({
+         />
+       </head>
+       <body>
++        <SiteVisitTracker />
+         <Providers>{children}</Providers>
+       </body>
+     </html>
+diff --git a/app/sitemap.ts b/app/sitemap.ts
+index 30074b0..3d4b4c2 100644
+--- a/app/sitemap.ts
++++ b/app/sitemap.ts
+@@ -58,7 +58,7 @@ async function getDistrictPages(): Promise<MetadataRoute.Sitemap> {
+       orderBy: { updatedAt: "desc" },
+     });
+ 
+-    return districts.map((d) => ({
++    return districts.map((d: (typeof districts)[number]) => ({
+       url: `${SITE_URL}/district-rate/${d.slug}`,
+       lastModified: d.updatedAt,
+       changeFrequency: "monthly" as const,
+diff --git a/components/site-visit-tracker.tsx b/components/site-visit-tracker.tsx
+new file mode 100644
+index 0000000..58bdb1e
+--- /dev/null
++++ b/components/site-visit-tracker.tsx
+@@ -0,0 +1,32 @@
++"use client";
++
++import { useEffect } from "react";
++
++const COOKIE_NAME = "erg_visit_counted";
++const COOKIE_MAX_AGE_SECONDS = 30 * 60; // 30 minutes
++
++function hasVisitCookie(): boolean {
++  return document.cookie
++    .split("; ")
++    .some((c) => c.startsWith(`${COOKIE_NAME}=`));
++}
++
++function setVisitCookie() {
++  document.cookie = `${COOKIE_NAME}=1; max-age=${COOKIE_MAX_AGE_SECONDS}; path=/; SameSite=Lax`;
++}
++
++/**
++ * Fires once per ~30-minute window (per browser) to increment the
++ * site-wide visit counter. Mounted once in the root layout.
++ */
++export function SiteVisitTracker() {
++  useEffect(() => {
++    if (hasVisitCookie()) return;
++    setVisitCookie();
++    fetch("/api/track-visit", { method: "POST", keepalive: true }).catch(() => {
++      // decorative only, safe to ignore failures
++    });
++  }, []);
++
++  return null;
++}
+diff --git a/lib/site-visits.ts b/lib/site-visits.ts
+new file mode 100644
+index 0000000..90e2180
+--- /dev/null
++++ b/lib/site-visits.ts
+@@ -0,0 +1,33 @@
++import { prisma } from "@/lib/prisma";
++
++const SITE_VISITS_KEY = "total_site_visits";
++
++/**
++ * Total number of site visits recorded so far (a simple, approximate
++ * counter -- not a precise unique-visitor count). Stored in the
++ * existing SiteConfig key/value table so no schema migration is needed.
++ */
++export async function getSiteVisitCount(): Promise<number> {
++  const row = await prisma.siteConfig.findUnique({
++    where: { key: SITE_VISITS_KEY },
++  });
++  return row ? parseInt(row.value, 10) || 0 : 0;
++}
++
++/**
++ * Increments the site visit counter by 1 and returns the new total.
++ */
++export async function incrementSiteVisitCount(): Promise<number> {
++  const existing = await prisma.siteConfig.findUnique({
++    where: { key: SITE_VISITS_KEY },
++  });
++  const next = (existing ? parseInt(existing.value, 10) || 0 : 0) + 1;
++
++  await prisma.siteConfig.upsert({
++    where: { key: SITE_VISITS_KEY },
++    update: { value: String(next), type: "number" },
++    create: { key: SITE_VISITS_KEY, value: String(next), type: "number" },
++  });
++
++  return next;
++}
