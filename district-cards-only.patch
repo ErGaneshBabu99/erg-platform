@@ -1,0 +1,81 @@
+diff --git a/app/(public)/district-rate/[slug]/page.tsx b/app/(public)/district-rate/[slug]/page.tsx
+index 50228b3..731811b 100644
+--- a/app/(public)/district-rate/[slug]/page.tsx
++++ b/app/(public)/district-rate/[slug]/page.tsx
+@@ -10,7 +10,7 @@ import { DownloadButton } from "@/components/district/download-button";
+ import { ContactBox } from "@/components/district/contact-box";
+ import { RelatedRates } from "@/components/district/related-rates";
+ import { formatNumber, formatDate, formatFileSize, getAbsoluteUrl } from "@/lib/utils";
+-import { Download, Eye, Calendar, FileText, MapPin, ArrowLeft } from "lucide-react";
++import { Download, Calendar, FileText, MapPin, ArrowLeft } from "lucide-react";
+ 
+ interface PageProps {
+   params: Promise<{ slug: string }>;
+@@ -156,11 +156,7 @@ export default async function DistrictRatePage({ params }: PageProps) {
+           <div className="flex flex-wrap gap-6 text-navy-200 text-sm">
+             <span className="flex items-center gap-1.5">
+               <Download className="w-4 h-4" />
+-              {formatNumber(rate.downloadCount)} downloads
+-            </span>
+-            <span className="flex items-center gap-1.5">
+-              <Eye className="w-4 h-4" />
+-              {formatNumber(rate.viewCount)} views
++              {formatNumber(rate.downloadCount + rate.viewCount)} downloads
+             </span>
+             {rate.publishedAt && (
+               <span className="flex items-center gap-1.5">
+@@ -273,7 +269,7 @@ export default async function DistrictRatePage({ params }: PageProps) {
+                   { label: "District", value: rate.district.name },
+                   { label: "Province", value: rate.district.province.name },
+                   { label: "Fiscal Year", value: rate.fiscalYear.year },
+-                  { label: "Downloads", value: formatNumber(rate.downloadCount) },
++                  { label: "Downloads", value: formatNumber(rate.downloadCount + rate.viewCount) },
+                   rate.pdfPages ? { label: "Pages", value: String(rate.pdfPages) } : null,
+                   rate.pdfSize ? { label: "File Size", value: formatFileSize(rate.pdfSize) } : null,
+                   rate.publishedAt ? { label: "Published", value: formatDate(rate.publishedAt) } : null,
+diff --git a/components/district/district-rate-grid.tsx b/components/district/district-rate-grid.tsx
+index 5e50579..96f12f4 100644
+--- a/components/district/district-rate-grid.tsx
++++ b/components/district/district-rate-grid.tsx
+@@ -1,6 +1,6 @@
+ import React from "react";
+ import Link from "next/link";
+-import { FileText, Download, Eye, Calendar, ArrowRight, SearchX } from "lucide-react";
++import { FileText, Download, Calendar, ArrowRight, SearchX } from "lucide-react";
+ import { Badge } from "@/components/ui/badge";
+ import { Pagination } from "@/components/ui/pagination";
+ import { formatNumber, formatDate, formatFileSize } from "@/lib/utils";
+@@ -79,11 +79,7 @@ export function DistrictRateGrid({ rates, total, page, limit, currentParams }: P
+               <div className="flex items-center gap-4 text-xs text-gray-400 mb-4">
+                 <span className="flex items-center gap-1.5">
+                   <Download className="w-3.5 h-3.5" />
+-                  {formatNumber(rate.downloadCount)} downloads
+-                </span>
+-                <span className="flex items-center gap-1.5">
+-                  <Eye className="w-3.5 h-3.5" />
+-                  {formatNumber(rate.viewCount)} views
++                  {formatNumber(rate.downloadCount + rate.viewCount)} downloads
+                 </span>
+                 {rate.pdfSize && (
+                   <span className="ml-auto">{formatFileSize(rate.pdfSize)}</span>
+diff --git a/components/district/related-rates.tsx b/components/district/related-rates.tsx
+index 859d92d..67331b8 100644
+--- a/components/district/related-rates.tsx
++++ b/components/district/related-rates.tsx
+@@ -8,6 +8,7 @@ interface RelatedRate {
+   id: string;
+   slug: string;
+   downloadCount: number;
++  viewCount: number;
+   district: { name: string; province: { name: string } };
+   fiscalYear: { year: string };
+ }
+@@ -39,7 +40,7 @@ export function RelatedRates({ rates, districtName }: RelatedRatesProps) {
+               </div>
+               <div className="flex items-center gap-2 mt-0.5">
+                 <Badge variant="navy" className="text-xs">{rate.fiscalYear.year}</Badge>
+-                <span className="text-xs text-gray-400">{formatNumber(rate.downloadCount)} downloads</span>
++                <span className="text-xs text-gray-400">{formatNumber(rate.downloadCount + rate.viewCount)} downloads</span>
+               </div>
+             </div>
+             <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-navy-600 dark:group-hover:text-blue-400 transition-colors" />
