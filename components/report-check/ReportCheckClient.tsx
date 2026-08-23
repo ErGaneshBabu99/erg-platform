@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { AlertTriangle, RotateCcw } from "lucide-react";
 import { ReportUploader, type UploadResult } from "./ReportUploader";
-import { ReviewLoading } from "./ReviewLoading";
 import { ReviewCard } from "./ReviewCard";
 import { ReviewComplete } from "./ReviewComplete";
 import { ReviewUnavailable } from "./ReviewUnavailable";
@@ -110,8 +109,6 @@ export function ReportCheckClient() {
   return (
     <div className="max-w-2xl mx-auto">
       {phase === "idle" && <ReportUploader onDone={handleUploadDone} onFail={handleUploadFail} />}
-
-      {phase === "uploading" && <ReviewLoading label="Extracting and reviewing your document..." />}
 
       {phase === "issue" && issue && (
         <ReviewCard issue={issue} onFindAnother={handleFindAnother} isLoadingNext={isLoadingNext} />
