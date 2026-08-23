@@ -16,7 +16,8 @@
     "setup": "npm install && npx prisma generate && npx prisma db push && npm run db:seed",
     "type-check": "tsc --noEmit",
     "upload-rates": "tsx scripts/uploadDistrictRates.ts",
-    "sync-rates": "tsx scripts/syncDistrictRates.ts"
+    "sync-rates": "tsx scripts/syncDistrictRates.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
@@ -42,10 +43,10 @@
     "lucide-react": "^0.469.0",
     "mammoth": "^1.8.0",
     "next": "^15.1.4",
-    "next-auth": "^4.24.11",
-    "next-themes": "^0.4.4",
     "pdf-parse": "^1.1.1",
     "pdfjs-dist": "^4.9.155",
+    "next-auth": "^4.24.11",
+    "next-themes": "^0.4.4",
     "prisma": "^6.2.1",
     "rate-limiter-flexible": "^5.0.4",
     "react": "^19.0.0",
