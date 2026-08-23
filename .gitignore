@@ -42,3 +42,4 @@ backups/
 .open-next
 .wrangler
  Stashed changes
+.env*

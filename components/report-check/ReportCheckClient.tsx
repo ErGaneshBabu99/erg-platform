@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { AlertTriangle, RotateCcw } from "lucide-react";
-import { ReportUploader } from "./ReportUploader";
+import { ReportUploader, type UploadResult } from "./ReportUploader";
 import { ReviewLoading } from "./ReviewLoading";
 import { ReviewCard } from "./ReviewCard";
 import { ReviewComplete } from "./ReviewComplete";
@@ -10,18 +10,6 @@ import { ReviewUnavailable } from "./ReviewUnavailable";
 import type { ReviewIssue } from "@/lib/report-check/types";
 
 type Phase = "idle" | "uploading" | "issue" | "completed" | "error" | "unavailable";
-
-interface ApiResult {
-  sessionId?: string;
-  completed?: boolean;
-  status?: "unavailable";
-  message?: string;
-  issue?: ReviewIssue;
-  error?: string;
-}
-
-// Which request to re-run when the user hits Retry from the "unavailable" state.
-type PendingAction = "upload" | "next";
 
 export function ReportCheckClient() {
   const [phase, setPhase] = useState<Phase>("idle");
@@ -31,8 +19,6 @@ export function ReportCheckClient() {
   const [issuesFound, setIssuesFound] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isLoadingNext, setIsLoadingNext] = useState(false);
-  const [pendingFile, setPendingFile] = useState<File | null>(null);
-  const [pendingAction, setPendingAction] = useState<PendingAction>("upload");
 
   function resetToIdle() {
     setPhase("idle");
@@ -42,59 +28,40 @@ export function ReportCheckClient() {
     setIssuesFound(0);
     setErrorMessage("");
     setIsLoadingNext(false);
-    setPendingFile(null);
   }
 
-  async function handleUpload(file: File) {
-    setPhase("uploading");
-    setErrorMessage("");
-    setPendingFile(file);
-    setPendingAction("upload");
+  function handleUploadDone(status: number, data: UploadResult) {
+    if (status < 200 || status >= 300) {
+      setErrorMessage(data.error || "Something went wrong while processing your document.");
+      setPhase("error");
+      return;
+    }
 
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
+    setSessionId(data.sessionId ?? null);
 
-      const res = await fetch("/api/report-check/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data: ApiResult = await res.json();
-
-      if (!res.ok) {
-        setErrorMessage(data.error || "Something went wrong while processing your document.");
-        setPhase("error");
-        return;
-      }
-
-      setSessionId(data.sessionId ?? null);
-
-      if (data.status === "unavailable") {
-        // Session + extracted document already exist server-side — just
-        // let the user retry without re-uploading.
-        setPhase("unavailable");
-      } else if (data.completed) {
-        setCompletionMessage(data.message || "No issues were found.");
-        setPhase("completed");
-      } else if (data.issue) {
-        setIssue(data.issue);
-        setIssuesFound(1);
-        setPhase("issue");
-      } else {
-        setErrorMessage("Received an unexpected response. Please try again.");
-        setPhase("error");
-      }
-    } catch (err) {
-      setErrorMessage("Couldn't reach the server. Please check your connection and try again.");
+    if (data.status === "unavailable") {
+      setPhase("unavailable");
+    } else if (data.completed) {
+      setCompletionMessage(data.message || "No issues were found.");
+      setPhase("completed");
+    } else if (data.issue) {
+      setIssue(data.issue as ReviewIssue);
+      setIssuesFound(1);
+      setPhase("issue");
+    } else {
+      setErrorMessage("Received an unexpected response. Please try again.");
       setPhase("error");
     }
+  }
+
+  function handleUploadFail(message: string) {
+    setErrorMessage(message);
+    setPhase("error");
   }
 
   async function handleFindAnother() {
     if (!sessionId) return;
     setIsLoadingNext(true);
-    setPendingAction("next");
 
     try {
       const res = await fetch("/api/report-check/next-issue", {
@@ -103,7 +70,18 @@ export function ReportCheckClient() {
         body: JSON.stringify({ sessionId }),
       });
 
-      const data: ApiResult = await res.json();
+      let data: UploadResult;
+      try {
+        data = await res.json();
+      } catch {
+        setErrorMessage(
+          res.ok
+            ? "Received an unexpected response. Please try again."
+            : `Something went wrong on our end (error ${res.status}). Please try again.`
+        );
+        setPhase("error");
+        return;
+      }
 
       if (!res.ok) {
         setErrorMessage(data.error || "Something went wrong while finding the next issue.");
@@ -112,35 +90,26 @@ export function ReportCheckClient() {
       }
 
       if (data.status === "unavailable") {
-        // Keep the current issue and session alive — just show the retry card.
         setPhase("unavailable");
       } else if (data.completed) {
         setCompletionMessage(data.message || "No more issues were found.");
         setPhase("completed");
       } else if (data.issue) {
-        setIssue(data.issue);
+        setIssue(data.issue as ReviewIssue);
         setIssuesFound((n) => n + 1);
         setPhase("issue");
       }
-    } catch (err) {
-      setErrorMessage("Couldn't reach the server. Please check your connection and try again.");
+    } catch {
+      setErrorMessage("Couldn't reach the server. Please check your internet connection and try again.");
       setPhase("error");
     } finally {
       setIsLoadingNext(false);
     }
   }
 
-  function handleRetry() {
-    if (pendingAction === "upload" && pendingFile) {
-      void handleUpload(pendingFile);
-    } else {
-      void handleFindAnother();
-    }
-  }
-
   return (
     <div className="max-w-2xl mx-auto">
-      {phase === "idle" && <ReportUploader onSubmit={handleUpload} />}
+      {phase === "idle" && <ReportUploader onDone={handleUploadDone} onFail={handleUploadFail} />}
 
       {phase === "uploading" && <ReviewLoading label="Extracting and reviewing your document..." />}
 
@@ -149,7 +118,7 @@ export function ReportCheckClient() {
       )}
 
       {phase === "unavailable" && (
-        <ReviewUnavailable onRetry={handleRetry} isRetrying={isLoadingNext} />
+        <ReviewUnavailable onRetry={handleFindAnother} isRetrying={isLoadingNext} />
       )}
 
       {phase === "completed" && (

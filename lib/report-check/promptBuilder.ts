@@ -59,6 +59,7 @@ export function buildUserPrompt(session: ReviewSession): string {
   const chunkText = fullText.slice(start, start + MAX_PROMPT_CHARS);
 
   return [
+    `Today's date: ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })} — use this as ground truth. Do not flag a date as a "future date" error unless it is genuinely after this date.`,
     `Document file name: ${session.fileName}`,
     `Document type: ${session.fileType.toUpperCase()}`,
     session.pageCount ? `Total pages: ${session.pageCount}` : null,

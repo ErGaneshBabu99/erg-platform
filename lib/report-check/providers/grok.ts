@@ -1,7 +1,7 @@
 import type { AICompletionParams, AIProvider } from "./types";
 import { AIProviderHttpError, ProviderNotConfiguredError } from "./types";
 
-const DEFAULT_MODEL = "llama-3.3-70b-versatile";
+const DEFAULT_MODEL = "openai/gpt-oss-120b";
 
 export const groqProvider: AIProvider = {
   id: "groq",

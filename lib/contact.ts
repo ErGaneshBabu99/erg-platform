@@ -1,7 +1,7 @@
 export const CONTACT = {
   website: "https://www.erganesh.com.np",
 
-  email: "chapagainganesh98@gmail.com",
+  email: "contact@erganesh.com.np",
 
   phone: "+9779847805353",
 

@@ -1,11 +1,15 @@
 import { z } from "zod";
 
 // ---- Upload constraints ----
-// NOTE: v1 caps the upload at 25MB instead of the originally discussed 200MB
-// to keep per-request memory usage safe on the current single-instance Node
-// deployment (extraction buffers the whole file in memory). Raise this once
-// streaming-to-disk extraction or a background worker is in place.
-export const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024; // 25MB
+// v3: uploads go straight to our server route as multipart form data
+// (no separate blob storage step). Kept at 4MB, safely under Vercel's
+// 4.5MB serverless function request body limit. Files over this are
+// compressed client-side before upload; if they still don't fit, the
+// user is told clearly instead of a generic failure.
+export const MAX_FILE_SIZE_BYTES = 4 * 1024 * 1024; // 4MB
+
+// Target we try to compress large PDFs down to before giving up.
+export const COMPRESS_TARGET_BYTES = MAX_FILE_SIZE_BYTES;
 
 export const ALLOWED_MIME_TYPES = {
   pdf: ["application/pdf"],
