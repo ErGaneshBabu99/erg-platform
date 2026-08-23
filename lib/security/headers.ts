@@ -8,12 +8,12 @@ export function applySecurityHeaders(response: NextResponse): NextResponse {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob: https:",
-    "connect-src 'self' https://vitals.vercel-insights.com https://www.google-analytics.com",
     "frame-src 'none'",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
     "upgrade-insecure-requests",
+    "connect-src 'self' https://vitals.vercel-insights.com https://www.google-analytics.com https://www.clarity.ms https://*.public.blob.vercel-storage.com",
   ].join("; ");
 
   response.headers.set("Content-Security-Policy", csp);

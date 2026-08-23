@@ -6,9 +6,7 @@ import { validateFile } from "@/lib/report-check/validation";
 import { sessionStore } from "@/lib/report-check/sessionStore";
 import { getNextIssue } from "@/lib/report-check/reviewer";
 
-// Extraction (pdf-parse/mammoth) needs Node APIs — cannot run on the edge.
 export const runtime = "nodejs";
-// Extraction + first AI call can take a while for larger documents.
 export const maxDuration = 60;
 
 const reportCheckUploadRateLimit = rateLimit({
@@ -32,7 +30,7 @@ const ERROR_MESSAGES: Record<string, { status: number; message: string }> = {
     message:
       "No selectable text was found in this PDF. Scanned/image-only PDFs aren't supported yet.",
   },
-  FILE_TOO_LARGE: { status: 413, message: "File is too large. Maximum size is 25MB." },
+  FILE_TOO_LARGE: { status: 413, message: "File is too large. Maximum size is 4MB." },
   EXTRACTION_FAILED: {
     status: 500,
     message: "Something went wrong while reading this document. Please try again.",
@@ -45,23 +43,27 @@ export async function POST(req: NextRequest) {
 
   const startedAt = Date.now();
 
+  let formData: FormData;
   try {
-    const formData = await req.formData();
-    const file = formData.get("file");
+    formData = await req.formData();
+  } catch {
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
 
-    if (!file || !(file instanceof File)) {
-      return NextResponse.json({ error: "No file was uploaded." }, { status: 400 });
-    }
+  const file = formData.get("file");
+  if (!(file instanceof File)) {
+    return NextResponse.json({ error: "No file was provided." }, { status: 400 });
+  }
 
-    const fileCheck = validateFile({ type: file.type, size: file.size, name: file.name });
-    if (!fileCheck.ok) {
-      const mapped = ERROR_MESSAGES[fileCheck.code];
-      return NextResponse.json({ error: mapped.message, code: fileCheck.code }, { status: mapped.status });
-    }
+  const fileCheck = validateFile({ type: file.type, size: file.size, name: file.name });
+  if (!fileCheck.ok) {
+    const mapped = ERROR_MESSAGES[fileCheck.code];
+    return NextResponse.json({ error: mapped.message, code: fileCheck.code }, { status: mapped.status });
+  }
 
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+  const buffer = Buffer.from(await file.arrayBuffer());
 
+  try {
     let extracted;
     try {
       extracted = await extractDocument(buffer, file.type, file.name);
@@ -72,7 +74,13 @@ export async function POST(req: NextRequest) {
       }
       throw err;
     }
-    console.log("[report-check] extracted", { charCount: extracted.charCount, sections: extracted.sections.length, sample: extracted.promptText.slice(0, 200) });
+
+    console.log("[report-check] extracted", {
+      charCount: extracted.charCount,
+      sections: extracted.sections.length,
+      sample: extracted.promptText.slice(0, 200),
+    });
+
     const session = await sessionStore.create({
       fileName: file.name,
       fileType: extracted.fileType,
@@ -81,7 +89,6 @@ export async function POST(req: NextRequest) {
     });
 
     const result = await getNextIssue(session, (event) => {
-      // Structured, content-free logging per project convention.
       console.log("[report-check]", {
         ...event,
         pageCount: extracted.pageCount,
@@ -98,9 +105,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ sessionId: session.id, ...result });
   } catch (err: any) {
-    console.error("[report-check] upload error", {
-      error: err?.message || String(err),
-    });
+    console.error("[report-check] upload error", { error: err?.message || String(err) });
     return NextResponse.json(
       { error: "Something went wrong while processing your document. Please try again." },
       { status: 500 }

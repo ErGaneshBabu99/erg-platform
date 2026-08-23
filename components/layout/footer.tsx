@@ -8,7 +8,7 @@ import { ScrollToTop } from "@/components/ui/scroll-to-top";
 const WHATSAPP_NUMBER = "+9779847805353";
 const WHATSAPP_LINK = "https://wa.me/9779847805353";
 const PHONE_NUMBER = "+9779847805353";
-const EMAIL = "chapagainganeshutube98@gmail.com";
+const EMAIL = "contact@erganesh.com.np";
 
 const footerLinks = {
   platform: [

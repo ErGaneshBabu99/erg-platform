@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: "llama-3.3-70b-versatile", // सबैभन्दा राम्रो free model
+          model: "openai/gpt-oss-120b", // सबैभन्दा राम्रो free model
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
             ...messages,

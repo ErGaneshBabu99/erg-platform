@@ -27,7 +27,7 @@ answer:"Yes. Engineering consultancy services are available."
 
 {
 question:"How can I contact Er G?",
-answer:"Email: chapagainganesh98@gmail.com Phone: +9779847805353"
+answer:"Email: contact@erganesh.com.np Phone: +9779847805353"
 },
 
 {

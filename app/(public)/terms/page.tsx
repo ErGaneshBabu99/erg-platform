@@ -139,8 +139,8 @@ export default function TermsOfServicePage() {
             <p className="font-semibold text-gray-900 dark:text-white">Ganesh Chapagain</p>
             <p className="text-sm text-gray-500 mt-1">Er G – Engineering Hub Nepal</p>
             <p className="text-sm text-gray-500">Kathmandu, Nepal</p>
-            <a href="mailto:chapagainganeshutube98@gmail.com" className="text-sm text-navy-600 dark:text-blue-400 hover:underline mt-1 block">
-              chapagainganeshutube98@gmail.com
+            <a href="mailto:contact@erganesh.com.np" className="text-sm text-navy-600 dark:text-blue-400 hover:underline mt-1 block">
+              contact@erganesh.com.np
             </a>
             <a href="tel:+9779847805353" className="text-sm text-navy-600 dark:text-blue-400 hover:underline mt-1 block">
               +977 9847805353
