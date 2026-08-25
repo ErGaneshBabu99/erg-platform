@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimit } from "@/lib/security/rate-limit";
+import { prisma } from "@/lib/prisma";
 import { extractDocument } from "@/lib/report-check/extractor";
 import { ExtractionError } from "@/lib/report-check/types";
 import { validateFile } from "@/lib/report-check/validation";
@@ -86,6 +87,13 @@ export async function POST(req: NextRequest) {
       fileType: extracted.fileType,
       pageCount: extracted.pageCount,
       extracted,
+    });
+
+    // Persistent usage log for the analytics dashboard — separate from the
+    // session above, which expires after 2 hours and can't be used for
+    // historical stats. Best-effort; never blocks the actual review.
+    prisma.reportCheckUsage.create({ data: { fileName: file.name } }).catch((err) => {
+      console.error("[analytics] report check usage log failed", { error: (err as Error)?.message });
     });
 
     const result = await getNextIssue(session, (event) => {

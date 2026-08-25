@@ -288,3 +288,32 @@ enum InquiryStatus {
   RESOLVED
   CLOSED
 }
+
+/// One row per page view, used for the admin analytics dashboard
+/// (top pages, daily/weekly/monthly charts, unique visitors). Kept
+/// separate from the older SiteConfig-based global counter so we
+/// don't touch that existing behavior.
+model PageView {
+  id        String   @id @default(cuid())
+  path      String
+  visitorId String
+  referer   String?
+  createdAt DateTime @default(now())
+
+  @@index([path])
+  @@index([createdAt])
+  @@index([visitorId])
+  @@map("page_views")
+}
+
+/// One row per successfully processed Report Check upload — a
+/// persistent counter independent of ReportCheckSession, which
+/// expires after 2 hours and can't be used for historical stats.
+model ReportCheckUsage {
+  id        String   @id @default(cuid())
+  fileName  String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("report_check_usage")
+}
