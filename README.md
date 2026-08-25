@@ -2,66 +2,7 @@
 
 > Nepal's Engineering Resource & Consultancy Platform
 
-**Production-ready, enterprise-grade platform** for Nepal's engineering community.
-Built with Next.js 15, TypeScript, Tailwind CSS, PostgreSQL, Prisma ORM, and NextAuth.
 
----
-
-## Quick Start
-
-### 1. Clone & Install
-```bash
-git clone https://github.com/your-org/erg-platform.git
-cd erg-platform
-npm install
-```
-
-### 2. Environment Setup
-```bash
-cp .env.example .env
-# Fill in your values in .env
-```
-
-### 3. Database Setup
-```bash
-# Generate Prisma client
-npm run db:generate
-
-# Push schema to DB (dev)
-npm run db:push
-
-# Seed with all 77 districts + admin user
-npm run db:seed
-```
-
-### 4. Run
-```bash
-npm run dev
-# → http://localhost:3000
-# Admin: http://localhost:3000/admin
-# Default admin: admin@erg.com.np / Admin@123456!
-# ⚠️ CHANGE PASSWORD IMMEDIATELY
-```
-
----
-
-## Docker Deployment
-
-```bash
-# Copy and configure env
-cp .env.example .env
-
-# Start all services
-docker compose up -d
-
-# Run migrations
-docker compose exec app npm run db:migrate:deploy
-
-# Seed database
-docker compose exec app npm run db:seed
-```
-
----
 
 ## Project Structure
 
@@ -160,15 +101,6 @@ The following placeholder tables are already in the schema:
 
 ---
 
-## Deployment: Vercel
-
-1. Push to GitHub
-2. Import project in Vercel
-3. Add all environment variables from `.env.example`
-4. Set `DATABASE_URL` to your PostgreSQL connection string (Supabase, Neon, etc.)
-5. Deploy
-
----
 
 ## License
 
