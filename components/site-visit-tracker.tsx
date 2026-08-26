@@ -14,7 +14,12 @@ export function SiteVisitTracker() {
   const pathname = usePathname();
 
   useEffect(() => {
-    fetch("/api/track-visit", { method: "POST", keepalive: true }).catch(() => {
+    fetch("/api/track-visit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: pathname }),
+      keepalive: true,
+    }).catch(() => {
       // decorative only, safe to ignore failures
     });
   }, [pathname]);

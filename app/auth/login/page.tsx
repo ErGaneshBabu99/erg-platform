@@ -29,7 +29,11 @@ function LoginContent() {
     const result = await signIn("credentials", {
       email: data.email,
       password: data.password,
-      totp: data.totp,
+      // Only include totp when actually filled in — NextAuth serializes
+      // credentials via URLSearchParams, which turns `totp: undefined`
+      // into the literal string "undefined" (9 chars), failing the
+      // schema's exact-6-char check and breaking every non-2FA login.
+      ...(data.totp ? { totp: data.totp } : {}),
       redirect: false,
     });
 

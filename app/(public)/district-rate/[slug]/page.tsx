@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { PdfViewerButton } from "@/components/district/pdf-viewer-button";
 import type { Metadata } from "next";
 import { buildMetadata, buildDistrictKeywords, SITE_URL } from "@/lib/seo";
@@ -17,7 +18,7 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-async function getDistrictRate(slug: string) {
+const getDistrictRate = cache(async (slug: string) => {
   return prisma.districtRate.findUnique({
     where: { slug, status: "PUBLISHED" },
     include: {
@@ -25,7 +26,7 @@ async function getDistrictRate(slug: string) {
       fiscalYear: true,
     },
   });
-}
+});
 
 async function getRelatedRates(districtId: string, currentId: string) {
   return prisma.districtRate.findMany({
@@ -80,7 +81,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export const dynamic = "force-dynamic";
-export const revalidate = 3600;
 
 export default async function DistrictRatePage({ params }: PageProps) {
   const { slug } = await params;
