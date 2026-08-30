@@ -46,8 +46,12 @@ export async function getPlatformStats() {
     }),
     getSiteVisitCount(),
   ]);
-  return {
-    downloads: (agg._sum.downloadCount ?? 0) + (agg._sum.viewCount ?? 0),
-    views: siteVisits,
-  };
+
+  const districtViews = agg._sum.viewCount ?? 0;
+  const districtDownloads = agg._sum.downloadCount ?? 0;
+
+  const downloads = districtViews + districtDownloads;
+  const views = downloads + districtViews + siteVisits;
+
+  return { downloads, views };
 }

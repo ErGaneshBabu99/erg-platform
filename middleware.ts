@@ -42,11 +42,11 @@ export async function middleware(req: NextRequest) {
 function applySecurityHeaders(response: NextResponse) {
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.clarity.ms https://www.google-analytics.com",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.clarity.ms https://www.google-analytics.com https://static.cloudflareinsights.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: blob: https:",
-    "connect-src 'self' https://vitals.vercel-insights.com https://www.google-analytics.com https://www.clarity.ms",
+    "connect-src 'self' https://vitals.vercel-insights.com https://www.google-analytics.com https://www.clarity.ms https://static.cloudflareinsights.com https://cloudflareinsights.com",
     "frame-src 'none'",
     "object-src 'none'",
     "base-uri 'self'",
