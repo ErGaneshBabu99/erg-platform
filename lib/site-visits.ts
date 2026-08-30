@@ -51,7 +51,7 @@ export async function getPlatformStats() {
   const districtDownloads = agg._sum.downloadCount ?? 0;
 
   const downloads = districtViews + districtDownloads;
-  const views = downloads + districtViews + siteVisits;
+  const views = downloads + siteVisits;
 
   return { downloads, views };
 }
