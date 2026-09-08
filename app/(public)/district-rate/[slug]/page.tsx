@@ -11,8 +11,9 @@ import { DownloadButton } from "@/components/district/download-button";
 import { ContactBox } from "@/components/district/contact-box";
 import { RelatedRates } from "@/components/district/related-rates";
 import { formatNumber, formatDate, formatFileSize, getAbsoluteUrl } from "@/lib/utils";
-import { Download, Eye, Calendar, FileText, MapPin, ArrowLeft } from "lucide-react";
+import { Download, Eye, Calendar, FileText, MapPin, ArrowLeft, Users, Landmark } from "lucide-react";
 import { getPlatformStats } from "@/lib/site-visits";
+import { getDistrictFact } from "@/lib/district-facts";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -61,14 +62,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const fiscalYear = rate.fiscalYear.year;
   const provinceName = rate.district.province.name;
   const nameNp = rate.district.nameNp ?? undefined;
+  const fact = getDistrictFact(rate.district.slug);
 
   const title =
     rate.seoTitle ??
-    `District Rate of ${districtName} ${fiscalYear} PDF Download`;
+    (fact
+      ? `${districtName} District Rate ${fiscalYear} PDF — ${fact.headquarters} HQ | Er G`
+      : `District Rate of ${districtName} ${fiscalYear} PDF Download`);
 
   const description =
     rate.seoDescription ??
-    `Download the official district rate of ${districtName}, ${provinceName} for fiscal year ${fiscalYear}. Free PDF. Used for construction cost estimation and BOQ preparation in Nepal.`;
+    (fact
+      ? `Official ${districtName} district rate for FY ${fiscalYear} — free PDF, verified for BOQ and cost estimation. ${districtName} (HQ: ${fact.headquarters}, pop. ${fact.population.toLocaleString()}) is in ${provinceName}. ${fact.highlight}`
+      : `Download the official district rate of ${districtName}, ${provinceName} for fiscal year ${fiscalYear}. Free PDF. Used for construction cost estimation and BOQ preparation in Nepal.`);
 
   return buildMetadata({
     title,
@@ -90,6 +96,10 @@ export default async function DistrictRatePage({ params }: PageProps) {
   const related = await getRelatedRates(rate.districtId, rate.id);
   const platformStats = await getPlatformStats();
 
+  const districtName = rate.district.name;
+  const fiscalYear = rate.fiscalYear.year;
+  const provinceName = rate.district.province.name;
+  const fact = getDistrictFact(rate.district.slug);
 
   // Increment view count (async, non-blocking)
   prisma.districtRate.update({
@@ -132,6 +142,18 @@ export default async function DistrictRatePage({ params }: PageProps) {
           text: `Yes. Contact Er G Nepal via WhatsApp, phone, or email to request the district rate in Word or Excel format. We also provide editable formats for professional use.`,
         },
       },
+      ...(fact
+        ? [
+            {
+              "@type": "Question",
+              name: `Where is ${rate.district.name} district and what is its headquarters?`,
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: `${rate.district.name} is in ${rate.district.province.name}, with its administrative headquarters at ${fact.headquarters}. It covers about ${fact.areaKm2.toLocaleString()} km² and had a population of ${fact.population.toLocaleString()} in the 2021 census.`,
+              },
+            },
+          ]
+        : []),
     ],
   };
 
@@ -238,14 +260,59 @@ export default async function DistrictRatePage({ params }: PageProps) {
             </div>
 
             {/* Description */}
-            {rate.description && (
+            {(rate.description || fact) && (
               <div className="card-base p-6">
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
                   About This Rate
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                  {rate.description}
-                </p>
+                {rate.description && (
+                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                    {rate.description}
+                  </p>
+                )}
+                {fact && (
+                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed mt-3">
+                    {districtName} district has its headquarters at {fact.headquarters} and, per the 2021 census,
+                    a population of {fact.population.toLocaleString()} spread across {fact.areaKm2.toLocaleString()} km².
+                    {" "}{fact.highlight} Engineers and contractors working in this district use this {fiscalYear}{" "}
+                    rate for BOQ preparation, cost estimation, and government tender valuation.
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* District Snapshot — real per-district facts, not just a name/year swap */}
+            {fact && (
+              <div className="card-base p-6">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                  {districtName} District Snapshot
+                </h2>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div>
+                    <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-1">
+                      <Landmark className="w-3.5 h-3.5" /> Headquarters
+                    </div>
+                    <div className="font-semibold text-gray-900 dark:text-white text-sm">{fact.headquarters}</div>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-1">
+                      <Users className="w-3.5 h-3.5" /> Population (2021)
+                    </div>
+                    <div className="font-semibold text-gray-900 dark:text-white text-sm">{fact.population.toLocaleString()}</div>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-1">
+                      <MapPin className="w-3.5 h-3.5" /> Area
+                    </div>
+                    <div className="font-semibold text-gray-900 dark:text-white text-sm">{fact.areaKm2.toLocaleString()} km²</div>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-1">
+                      <MapPin className="w-3.5 h-3.5" /> Province
+                    </div>
+                    <div className="font-semibold text-gray-900 dark:text-white text-sm">{provinceName}</div>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -268,6 +335,14 @@ export default async function DistrictRatePage({ params }: PageProps) {
                     q: `Is this the latest district rate for ${rate.district.name}?`,
                     a: `This is the ${rate.fiscalYear.year} fiscal year district rate for ${rate.district.name}. For the most recent fiscal year, please check our district rate database.`,
                   },
+                  ...(fact
+                    ? [
+                        {
+                          q: `Where is ${rate.district.name} district and what is its headquarters?`,
+                          a: `${rate.district.name} is in ${rate.district.province.name}, with its administrative headquarters at ${fact.headquarters}. It covers about ${fact.areaKm2.toLocaleString()} km² and had a population of ${fact.population.toLocaleString()} in the 2021 census.`,
+                        },
+                      ]
+                    : []),
                 ].map((faq, i) => (
                   <details key={i} className="group border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden">
                     <summary className="flex justify-between items-center p-4 cursor-pointer font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors list-none">
