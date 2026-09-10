@@ -62,6 +62,7 @@ const DISTRICTS: { provinceName: string; districts: { name: string; slug: string
       { name: "Sindhuli", slug: "sindhuli" },
       { name: "Ramechhap", slug: "ramechhap" },
       { name: "Dolakha", slug: "dolakha" },
+      { name: "Chitwan", slug: "chitwan" },
     ],
   },
   {
@@ -124,7 +125,10 @@ const DISTRICTS: { provinceName: string; districts: { name: string; slug: string
       { name: "Dadeldhura", slug: "dadeldhura" },
       { name: "Baitadi", slug: "baitadi" },
       { name: "Darchula", slug: "darchula" },
-      { name: "Mahakali", slug: "mahakali" },
+      // "Mahakali" removed — not a real 10th district (Sudurpashchim has 9).
+      // "Mahakali" is the name of Darchula's headquarters municipality, not
+      // a separate district. This entry was already removed from the live
+      // database; seed.ts is now updated to match.
     ],
   },
 ];

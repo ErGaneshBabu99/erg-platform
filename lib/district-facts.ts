@@ -22,14 +22,9 @@
  *
  * Keyed by the exact `slug` values used in prisma/seed.ts.
  *
- * NOTE: two data issues were spotted while building this file and should be
- * fixed separately from the SEO work:
- *   1. "Chitwan" (a real, populous Bagmati district — HQ Bharatpur) is missing
- *      entirely from prisma/seed.ts's Bagmati Province list.
- *   2. The Sudurpashchim list includes a 10th slug, "mahakali", which is not a
- *      real district (Sudurpashchim has 9). "Mahakali" is the name of the
- *      municipality that is Darchula's headquarters, not a separate district —
- *      this slug is likely a leftover/duplicate and has no real facts below.
+ * NOTE: this file matches the current live database (76 real districts —
+ * Chitwan included in Bagmati, the fake "mahakali" 10th Sudurpashchim entry
+ * removed). prisma/seed.ts has been synced to match on 2026-09-10.
  */
 
 export interface DistrictFact {
@@ -83,6 +78,7 @@ export const DISTRICT_FACTS: Record<string, DistrictFact> = {
   sindhuli: { population: 300026, areaKm2: 2491, headquarters: "Sindhulimadhi (Kamalamai)", highlight: "Site of Sindhuli Gadhi fort, where Gorkhali forces once repelled a British expedition." },
   ramechhap: { population: 170302, areaKm2: 1546, headquarters: "Manthali", highlight: "Home to Manthali airport, a busy seasonal alternative gateway for Lukla-Everest flights." },
   dolakha: { population: 172767, areaKm2: 2191, headquarters: "Charikot (Bhimeshwar)", highlight: "Site of the Kalinchok shrine and the Upper Tamakoshi hydropower plant, Nepal's largest." },
+  chitwan: { population: 719859, areaKm2: 2218, headquarters: "Bharatpur", highlight: "Home to Chitwan National Park, Nepal's first, and Bharatpur, Bagmati Province's second-largest city." },
 
   // ---------------- Gandaki Province ----------------
   gorkha: { population: 251027, areaKm2: 3610, headquarters: "Gorkha", highlight: "Cradle of Nepal's unification under Prithvi Narayan Shah, and home to Manaslu (8,163 m)." },
@@ -133,8 +129,9 @@ export const DISTRICT_FACTS: Record<string, DistrictFact> = {
   dadeldhura: { population: 139602, areaKm2: 1538, headquarters: "Dadeldhura (Amargadhi)", highlight: "Site of Amargadhi Fort, a stronghold of the Nepali general Amar Singh Thapa." },
   baitadi: { population: 242157, areaKm2: 1519, headquarters: "Baitadi Khalanga (Dasharathchand)", highlight: "Home to the Tripurasundari temple in Nepal's far west." },
   darchula: { population: 133310, areaKm2: 2322, headquarters: "Darchula Khalanga (Mahakali)", highlight: "Home to Api Himal (7,132 m) along the Mahakali river frontier with India." },
-  // "mahakali": not a real, separate district — see note at top of this file. Left out
-  // deliberately rather than filled in with guessed or fabricated facts.
+  // "mahakali" slug intentionally has no entry — it is not a real, separate
+  // district (Sudurpashchim has 9, not 10). It was a data-entry duplicate
+  // that has since been removed from the live database and from seed.ts.
 };
 
 /** Returns the fact entry for a slug, or null if none exists (e.g. the "mahakali" data bug). */
