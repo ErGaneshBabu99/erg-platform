@@ -2,8 +2,14 @@ import React from "react";
 import Link from "next/link";
 import { MessageCircle, Phone, Mail, FileSpreadsheet, FileText } from "lucide-react";
 
-const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "+977980XXXXXXX";
-const PHONE = process.env.NEXT_PUBLIC_PHONE_NUMBER ?? "+977980XXXXXXX";
+// BUG FIX (2026-09-10): this used to fall back to the literal placeholder
+// "+977980XXXXXXX" whenever NEXT_PUBLIC_WHATSAPP_NUMBER / NEXT_PUBLIC_PHONE_NUMBER
+// weren't set — which they weren't, in production, on every one of the 139
+// district-rate pages. The fallback now matches the real number already
+// hardcoded in footer.tsx and contact-section.tsx, so the buttons work even
+// if the env vars are missing. Still best to set the env vars in Vercel too.
+const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "+9779847805353";
+const PHONE = process.env.NEXT_PUBLIC_PHONE_NUMBER ?? "+9779847805353";
 const EMAIL = process.env.NEXT_PUBLIC_EMAIL ?? "info@erg.com.np";
 
 interface ContactBoxProps {
