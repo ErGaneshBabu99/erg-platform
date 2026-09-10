@@ -183,12 +183,29 @@ async function main() {
 
   // Admin user
   console.log("Creating admin user...");
-  const adminPassword = await bcrypt.hash("Admin@123456!", 12);
+
+  // SECURITY FIX (2026-09-10): this used to hardcode "Admin@123456!" and
+  // print it to the console. Since this file is public on GitHub, that
+  // password was effectively public too. It now reads from an environment
+  // variable — set ADMIN_SEED_PASSWORD in your local .env (never commit it)
+  // before running the seed.
+  const rawAdminPassword = process.env.ADMIN_SEED_PASSWORD;
+  const rawAdminEmail = process.env.ADMIN_SEED_EMAIL ?? "admin@erg.com.np";
+
+  if (!rawAdminPassword) {
+    throw new Error(
+      "ADMIN_SEED_PASSWORD is not set. Add it to your local .env file " +
+        "(never commit it) before running the seed, e.g.\n" +
+        "  ADMIN_SEED_PASSWORD=\"choose-a-strong-password-here\""
+    );
+  }
+
+  const adminPassword = await bcrypt.hash(rawAdminPassword, 12);
   await prisma.user.upsert({
-    where: { email: "admin@erg.com.np" },
+    where: { email: rawAdminEmail },
     update: {},
     create: {
-      email: "admin@erg.com.np",
+      email: rawAdminEmail,
       name: "Er G Admin",
       password: adminPassword,
       role: "SUPER_ADMIN",
@@ -197,8 +214,7 @@ async function main() {
   });
 
   console.log("✅ Seed complete!");
-  console.log("Admin credentials: admin@erg.com.np / Admin@123456!");
-  console.log("⚠️  IMPORTANT: Change the admin password immediately after first login!");
+  console.log(`Admin account created for ${rawAdminEmail}. Password was read from ADMIN_SEED_PASSWORD (not printed here).`);
 }
 
 main()
