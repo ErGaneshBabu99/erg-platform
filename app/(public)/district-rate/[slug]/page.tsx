@@ -101,11 +101,8 @@ export default async function DistrictRatePage({ params }: PageProps) {
   const provinceName = rate.district.province.name;
   const fact = getDistrictFact(rate.district.slug);
 
-  // Increment view count (async, non-blocking)
-  prisma.districtRate.update({
-    where: { id: rate.id },
-    data: { viewCount: { increment: 1 } },
-  }).catch(() => {});
+  // Increment view count without bumping updatedAt (raw SQL skips Prisma's @updatedAt)
+  prisma.$executeRaw`UPDATE district_rates SET "viewCount" = "viewCount" + 1 WHERE id = ${rate.id}`.catch(() => {});
 
   const breadcrumbs = [
     { label: "Home", href: "/" },
