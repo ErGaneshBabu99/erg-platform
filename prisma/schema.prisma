@@ -259,34 +259,6 @@ model ReportCheckSession {
   chunkIndex       Int      @default(0)
 
   @@map("report_check_sessions")
-} 
-
-enum UserRole {
-  SUPER_ADMIN
-  ADMIN
-  EDITOR
-  VIEWER
-}
-
-enum PublicationStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
-
-enum InquiryType {
-  GENERAL
-  WORD_FORMAT
-  EXCEL_FORMAT
-  EDITABLE_FORMAT
-  CUSTOM_REQUEST
-}
-
-enum InquiryStatus {
-  NEW
-  IN_PROGRESS
-  RESOLVED
-  CLOSED
 }
 
 /// One row per page view, used for the admin analytics dashboard
@@ -316,4 +288,32 @@ model ReportCheckUsage {
 
   @@index([createdAt])
   @@map("report_check_usage")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum PublicationStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum InquiryType {
+  GENERAL
+  WORD_FORMAT
+  EXCEL_FORMAT
+  EDITABLE_FORMAT
+  CUSTOM_REQUEST
+}
+
+enum InquiryStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
 }

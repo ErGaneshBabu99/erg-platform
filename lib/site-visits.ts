@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
 
 const SITE_VISITS_KEY = "total_site_visits";
 
@@ -37,21 +38,33 @@ export async function incrementSiteVisitCount(): Promise<number> {
  * and individual district detail pages: "Total downloads" (combined
  * views+downloads across all published district rates) and "Total
  * views" (total website visitors).
+ *
+ * Cached for 30 minutes (1800s) via unstable_cache, tagged "platform-stats".
+ * Previously this ran a live aggregate() + findUnique() on every single
+ * district-rate page render (part of the server component's RSC payload),
+ * hitting the DB on every page view across all 77 districts. A sitewide
+ * counter has no reason to be computed fresh on every request -- 30-minute
+ * staleness is invisible to users and removes this from the request path
+ * entirely between revalidations.
  */
-export async function getPlatformStats() {
-  const [agg, siteVisits] = await Promise.all([
-    prisma.districtRate.aggregate({
-      where: { status: "PUBLISHED" },
-      _sum: { downloadCount: true, viewCount: true },
-    }),
-    getSiteVisitCount(),
-  ]);
+export const getPlatformStats = unstable_cache(
+  async () => {
+    const [agg, siteVisits] = await Promise.all([
+      prisma.districtRate.aggregate({
+        where: { status: "PUBLISHED" },
+        _sum: { downloadCount: true, viewCount: true },
+      }),
+      getSiteVisitCount(),
+    ]);
 
-  const districtViews = agg._sum.viewCount ?? 0;
-  const districtDownloads = agg._sum.downloadCount ?? 0;
+    const districtViews = agg._sum.viewCount ?? 0;
+    const districtDownloads = agg._sum.downloadCount ?? 0;
 
-  const downloads = districtViews + districtDownloads;
-  const views = downloads + siteVisits;
+    const downloads = districtViews + districtDownloads;
+    const views = downloads + siteVisits;
 
-  return { downloads, views };
-}
+    return { downloads, views };
+  },
+  ["platform-stats"],
+  { revalidate: 1800, tags: ["platform-stats"] }
+);
