@@ -36,9 +36,9 @@ const footerLinks = {
 
 const socials = [
   { label: "WhatsApp", icon: MessageCircle, href: WHATSAPP_LINK },
-  { label: "Facebook", icon: Facebook, href: "#" },
-  { label: "LinkedIn", icon: Linkedin, href: "#" },
-  { label: "YouTube", icon: Youtube, href: "#" },
+  { label: "Facebook", icon: Facebook, href: "https://www.facebook.com/Ganesh9817" },
+  { label: "LinkedIn", icon: Linkedin, href: "https://np.linkedin.com/in/ganesh-chapagain-a16906244" },
+  { label: "YouTube", icon: Youtube, href: "https://www.youtube.com/@ganesh.com1" },
 ];
 
 export function Footer() {
