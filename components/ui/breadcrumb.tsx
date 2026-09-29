@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { ChevronRight, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SITE_URL } from "@/lib/seo";
 
 interface BreadcrumbItem {
   label: string;
@@ -25,7 +26,7 @@ export function Breadcrumb({ items, className }: BreadcrumbProps) {
   item: {
     "@id": item.href.startsWith("http")
       ? item.href
-      : `${process.env.NEXT_PUBLIC_SITE_URL}${item.href}`,
+      : `${SITE_URL}${item.href}`,
   },
 }),
     })),

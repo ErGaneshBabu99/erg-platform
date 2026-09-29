@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, SITE_URL } from "@/lib/seo";
 import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { searchDistrictRateSchema } from "@/lib/validations/district-rate";
@@ -194,7 +194,7 @@ export default async function DistrictRatePage({ searchParams }: PageProps) {
             "@type": "CollectionPage",
             name: "District Rate Database Nepal",
             description: "Official district rates for all 77 districts of Nepal",
-            url: `${process.env.NEXT_PUBLIC_SITE_URL}/district-rate`,
+            url: `${SITE_URL}/district-rate`,
           }),
         }}
       />
