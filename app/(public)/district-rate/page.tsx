@@ -10,6 +10,7 @@ import { Download, Eye } from "lucide-react";
 import { DownloadLiveScene } from "@/components/district-rate/download-live-scene";
 import { DownloadLiveScene3D } from "@/components/district-rate/download-live-scene-3d";
 import { getPlatformStats } from "@/lib/site-visits";
+import { AllDistrictsDirectory } from "@/components/district/all-districts-directory";
 
 export const metadata: Metadata = buildMetadata({
   title: "District Rate of Nepal – All 77 Districts Database",
@@ -58,7 +59,7 @@ async function getDistrictRates(params: Record<string, string>) {
   }
 
   const orderBy: any =
-    sort === "downloads" ? { downloadCount: "desc" }
+    sort === "downloads" ? [{ downloadCountAfter: "desc" }, { downloadCount: "desc" }]
     : sort === "oldest" ? { publishedAt: "asc" }
     : sort === "name" ? { district: { name: "asc" } }
     : { publishedAt: "desc" };
@@ -72,7 +73,7 @@ async function getDistrictRates(params: Record<string, string>) {
       skip,
       take: limit,
       include: {
-        district: { include: { province: { select: { name: true } } } },
+        district: { select: { name: true, slug: true, nameNp: true, province: { select: { name: true } } } },
         fiscalYear: { select: { year: true } },
       },
     }),
@@ -183,6 +184,9 @@ export default async function DistrictRatePage({ searchParams }: PageProps) {
             currentParams={flatParams}
           />
         </Suspense>
+
+        {/* Directory linking all 77 districts */}
+        <AllDistrictsDirectory />
       </div>
 
       {/* Schema */}

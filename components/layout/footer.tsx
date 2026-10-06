@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Phone, Mail, MapPin, Send, Facebook, Linkedin, Youtube, MessageCircle } from "lucide-react";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
+import { ALL_77_DISTRICTS } from "@/lib/district-nepali-names";
+import { getCanonicalRateSlug } from "@/lib/slug-migration";
 
 const WHATSAPP_NUMBER = "+9779847805353";
 const WHATSAPP_LINK = "https://wa.me/9779847805353";
@@ -205,6 +207,36 @@ export function Footer() {
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+
+        {/* 77 District Rates Directory */}
+        <div className="border-t border-white/8 pt-8 pb-6 mb-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <h3 className="font-semibold text-white text-xs uppercase tracking-wider">
+              Nepal District Rates (सबै ७७ जिल्ला दररेट २०८३/२०८४)
+            </h3>
+            <Link
+              href="/district-rate"
+              className="text-xs text-accent hover:text-accent-light transition-colors font-medium inline-flex items-center gap-1"
+            >
+              All District Rates Directory →
+            </Link>
+          </div>
+          <p className="text-navy-400 text-xs mb-3">
+            Quickly browse official government district rate PDFs (जिल्ला दररेट) for every district across Nepal:
+          </p>
+          <div className="flex flex-wrap gap-x-3 gap-y-1.5 text-xs text-navy-400">
+            {ALL_77_DISTRICTS.map((d) => (
+              <Link
+                key={d.slug}
+                href={`/district-rate/${getCanonicalRateSlug(d.slug, "2083-84")}`}
+                className="hover:text-white transition-colors"
+                title={`${d.name} District Rate 2083/84 (${d.nameNp})`}
+              >
+                {d.name} <span className="text-navy-500 hover:text-navy-300">({d.nameNp})</span>
+              </Link>
+            ))}
           </div>
         </div>
 

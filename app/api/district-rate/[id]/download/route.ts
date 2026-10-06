@@ -30,7 +30,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       prisma.download.create({
         data: { districtRateId: id, ipAddress: ip, userAgent, referer },
       }),
-      prisma.$executeRaw`UPDATE district_rates SET "downloadCount" = "downloadCount" + 1 WHERE id = ${id}`,
+      prisma.$executeRaw`UPDATE district_rates SET "downloadCountAfter" = "downloadCountAfter" + 1 WHERE id = ${id}`,
     ]);
 
     return NextResponse.json({ success: true });

@@ -1,6 +1,8 @@
 import { MetadataRoute } from "next";
 import { fetchBloggerPosts } from "@/lib/blogger";
 import { prisma } from "@/lib/prisma";
+import { getCanonicalRateSlug } from "@/lib/slug-migration";
+import { ALL_77_DISTRICTS } from "@/lib/district-nepali-names";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.erganesh.com.np";
@@ -51,22 +53,46 @@ async function getFiscalYearPages(): Promise<MetadataRoute.Sitemap> {
 // lastModified pulled from DB so Google sees real change signals.
 // ---------------------------------------------------------------------------
 async function getDistrictPages(): Promise<MetadataRoute.Sitemap> {
+  const fallbackDate = new Date("2026-10-06T00:00:00.000Z");
+  const fallbackList: MetadataRoute.Sitemap = ALL_77_DISTRICTS.map((d) => ({
+    url: `${SITE_URL}/district-rate/${getCanonicalRateSlug(d.slug, "2083-84")}`,
+    lastModified: fallbackDate,
+    changeFrequency: "weekly" as const,
+    priority: 0.9,
+  }));
+
   try {
-    const districts = await prisma.districtRate.findMany({
+    const rates = await prisma.districtRate.findMany({
       where: { status: "PUBLISHED" },
-      select: { slug: true, updatedAt: true },
+      select: {
+        slug: true,
+        updatedAt: true,
+        district: { select: { slug: true } },
+        fiscalYear: { select: { year: true } },
+      },
       orderBy: { updatedAt: "desc" },
     });
 
-    return districts.map((d: (typeof districts)[number]) => ({
-      url: `${SITE_URL}/district-rate/${d.slug}`,
-      lastModified: d.updatedAt,
-      changeFrequency: "monthly" as const,
-      priority: 0.9,
-    }));
-  } catch {
-    console.warn("[sitemap] Could not fetch district rates from DB");
-    return [];
+    if (!rates || rates.length === 0) {
+      return fallbackList;
+    }
+
+    return rates.map((rate) => {
+      const districtSlug = rate.district?.slug ?? rate.slug.replace(/-\d{4}-\d{2,4}$/, "");
+      const fyYear = rate.fiscalYear?.year ?? "2083-84";
+      const canonicalSlug = getCanonicalRateSlug(districtSlug, fyYear);
+      const isCurrentYear = fyYear === "2083-84" || fyYear === "2083-2084";
+
+      return {
+        url: `${SITE_URL}/district-rate/${canonicalSlug}`,
+        lastModified: rate.updatedAt,
+        changeFrequency: isCurrentYear ? ("weekly" as const) : ("monthly" as const),
+        priority: isCurrentYear ? 0.9 : 0.7,
+      };
+    });
+  } catch (error) {
+    console.warn("[sitemap] Could not fetch district rates from DB, using 77 static fallback:", error);
+    return fallbackList;
   }
 }
 

@@ -110,13 +110,13 @@ export default async function AnalyticsPage({ searchParams }: PageProps) {
                     <div
                       className="h-full bg-navy-600 rounded-full"
                       style={{
-                        width: `${(rate.viewCount / (topDistrictRates[0]?.viewCount || 1)) * 100}%`,
+                        width: `${((rate.totalViews ?? rate.viewCount) / ((topDistrictRates[0]?.totalViews ?? topDistrictRates[0]?.viewCount) || 1)) * 100}%`,
                       }}
                     />
                   </div>
                 </div>
                 <span className="text-sm font-semibold text-navy-600 w-10 text-right">
-                  {formatNumber(rate.viewCount)}
+                  {formatNumber(rate.totalViews ?? rate.viewCount)}
                 </span>
               </div>
             ))}

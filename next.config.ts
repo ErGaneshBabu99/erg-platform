@@ -23,9 +23,22 @@ const nextConfig: NextConfig = {
     bundleAnalyzer: { enabled: true },
   }),
 
-  // Redirects for old URLs
+  // Redirects for old URLs (permanent: true emits 308/301 for search engines)
   async redirects() {
-    return [];
+    // 25 Batch 1 districts migrating from -2083-84 to -2083-2084
+    const batch1Districts = [
+      "kathmandu", "lalitpur", "bhaktapur", "kaski", "morang",
+      "chitwan", "rupendehi", "jhapa", "sunsari", "kavrepalanchok",
+      "makwanpur", "dhanusha", "parsa", "banke", "dang",
+      "kailali", "kanchanpur", "gorkha", "tanahun", "palpa",
+      "syangja", "nuwakot", "dhading", "ilam", "surkhet",
+    ];
+
+    return batch1Districts.map((district) => ({
+      source: `/district-rate/${district}-2083-84`,
+      destination: `/district-rate/${district}-2083-2084`,
+      permanent: true,
+    }));
   },
 
   // Headers (additional security)

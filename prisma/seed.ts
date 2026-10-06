@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { getDistrictNepaliName } from "../lib/district-nepali-names";
 
 const prisma = new PrismaClient();
 
@@ -173,10 +174,11 @@ async function main() {
     if (!province) continue;
 
     for (const district of group.districts) {
+      const nameNp = getDistrictNepaliName(district.slug) || undefined;
       await prisma.district.upsert({
         where: { slug: district.slug },
-        update: { ...district, provinceId: province.id },
-        create: { ...district, provinceId: province.id },
+        update: { ...district, nameNp, provinceId: province.id },
+        create: { ...district, nameNp, provinceId: province.id },
       });
     }
   }

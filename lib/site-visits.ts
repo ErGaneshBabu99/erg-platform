@@ -52,13 +52,20 @@ export const getPlatformStats = unstable_cache(
     const [agg, siteVisits] = await Promise.all([
       prisma.districtRate.aggregate({
         where: { status: "PUBLISHED" },
-        _sum: { downloadCount: true, viewCount: true },
+        _sum: {
+          downloadCount: true,
+          viewCount: true,
+          downloadCountAfter: true,
+          viewCountAfter: true,
+        },
       }),
       getSiteVisitCount(),
     ]);
 
-    const districtViews = agg._sum.viewCount ?? 0;
-    const districtDownloads = agg._sum.downloadCount ?? 0;
+    const districtViews =
+      (agg._sum.viewCount ?? 0) + (agg._sum.viewCountAfter ?? 0);
+    const districtDownloads =
+      (agg._sum.downloadCount ?? 0) + (agg._sum.downloadCountAfter ?? 0);
 
     const downloads = districtViews + districtDownloads;
     const views = downloads + siteVisits;

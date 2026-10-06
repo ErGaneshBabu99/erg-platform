@@ -13,6 +13,7 @@ interface DistrictRateCardProps {
   district: { name: string; province: { name: string } };
   fiscalYear: { year: string };
   downloadCount: number;
+  downloadCountAfter?: number;
   publishedAt: Date | null;
   featured?: boolean;
 }
@@ -22,6 +23,7 @@ export function DistrictRateCard({
   district,
   fiscalYear,
   downloadCount,
+  downloadCountAfter = 0,
   featured = false,
 }: DistrictRateCardProps) {
   return (
@@ -51,7 +53,7 @@ export function DistrictRateCard({
       </div>
       <div className="flex items-center gap-1 text-xs text-gray-400 flex-shrink-0">
         <Download className="w-3.5 h-3.5" />
-        {formatNumber(downloadCount)}
+        {formatNumber(downloadCount + downloadCountAfter)}
       </div>
       <button
         type="button"

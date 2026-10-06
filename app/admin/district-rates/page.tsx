@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatNumber, formatDate } from "@/lib/utils";
 import { Plus, Edit, Eye, Trash2, Download } from "lucide-react";
+import { getCanonicalRateSlug } from "@/lib/slug-migration";
 
 export const metadata: Metadata = { title: "District Rates – Er G Admin" };
 export const dynamic = "force-dynamic";
@@ -68,7 +69,7 @@ export default async function AdminDistrictRatesPage() {
                   <td className="px-4 py-3 text-right text-gray-600 dark:text-gray-400">
                     <span className="flex items-center justify-end gap-1">
                       <Download className="w-3.5 h-3.5" />
-                      {formatNumber(rate.downloadCount)}
+                      {formatNumber(rate.downloadCount + (rate.downloadCountAfter ?? 0))}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-gray-500 text-xs">
@@ -78,7 +79,7 @@ export default async function AdminDistrictRatesPage() {
                     <div className="flex items-center justify-center gap-1">
                       {rate.status === "PUBLISHED" && (
                         <Link
-                          href={`/district-rate/${rate.slug}`}
+                          href={`/district-rate/${getCanonicalRateSlug(rate.district.slug, rate.fiscalYear.year)}`}
                           target="_blank"
                           className="p-1.5 text-gray-400 hover:text-navy-600 rounded-lg hover:bg-navy-50 dark:hover:bg-navy-900/30 transition-colors"
                           title="View page"

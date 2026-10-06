@@ -182,6 +182,10 @@ export function buildDistrictKeywords(
           `जिल्ला दर रेट ${nameNp}`,
           `${nameNp} जिल्ला दररेट`,
           `${nameNp} जिल्ला दर`,
+          `${nameNp} दररेट`,
+          `जिल्ला दररेट ${nameNp} २०८३-८४`,
+          `जिल्ला दररेट ${nameNp} २०८३/८४`,
+          `${nameNp} निर्माण सामग्री दररेट`,
           `जिल्ला दररेट PDF ${nameNp}`,
         ]
       : [];

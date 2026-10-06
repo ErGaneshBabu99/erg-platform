@@ -5,15 +5,21 @@ import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/pagination";
 import { formatNumber, formatDate, formatFileSize } from "@/lib/utils";
 
+import { getCanonicalRateSlug } from "@/lib/slug-migration";
+
 interface DistrictRate {
   id: string;
   slug: string;
   downloadCount: number;
   viewCount: number;
+  downloadCountAfter?: number;
+  viewCountAfter?: number;
   publishedAt: Date | null;
   pdfSize: number | null;
   district: {
     name: string;
+    slug?: string;
+    nameNp?: string | null;
     province: { name: string };
   };
   fiscalYear: { year: string };
@@ -63,10 +69,10 @@ export function DistrictRateGrid({ rates, total, page, limit, currentParams }: P
                 </div>
                 <div className="flex-1 min-w-0">
                   <Link
-                    href={`/district-rate/${rate.slug}`}
+                    href={`/district-rate/${rate.district.slug ? getCanonicalRateSlug(rate.district.slug, rate.fiscalYear.year) : rate.slug}`}
                     className="font-bold text-gray-900 dark:text-white group-hover:text-navy-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 block"
                   >
-                    {rate.district.name} District Rate
+                    {rate.district.name} {rate.district.nameNp ? `(${rate.district.nameNp})` : ""} District Rate
                   </Link>
                   <div className="text-xs text-gray-500 mt-0.5 truncate">
                     {rate.district.province.name}
@@ -79,7 +85,12 @@ export function DistrictRateGrid({ rates, total, page, limit, currentParams }: P
               <div className="flex items-center gap-4 text-xs text-gray-400 mb-4">
                 <span className="flex items-center gap-1.5">
                   <Download className="w-3.5 h-3.5" />
-                  {formatNumber(rate.downloadCount + rate.viewCount)} downloads
+                  {formatNumber(
+                    rate.downloadCount +
+                      (rate.downloadCountAfter ?? 0) +
+                      rate.viewCount +
+                      (rate.viewCountAfter ?? 0)
+                  )} downloads
                 </span>
                 {rate.pdfSize && (
                   <span className="ml-auto">{formatFileSize(rate.pdfSize)}</span>
@@ -95,7 +106,7 @@ export function DistrictRateGrid({ rates, total, page, limit, currentParams }: P
                   </span>
                 )}
                 <Link
-                  href={`/district-rate/${rate.slug}`}
+                  href={`/district-rate/${rate.district.slug ? getCanonicalRateSlug(rate.district.slug, rate.fiscalYear.year) : rate.slug}`}
                   className="flex items-center gap-1 text-xs font-semibold text-navy-600 dark:text-blue-400 hover:text-navy-700 dark:hover:text-blue-300 ml-auto"
                   aria-label={`View ${rate.district.name} district rate ${rate.fiscalYear.year}`}
                 >

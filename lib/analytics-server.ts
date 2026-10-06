@@ -106,15 +106,17 @@ export async function getTopPages(range: DateRange, take = 10) {
 }
 
 export async function getTopDistrictRates(take = 10) {
-  // Uses the existing cumulative viewCount on DistrictRate — this is
-  // all-time (not scoped to the selected date range), same as it was
-  // before this dashboard existed. A range-scoped version would need
-  // PageView paths matched back to district slugs, which we can add
-  // later if needed.
-  return prisma.districtRate.findMany({
-    orderBy: { viewCount: "desc" },
-    take,
+  const rates = await prisma.districtRate.findMany({
+    take: 50,
     where: { status: "PUBLISHED" },
     include: { district: { select: { name: true } }, fiscalYear: { select: { year: true } } },
   });
+
+  return rates
+    .map((r) => ({
+      ...r,
+      totalViews: r.viewCount + (r.viewCountAfter ?? 0),
+    }))
+    .sort((a, b) => b.totalViews - a.totalViews)
+    .slice(0, take);
 }

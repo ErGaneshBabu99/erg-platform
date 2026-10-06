@@ -8,6 +8,7 @@ import  GaneshPostPreview  from "@/components/home/ganesh-post-preview";
 import { VacancyPreview } from "@/components/home/vacancy-preview";
 import { Features } from "@/components/home/features";
 import { ContactSection } from "@/components/home/contact-section";
+import { AllDistrictsDirectory } from "@/components/district/all-districts-directory";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = buildMetadata({
@@ -57,6 +58,9 @@ export default async function HomePage() {
       <FounderSection />
       <AboutMe />
       <LatestRates rates={latestRates as any} />
+      <div className="container-erg my-8">
+        <AllDistrictsDirectory />
+      </div>
       <GaneshPostPreview />
       <VacancyPreview />
       <Features />

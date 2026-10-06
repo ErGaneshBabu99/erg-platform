@@ -2,7 +2,7 @@ import { cache } from "react";
 import { PdfViewerButton } from "@/components/district/pdf-viewer-button";
 import type { Metadata } from "next";
 import { buildMetadata, buildDistrictKeywords, SITE_URL } from "@/lib/seo";
-import { notFound } from "next/navigation";
+import { notFound, redirect, RedirectType } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
@@ -10,18 +10,54 @@ import { Badge } from "@/components/ui/badge";
 import { DownloadButton } from "@/components/district/download-button";
 import { ContactBox } from "@/components/district/contact-box";
 import { RelatedRates } from "@/components/district/related-rates";
-import { formatNumber, formatDate, formatFileSize, getAbsoluteUrl } from "@/lib/utils";
-import { Download, Eye, Calendar, FileText, MapPin, ArrowLeft, Users, Landmark } from "lucide-react";
-import { getPlatformStats } from "@/lib/site-visits";
+import { NeighboringDistricts } from "@/components/district/neighboring-districts";
+import { DistrictStatsLive } from "@/components/district/district-stats-live";
+import { formatNumber, formatDate, formatFileSize } from "@/lib/utils";
+import { Calendar, FileText, MapPin, ArrowLeft, Users, Landmark } from "lucide-react";
 import { getDistrictFact } from "@/lib/district-facts";
+import { getDistrictNepaliName, ALL_77_DISTRICTS } from "@/lib/district-nepali-names";
+import {
+  getCanonicalRateSlug,
+  getMigratedRedirectTarget,
+  getLegacyLookupSlug,
+  isDistrictMigrated,
+} from "@/lib/slug-migration";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+export async function generateStaticParams() {
+  try {
+    const rates = await prisma.districtRate.findMany({
+      where: { status: "PUBLISHED" },
+      include: { district: true, fiscalYear: true },
+    });
+
+    if (rates.length > 0) {
+      return rates.map((r) => {
+        const canonicalSlug = getCanonicalRateSlug(r.district.slug, r.fiscalYear.year);
+        return { slug: canonicalSlug };
+      });
+    }
+  } catch (error) {
+    console.warn("[generateStaticParams] Could not fetch district rates from DB, using fallback", error);
+  }
+
+  // Resilient fallback: all 77 canonical slugs
+  return ALL_77_DISTRICTS.map((d) => ({
+    slug: getCanonicalRateSlug(d.slug, "2083-84"),
+  }));
+}
+
 const getDistrictRate = cache(async (slug: string) => {
-  return prisma.districtRate.findUnique({
-    where: { slug, status: "PUBLISHED" },
+  const legacySlug = getLegacyLookupSlug(slug);
+
+  return prisma.districtRate.findFirst({
+    where: {
+      status: "PUBLISHED",
+      OR: [{ slug }, { slug: legacySlug }],
+    },
     include: {
       district: { include: { province: true } },
       fiscalYear: true,
@@ -61,92 +97,148 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const districtName = rate.district.name;
   const fiscalYear = rate.fiscalYear.year;
   const provinceName = rate.district.province.name;
-  const nameNp = rate.district.nameNp ?? undefined;
+  const nameNp = rate.district.nameNp || getDistrictNepaliName(rate.district.slug);
   const fact = getDistrictFact(rate.district.slug);
+  const canonicalSlug = getCanonicalRateSlug(rate.district.slug, fiscalYear);
 
-  const title =
-    rate.seoTitle ??
-    (fact
-      ? `${districtName} District Rate ${fiscalYear} PDF — ${fact.headquarters} HQ | Er G`
-      : `District Rate of ${districtName} ${fiscalYear} PDF Download`);
+  // High-ranking, Google-compliant Title under 60 chars (template appends " | ER G Platform")
+  const title = nameNp
+    ? `${districtName} District Rate ${fiscalYear} (${nameNp} दररेट) PDF`
+    : `${districtName} District Rate ${fiscalYear} PDF Download`;
 
-  const description =
-    rate.seoDescription ??
-    (fact
-      ? `Official ${districtName} district rate for FY ${fiscalYear} — free PDF, verified for BOQ and cost estimation. ${districtName} (HQ: ${fact.headquarters}, pop. ${fact.population.toLocaleString()}) is in ${provinceName}. ${fact.highlight}`
-      : `Download the official district rate of ${districtName}, ${provinceName} for fiscal year ${fiscalYear}. Free PDF. Used for construction cost estimation and BOQ preparation in Nepal.`);
+  // Unique, fact-enriched description blending rate facts and district info
+  const description = fact
+    ? `Download official ${districtName} (${nameNp}) district rate for FY ${fiscalYear} (2083/84). Free verified PDF for BOQ & construction cost estimation. HQ: ${fact.headquarters}, ${provinceName}. ${fact.highlight}`
+    : `Download official ${districtName} (${nameNp}) district rate for fiscal year ${fiscalYear}. Free PDF download for civil engineering cost estimation and BOQ in ${provinceName}, Nepal.`;
 
   return buildMetadata({
     title,
     description,
     keywords: buildDistrictKeywords(districtName, fiscalYear, provinceName, nameNp),
-    path: `/district-rate/${slug}`,
+    path: `/district-rate/${canonicalSlug}`,
     ogType: "article",
     publishedTime: rate.publishedAt?.toISOString(),
   });
 }
 
-export const dynamic = "force-dynamic";
-
 export default async function DistrictRatePage({ params }: PageProps) {
   const { slug } = await params;
+
+  // Single-hop 301 redirect for migrated districts if accessed via old -2083-84 slug
+  const redirectTarget = getMigratedRedirectTarget(slug);
+  if (redirectTarget) {
+    redirect(`/district-rate/${redirectTarget}`, RedirectType.replace);
+  }
+
   const rate = await getDistrictRate(slug);
   if (!rate) notFound();
-
-  const related = await getRelatedRates(rate.districtId, rate.id);
-  const platformStats = await getPlatformStats();
 
   const districtName = rate.district.name;
   const fiscalYear = rate.fiscalYear.year;
   const provinceName = rate.district.province.name;
+  const provinceSlug = rate.district.province.slug;
+  const nameNp = rate.district.nameNp || getDistrictNepaliName(rate.district.slug);
   const fact = getDistrictFact(rate.district.slug);
+  const canonicalSlug = getCanonicalRateSlug(rate.district.slug, fiscalYear);
 
-  // Increment view count without bumping updatedAt (raw SQL skips Prisma's @updatedAt)
-  prisma.$executeRaw`UPDATE district_rates SET "viewCount" = "viewCount" + 1 WHERE id = ${rate.id}`.catch(() => {});
+  const related = await getRelatedRates(rate.districtId, rate.id);
 
   const breadcrumbs = [
     { label: "Home", href: "/" },
     { label: "District Rates", href: "/district-rate" },
-    { label: rate.district.province.name, href: `/district-rate?province=${encodeURIComponent(rate.district.province.name)}` },
-    { label: `${rate.district.name} ${rate.fiscalYear.year}` },
+    { label: provinceName, href: `/district-rate?province=${encodeURIComponent(provinceName)}` },
+    { label: `${districtName} ${fiscalYear}` },
   ];
 
+  // BreadcrumbList JSON-LD Schema
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: SITE_URL,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "District Rates",
+        item: `${SITE_URL}/district-rate`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: provinceName,
+        item: `${SITE_URL}/district-rate?province=${encodeURIComponent(provinceName)}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 4,
+        name: `${districtName} District Rate ${fiscalYear}`,
+        item: `${SITE_URL}/district-rate/${canonicalSlug}`,
+      },
+    ],
+  };
+
+  // DigitalDocument JSON-LD Schema (publisher is Er G, not Government of Nepal)
+  const digitalDocumentSchema = {
+    "@context": "https://schema.org",
+    "@type": "DigitalDocument",
+    name: `${districtName} District Rate ${fiscalYear} PDF (${nameNp})`,
+    description: `Official district rate list and construction schedule of rates for ${districtName} (${nameNp}) fiscal year ${fiscalYear}.`,
+    url: rate.pdfUrl,
+    encodingFormat: "application/pdf",
+    publisher: {
+      "@type": "Organization",
+      name: "ER G – Engineering Hub Nepal",
+      url: SITE_URL,
+    },
+    author: {
+      "@type": "Organization",
+      name: "ER G – Engineering Hub Nepal",
+      url: SITE_URL,
+    },
+  };
+
+  // FAQ Schema
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: [
       {
         "@type": "Question",
-        name: `What is the district rate of ${rate.district.name} for ${rate.fiscalYear.year}?`,
+        name: `What is the district rate of ${districtName} (${nameNp}) for ${fiscalYear}?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: `The official district rate of ${rate.district.name} for fiscal year ${rate.fiscalYear.year} is available for free download on Er G Nepal. This rate is published by the Government of Nepal and is used for construction cost estimation.`,
+          text: `The official district rate of ${districtName} (${nameNp} जिल्ला दररेट) for fiscal year ${fiscalYear} is available for free download on Er G Nepal. It contains standard construction materials rates, labor wages, and equipment transport rates.`,
         },
       },
       {
         "@type": "Question",
-        name: `How do I download the district rate PDF of ${rate.district.name}?`,
+        name: `How do I download the ${districtName} district rate PDF?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: `Click the Download PDF button on this page to instantly download the official district rate of ${rate.district.name} for ${rate.fiscalYear.year}. No registration required.`,
+          text: `Click the "Download PDF" button on this page to instantly download the official district rate of ${districtName} (${nameNp}) for ${fiscalYear}. No registration required.`,
         },
       },
       {
         "@type": "Question",
-        name: `Can I get the district rate of ${rate.district.name} in Word or Excel format?`,
+        name: `Can I get the district rate of ${districtName} in Word or Excel format?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: `Yes. Contact Er G Nepal via WhatsApp, phone, or email to request the district rate in Word or Excel format. We also provide editable formats for professional use.`,
+          text: `Yes. Contact Er G Nepal via WhatsApp, phone, or email to request editable format rates for ${districtName}.`,
         },
       },
       ...(fact
         ? [
             {
               "@type": "Question",
-              name: `Where is ${rate.district.name} district and what is its headquarters?`,
+              name: `Where is ${districtName} district and what is its headquarters?`,
               acceptedAnswer: {
                 "@type": "Answer",
-                text: `${rate.district.name} is in ${rate.district.province.name}, with its administrative headquarters at ${fact.headquarters}. It covers about ${fact.areaKm2.toLocaleString()} km² and had a population of ${fact.population.toLocaleString()} in the 2021 census.`,
+                text: `${districtName} (${nameNp}) is in ${provinceName}, with its administrative headquarters at ${fact.headquarters}. It covers ${fact.areaKm2.toLocaleString()} km² with a population of ${fact.population.toLocaleString()}.`,
               },
             },
           ]
@@ -156,31 +248,41 @@ export default async function DistrictRatePage({ params }: PageProps) {
 
   return (
     <>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(digitalDocumentSchema) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
-      {/* Header — district-specific content only; no sitewide stats here so Googlebot's
-          above-the-fold view is 100% about this district, not the platform as a whole. */}
+      {/* Header */}
       <div className="bg-gradient-to-br from-navy-950 to-navy-700 py-12 px-4">
         <div className="container-erg">
           <Breadcrumb items={breadcrumbs} className="mb-5 text-navy-300" />
           <div className="flex flex-wrap items-start gap-3 mb-3">
-            <Badge variant="navy" className="text-xs">{rate.district.province.name}</Badge>
-            <Badge variant="gold">{rate.fiscalYear.year}</Badge>
+            <Badge variant="navy" className="text-xs">{provinceName}</Badge>
+            <Badge variant="gold">{fiscalYear}</Badge>
+            {nameNp && (
+              <Badge variant="navy" className="text-xs bg-navy-800/80 text-blue-200 border border-blue-400/20">
+                {nameNp}
+              </Badge>
+            )}
           </div>
-          <h1 className="text-3xl md:text-4xl font-display font-bold text-white mb-3">
-            District Rate of {rate.district.name}
-            <span className="block text-navy-200 text-2xl md:text-3xl font-semibold mt-1">
-              Fiscal Year {rate.fiscalYear.year}
+          <h1 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">
+            District Rate of {districtName}
+            <span className="block text-accent text-2xl md:text-3xl font-semibold mt-1">
+              {nameNp ? `${nameNp} जिल्ला दररेट २०८३-८४` : `जिल्ला दररेट २०८३-८४`} (FY {fiscalYear})
             </span>
           </h1>
-          <div className="flex flex-wrap gap-6 text-navy-200 text-sm">
-            <span className="flex items-center gap-1.5">
-              <Download className="w-4 h-4" />
-              {formatNumber(rate.downloadCount + rate.viewCount)} downloads
-            </span>
+
+          <div className="flex flex-wrap gap-6 text-navy-200 text-sm mt-3">
             {rate.publishedAt && (
               <span className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4" />
@@ -194,20 +296,6 @@ export default async function DistrictRatePage({ params }: PageProps) {
                 {rate.pdfPages ? ` · ${rate.pdfPages} pages` : ""}
               </span>
             )}
-          </div>
-
-          {/* Sitewide platform stats — demoted to a muted footnote well below the <h1>.
-              text-[11px]/font-medium/text-navy-400 keeps it under half the h1's visual
-              weight (text-3xl/md:text-4xl + font-bold) so it reads as trivia, not content. */}
-          <div className="mt-5 pt-3 border-t border-white/10 flex flex-wrap gap-4 text-[11px] font-medium text-navy-400/80">
-            <span className="flex items-center gap-1">
-              <Download className="w-3 h-3" />
-              {platformStats.downloads.toLocaleString()} platform-wide downloads
-            </span>
-            <span className="flex items-center gap-1">
-              <Eye className="w-3 h-3" />
-              {platformStats.views.toLocaleString()} platform-wide views
-            </span>
           </div>
         </div>
       </div>
@@ -225,7 +313,7 @@ export default async function DistrictRatePage({ params }: PageProps) {
                 </div>
                 <div>
                   <div className="font-bold text-gray-900 dark:text-white">
-                    {rate.district.name} District Rate {rate.fiscalYear.year}
+                    {districtName} {nameNp ? `(${nameNp})` : ""} District Rate {fiscalYear}
                   </div>
                   <div className="text-sm text-gray-500">
                     Official PDF · {rate.pdfSize ? formatFileSize(rate.pdfSize) : "PDF"}
@@ -237,39 +325,32 @@ export default async function DistrictRatePage({ params }: PageProps) {
                 <DownloadButton
                   districtRateId={rate.id}
                   pdfUrl={rate.pdfUrl}
-                  fileName={`district-rate-${rate.district.name.toLowerCase()}-${rate.fiscalYear.year}.pdf`}
+                  fileName={`district-rate-${districtName.toLowerCase()}-${fiscalYear}.pdf`}
                 />
                 <PdfViewerButton pdfUrl={rate.pdfUrl} />
               </div>
             </div>
 
-            {/* Description */}
-            {(rate.description || fact) && (
-              <div className="card-base p-6">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
-                  About This Rate
-                </h2>
-                {rate.description && (
-                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                    {rate.description}
-                  </p>
-                )}
-                {fact && (
-                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed mt-3">
-                    {districtName} district has its headquarters at {fact.headquarters} and, per the 2021 census,
-                    a population of {fact.population.toLocaleString()} spread across {fact.areaKm2.toLocaleString()} km².
-                    {" "}{fact.highlight} Engineers and contractors working in this district use this {fiscalYear}{" "}
-                    rate for BOQ preparation, cost estimation, and government tender valuation.
-                  </p>
-                )}
-              </div>
-            )}
+            {/* Description / About This Rate */}
+            <div className="card-base p-6">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
+                About {districtName} {nameNp ? `(${nameNp})` : ""} District Rate
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                {nameNp ? `${nameNp} (${districtName})` : districtName} जिल्लाको आर्थिक वर्ष {fiscalYear} को आधिकारिक निर्माण सामग्री तथा ज्याला दररेट। Download the complete approved government rate list for BOQ preparation, tender bidding, and project cost estimation.
+              </p>
+              {fact && (
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed mt-3">
+                  {districtName} district has its headquarters at {fact.headquarters} with a population of {fact.population.toLocaleString()} spread across {fact.areaKm2.toLocaleString()} km² in {provinceName}. {fact.highlight}
+                </p>
+              )}
+            </div>
 
-            {/* District Snapshot — real per-district facts, not just a name/year swap */}
+            {/* District Snapshot */}
             {fact && (
               <div className="card-base p-6">
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                  {districtName} District Snapshot
+                  {districtName} {nameNp ? `(${nameNp})` : ""} District Snapshot
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div>
@@ -300,33 +381,41 @@ export default async function DistrictRatePage({ params }: PageProps) {
               </div>
             )}
 
+            {/* Live Client-Hydrated Statistics (Separated Before & After) */}
+            <DistrictStatsLive
+              slug={canonicalSlug}
+              initialDownloadsBefore={rate.downloadCount}
+              initialViewsBefore={rate.viewCount}
+              initialDownloadsAfter={rate.downloadCountAfter}
+              initialViewsAfter={rate.viewCountAfter}
+            />
+
+            {/* Neighbouring Districts in Same Province */}
+            <NeighboringDistricts
+              currentDistrictSlug={rate.district.slug}
+              provinceName={provinceName}
+              provinceSlug={provinceSlug}
+            />
+
             {/* FAQ */}
             <div className="card-base p-6">
               <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                Frequently Asked Questions
+                Frequently Asked Questions ({nameNp ? `${nameNp} दररेट प्रश्नहरू` : "FAQs"})
               </h2>
               <div className="space-y-4">
                 {[
                   {
-                    q: `What is the district rate of ${rate.district.name} for ${rate.fiscalYear.year}?`,
-                    a: `The official district rate of ${rate.district.name} for fiscal year ${rate.fiscalYear.year} is available for free download above. This rate is published by the Government of Nepal and used for construction and engineering cost estimation.`,
+                    q: `What is the district rate of ${districtName} (${nameNp}) for ${fiscalYear}?`,
+                    a: `The official district rate of ${districtName} (${nameNp}) for fiscal year ${fiscalYear} is published by the District Administration / Rate Fixation Committee and available for free download above. It contains standard rates for cement, steel, sand, aggregate, bricks, and labor wages.`,
                   },
                   {
-                    q: `How do I download the ${rate.district.name} district rate PDF?`,
-                    a: `Click the "Download PDF" button above to instantly download the PDF. No registration is required. The file will be downloaded directly to your device.`,
+                    q: `How do I download the ${districtName} district rate PDF?`,
+                    a: `Click the "Download PDF" button above to immediately save the verified rate document to your device.`,
                   },
                   {
-                    q: `Is this the latest district rate for ${rate.district.name}?`,
-                    a: `This is the ${rate.fiscalYear.year} fiscal year district rate for ${rate.district.name}. For the most recent fiscal year, please check our district rate database.`,
+                    q: `Can I get this rate in Word or Excel format?`,
+                    a: `Yes. Contact Er G Nepal via WhatsApp or email to request editable format copies for BOQ preparation.`,
                   },
-                  ...(fact
-                    ? [
-                        {
-                          q: `Where is ${rate.district.name} district and what is its headquarters?`,
-                          a: `${rate.district.name} is in ${rate.district.province.name}, with its administrative headquarters at ${fact.headquarters}. It covers about ${fact.areaKm2.toLocaleString()} km² and had a population of ${fact.population.toLocaleString()} in the 2021 census.`,
-                        },
-                      ]
-                    : []),
                 ].map((faq, i) => (
                   <details key={i} className="group border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden">
                     <summary className="flex justify-between items-center p-4 cursor-pointer font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors list-none">
@@ -341,9 +430,9 @@ export default async function DistrictRatePage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* Related Rates */}
+            {/* Related Rates (Other Fiscal Years of this District) */}
             {related.length > 0 && (
-              <RelatedRates rates={related as any} districtName={rate.district.name} />
+              <RelatedRates rates={related as any} districtName={districtName} />
             )}
           </div>
 
@@ -356,10 +445,9 @@ export default async function DistrictRatePage({ params }: PageProps) {
               </h3>
               <dl className="space-y-3">
                 {[
-                  { label: "District", value: rate.district.name },
-                  { label: "Province", value: rate.district.province.name },
-                  { label: "Fiscal Year", value: rate.fiscalYear.year },
-                  { label: "Downloads", value: formatNumber(rate.downloadCount + rate.viewCount) },
+                  { label: "District", value: `${districtName} ${nameNp ? `(${nameNp})` : ""}` },
+                  { label: "Province", value: provinceName },
+                  { label: "Fiscal Year", value: fiscalYear },
                   rate.pdfPages ? { label: "Pages", value: String(rate.pdfPages) } : null,
                   rate.pdfSize ? { label: "File Size", value: formatFileSize(rate.pdfSize) } : null,
                   rate.publishedAt ? { label: "Published", value: formatDate(rate.publishedAt) } : null,
@@ -373,7 +461,7 @@ export default async function DistrictRatePage({ params }: PageProps) {
             </div>
 
             {/* Contact Box */}
-            <ContactBox districtName={rate.district.name} districtRateId={rate.id} />
+            <ContactBox districtName={districtName} districtRateId={rate.id} />
 
             {/* Back Link */}
             <Link

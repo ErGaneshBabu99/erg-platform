@@ -18,7 +18,7 @@ async function getDashboardData() {
   ] = await Promise.all([
     prisma.districtRate.count(),
     prisma.districtRate.count({ where: { status: "PUBLISHED" } }),
-    prisma.districtRate.aggregate({ _sum: { downloadCount: true } }),
+    prisma.districtRate.aggregate({ _sum: { downloadCount: true, downloadCountAfter: true } }),
     prisma.contactInquiry.count({ where: { status: "NEW" } }),
     prisma.download.findMany({
       orderBy: { createdAt: "desc" },
@@ -39,7 +39,9 @@ async function getDashboardData() {
   return {
     totalRates,
     publishedRates,
-    totalDownloads: totalDownloads._sum.downloadCount ?? 0,
+    totalDownloads:
+      (totalDownloads._sum.downloadCount ?? 0) +
+      (totalDownloads._sum.downloadCountAfter ?? 0),
     totalInquiries,
     recentDownloads,
     recentInquiries,

@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
     }
 
     const orderBy: any =
-      sort === "downloads" ? { downloadCount: "desc" }
+      sort === "downloads" ? [{ downloadCountAfter: "desc" }, { downloadCount: "desc" }]
       : sort === "oldest" ? { publishedAt: "asc" }
       : sort === "name" ? { district: { name: "asc" } }
       : { publishedAt: "desc" };

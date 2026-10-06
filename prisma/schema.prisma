@@ -136,8 +136,10 @@ model DistrictRate {
   pdfPages       Int?
   status         PublicationStatus @default(DRAFT)
   publishedAt    DateTime?
-  downloadCount  Int               @default(0)
-  viewCount      Int               @default(0)
+  downloadCount      Int               @default(0)
+  viewCount          Int               @default(0)
+  downloadCountAfter Int               @default(0)
+  viewCountAfter     Int               @default(0)
   description    String?
   seoTitle       String?
   seoDescription String?
