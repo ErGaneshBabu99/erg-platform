@@ -11,32 +11,25 @@ import { ContactSection } from "@/components/home/contact-section";
 import { AllDistrictsDirectory } from "@/components/district/all-districts-directory";
 import { prisma } from "@/lib/prisma";
 
-export const metadata: Metadata = {
-  ...buildMetadata({
-    title: "District Rate Nepal – All 77 Districts | ER G Platform",
-    description:
-      "Download official district rates for all 77 districts of Nepal. Free PDF, updated for fiscal year 2083/84. Search by province, district, or fiscal year.",
-    keywords: [
-      "district rate nepal",
-      "district rate all 77 districts nepal",
-      "district rate pdf download nepal",
-      "official district rate nepal",
-      "jilla dar rate nepal",
-      "जिल्ला दररेट",
-      "जिल्ला दर रेट",
-      "जिल्ला दररेट PDF",
-      "district rate 2083 84",
-      "construction district rate nepal",
-      "district rate free download",
-    ],
-    path: "/",
-  }),
-  verification: {
-    google:
-      process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION ||
-      "h5Ude_32eo2PBAoLrl5UfPDn0xqMOJyAm-FSaY4HUI8",
-  },
-};
+export const metadata: Metadata = buildMetadata({
+  title: "District Rate Nepal – All 77 Districts | ER G Platform",
+  description:
+    "Download official district rates for all 77 districts of Nepal. Free PDF, updated for fiscal year 2083/84. Search by province, district, or fiscal year.",
+  keywords: [
+    "district rate nepal",
+    "district rate all 77 districts nepal",
+    "district rate pdf download nepal",
+    "official district rate nepal",
+    "jilla dar rate nepal",
+    "जिल्ला दररेट",
+    "जिल्ला दर रेट",
+    "जिल्ला दररेट PDF",
+    "district rate 2083 84",
+    "construction district rate nepal",
+    "district rate free download",
+  ],
+  path: "/",
+});
 
 export const revalidate = 3600;
 
