@@ -39,39 +39,40 @@ export async function incrementSiteVisitCount(): Promise<number> {
  * views+downloads across all published district rates) and "Total
  * views" (total website visitors).
  *
- * Cached for 30 minutes (1800s) via unstable_cache, tagged "platform-stats".
- * Previously this ran a live aggregate() + findUnique() on every single
- * district-rate page render (part of the server component's RSC payload),
- * hitting the DB on every page view across all 77 districts. A sitewide
- * counter has no reason to be computed fresh on every request -- 30-minute
- * staleness is invisible to users and removes this from the request path
- * entirely between revalidations.
+ * Cached for 5 minutes (300s) via unstable_cache, tagged "platform-stats".
+ * This keeps the header stats reasonably fresh while avoiding hitting
+ * the DB on every single page render across all 77 districts.
  */
 export const getPlatformStats = unstable_cache(
   async () => {
-    const [agg, siteVisits] = await Promise.all([
-      prisma.districtRate.aggregate({
-        where: { status: "PUBLISHED" },
-        _sum: {
-          downloadCount: true,
-          viewCount: true,
-          downloadCountAfter: true,
-          viewCountAfter: true,
-        },
-      }),
-      getSiteVisitCount(),
-    ]);
+    try {
+      const [agg, siteVisits] = await Promise.all([
+        prisma.districtRate.aggregate({
+          where: { status: "PUBLISHED" },
+          _sum: {
+            downloadCount: true,
+            viewCount: true,
+            downloadCountAfter: true,
+            viewCountAfter: true,
+          },
+        }),
+        getSiteVisitCount(),
+      ]);
 
-    const districtViews =
-      (agg._sum.viewCount ?? 0) + (agg._sum.viewCountAfter ?? 0);
-    const districtDownloads =
-      (agg._sum.downloadCount ?? 0) + (agg._sum.downloadCountAfter ?? 0);
+      const districtViews =
+        (agg._sum.viewCount ?? 0) + (agg._sum.viewCountAfter ?? 0);
+      const districtDownloads =
+        (agg._sum.downloadCount ?? 0) + (agg._sum.downloadCountAfter ?? 0);
 
-    const downloads = districtViews + districtDownloads;
-    const views = downloads + siteVisits;
+      const downloads = districtViews + districtDownloads;
+      const views = downloads + siteVisits;
 
-    return { downloads, views };
+      return { downloads, views };
+    } catch (error) {
+      console.error("[getPlatformStats] DB error:", error);
+      return { downloads: 0, views: 0 };
+    }
   },
   ["platform-stats"],
-  { revalidate: 1800, tags: ["platform-stats"] }
+  { revalidate: 300, tags: ["platform-stats"] }
 );
