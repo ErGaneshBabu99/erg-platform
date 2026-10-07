@@ -477,8 +477,9 @@ export function DownloadLiveScene3D({ initialDownloads }: { initialDownloads: nu
       if (!visibleRef.current) return;
       try {
         const res = await fetch("/api/district-rate/live-stats", { cache: "no-store" });
+        if (!res.ok) return;
         const data = await res.json();
-        if (cancelled) return;
+        if (cancelled || !data || typeof data.downloads !== "number") return;
         const diff = data.downloads - actualRef.current;
         if (diff > 0) {
           actualRef.current = data.downloads;
@@ -497,7 +498,7 @@ export function DownloadLiveScene3D({ initialDownloads }: { initialDownloads: nu
           }
         }
       } catch {
-        // decorative only
+        // decorative only - silently ignore network hiccup
       }
     }
     const id = window.setInterval(poll, POLL_MS);
