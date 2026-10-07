@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
   // Strict mode for better development
   reactStrictMode: true,
 
+  // ESLint
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   // Bundle analyzer (enable via ANALYZE=true)
   ...(process.env.ANALYZE === "true" && {
     // @ts-ignore

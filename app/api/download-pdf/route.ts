@@ -31,7 +31,6 @@ function isAllowedPdfUrl(rawUrl: string): boolean {
 
 export async function GET(req: NextRequest) {
   const url = req.nextUrl.searchParams.get("url");
-  const name = req.nextUrl.searchParams.get("name") ?? "download.pdf";
 
   if (!url) {
     return NextResponse.json({ error: "No URL" }, { status: 400 });
@@ -44,32 +43,6 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  let response: Response;
-  try {
-    response = await fetch(url, { redirect: "follow" });
-  } catch {
-    return NextResponse.json({ error: "Failed to fetch file" }, { status: 502 });
-  }
-
-  if (!response.ok) {
-    return NextResponse.json({ error: "Failed to fetch file" }, { status: 502 });
-  }
-
-  // Verify the upstream actually served a PDF before relabeling it as one.
-  const upstreamType = response.headers.get("content-type") ?? "";
-  if (!upstreamType.includes("application/pdf") && !upstreamType.includes("octet-stream")) {
-    return NextResponse.json({ error: "Upstream file is not a PDF" }, { status: 502 });
-  }
-
-  const blob = await response.arrayBuffer();
-
-  // Sanitize the filename to prevent header injection via the `name` param.
-  const safeName = name.replace(/[^\w.\- ]/g, "_").slice(0, 150) || "download.pdf";
-
-  return new NextResponse(blob, {
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${safeName}"`,
-    },
-  });
+  // Redirect directly to the CDN PDF asset to prevent Vercel 4.5MB payload limit and memory exhaustion
+  return NextResponse.redirect(url, 302);
 }

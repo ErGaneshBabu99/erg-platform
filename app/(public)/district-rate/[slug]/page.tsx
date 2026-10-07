@@ -13,7 +13,7 @@ import { RelatedRates } from "@/components/district/related-rates";
 import { NeighboringDistricts } from "@/components/district/neighboring-districts";
 import { DistrictStatsLive } from "@/components/district/district-stats-live";
 import { formatNumber, formatDate, formatFileSize } from "@/lib/utils";
-import { Calendar, FileText, MapPin, ArrowLeft, Users, Landmark } from "lucide-react";
+import { Download, Calendar, FileText, MapPin, ArrowLeft, Users, Landmark } from "lucide-react";
 import { getDistrictFact } from "@/lib/district-facts";
 import { getDistrictNepaliName, ALL_77_DISTRICTS } from "@/lib/district-nepali-names";
 import {
@@ -34,51 +34,65 @@ export async function generateStaticParams() {
       include: { district: true, fiscalYear: true },
     });
 
-    if (rates.length > 0) {
+    if (rates && rates.length > 0) {
       return rates.map((r) => {
         const canonicalSlug = getCanonicalRateSlug(r.district.slug, r.fiscalYear.year);
         return { slug: canonicalSlug };
       });
     }
   } catch (error) {
-    console.warn("[generateStaticParams] Could not fetch district rates from DB, using fallback", error);
+    console.warn(
+      "[generateStaticParams] Database not reachable during build. Pages will be generated on demand at runtime.",
+      error
+    );
   }
 
-  // Resilient fallback: all 77 canonical slugs
-  return ALL_77_DISTRICTS.map((d) => ({
-    slug: getCanonicalRateSlug(d.slug, "2083-84"),
-  }));
+  // Return empty array when DB is unreachable so next build doesn't crash prerendering
+  return [];
 }
 
-const getDistrictRate = cache(async (slug: string) => {
-  const legacySlug = getLegacyLookupSlug(slug);
+export const dynamicParams = true;
+export const revalidate = 86400;
 
-  return prisma.districtRate.findFirst({
-    where: {
-      status: "PUBLISHED",
-      OR: [{ slug }, { slug: legacySlug }],
-    },
-    include: {
-      district: { include: { province: true } },
-      fiscalYear: true,
-    },
-  });
+const getDistrictRate = cache(async (slug: string) => {
+  try {
+    const legacySlug = getLegacyLookupSlug(slug);
+
+    return await prisma.districtRate.findFirst({
+      where: {
+        status: "PUBLISHED",
+        OR: [{ slug }, { slug: legacySlug }],
+      },
+      include: {
+        district: { include: { province: true } },
+        fiscalYear: true,
+      },
+    });
+  } catch (error) {
+    console.warn(`[getDistrictRate] DB query failed for slug ${slug}:`, error);
+    return null;
+  }
 });
 
 async function getRelatedRates(districtId: string, currentId: string) {
-  return prisma.districtRate.findMany({
-    where: {
-      districtId,
-      status: "PUBLISHED",
-      id: { not: currentId },
-    },
-    orderBy: { publishedAt: "desc" },
-    take: 3,
-    include: {
-      district: { include: { province: { select: { name: true } } } },
-      fiscalYear: { select: { year: true } },
-    },
-  });
+  try {
+    return await prisma.districtRate.findMany({
+      where: {
+        districtId,
+        status: "PUBLISHED",
+        id: { not: currentId },
+      },
+      orderBy: { publishedAt: "desc" },
+      take: 3,
+      include: {
+        district: { include: { province: { select: { name: true } } } },
+        fiscalYear: { select: { year: true } },
+      },
+    });
+  } catch (error) {
+    console.warn("[getRelatedRates] DB query failed:", error);
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -140,6 +154,10 @@ export default async function DistrictRatePage({ params }: PageProps) {
   const nameNp = rate.district.nameNp || getDistrictNepaliName(rate.district.slug);
   const fact = getDistrictFact(rate.district.slug);
   const canonicalSlug = getCanonicalRateSlug(rate.district.slug, fiscalYear);
+
+  const directDownloads = (rate.downloadCount ?? 0) + (rate.downloadCountAfter ?? 0);
+  const totalViews = (rate.viewCount ?? 0) + (rate.viewCountAfter ?? 0);
+  const totalDownloads = directDownloads + totalViews;
 
   const related = await getRelatedRates(rate.districtId, rate.id);
 
@@ -283,6 +301,10 @@ export default async function DistrictRatePage({ params }: PageProps) {
           </h1>
 
           <div className="flex flex-wrap gap-6 text-navy-200 text-sm mt-3">
+            <span className="flex items-center gap-1.5 font-medium text-white">
+              <Download className="w-4 h-4 text-accent" />
+              {formatNumber(totalDownloads)} downloads
+            </span>
             {rate.publishedAt && (
               <span className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4" />
@@ -327,7 +349,11 @@ export default async function DistrictRatePage({ params }: PageProps) {
                   pdfUrl={rate.pdfUrl}
                   fileName={`district-rate-${districtName.toLowerCase()}-${fiscalYear}.pdf`}
                 />
-                <PdfViewerButton pdfUrl={rate.pdfUrl} />
+                <PdfViewerButton
+                  pdfUrl={rate.pdfUrl}
+                  districtName={`${districtName} (${fiscalYear})`}
+                  districtRateId={rate.id}
+                />
               </div>
             </div>
 
@@ -381,13 +407,13 @@ export default async function DistrictRatePage({ params }: PageProps) {
               </div>
             )}
 
-            {/* Live Client-Hydrated Statistics (Separated Before & After) */}
+            {/* Live Interactive Total Downloads Activity */}
             <DistrictStatsLive
               slug={canonicalSlug}
-              initialDownloadsBefore={rate.downloadCount}
-              initialViewsBefore={rate.viewCount}
-              initialDownloadsAfter={rate.downloadCountAfter}
-              initialViewsAfter={rate.viewCountAfter}
+              districtName={districtName}
+              initialTotalDownloads={totalDownloads}
+              initialDirectDownloads={directDownloads}
+              initialViews={totalViews}
             />
 
             {/* Neighbouring Districts in Same Province */}
@@ -448,6 +474,7 @@ export default async function DistrictRatePage({ params }: PageProps) {
                   { label: "District", value: `${districtName} ${nameNp ? `(${nameNp})` : ""}` },
                   { label: "Province", value: provinceName },
                   { label: "Fiscal Year", value: fiscalYear },
+                  { label: "Total Downloads", value: formatNumber(totalDownloads) },
                   rate.pdfPages ? { label: "Pages", value: String(rate.pdfPages) } : null,
                   rate.pdfSize ? { label: "File Size", value: formatFileSize(rate.pdfSize) } : null,
                   rate.publishedAt ? { label: "Published", value: formatDate(rate.publishedAt) } : null,

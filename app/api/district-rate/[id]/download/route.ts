@@ -1,41 +1,59 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { downloadRateLimit } from "@/lib/security/rate-limit";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
 }
 
 export async function POST(req: NextRequest, { params }: RouteContext) {
-  const limitResult = downloadRateLimit(req);
-  if (limitResult) return limitResult;
-
   try {
     const { id } = await params;
-
-    const rate = await prisma.districtRate.findUnique({
-      where: { id, status: "PUBLISHED" },
-      select: { id: true },
-    });
-
-    if (!rate) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!id) {
+      return NextResponse.json({ error: "Missing id" }, { status: 400 });
     }
 
-    const ip = req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? undefined;
-    const userAgent = req.headers.get("user-agent") ?? undefined;
-    const referer = req.headers.get("referer") ?? undefined;
+    // Atomically increment download counters in PostgreSQL
+    const updated = await prisma.districtRate.update({
+      where: { id },
+      data: {
+        downloadCount: { increment: 1 },
+        downloadCountAfter: { increment: 1 },
+      },
+      select: {
+        id: true,
+        downloadCount: true,
+        viewCount: true,
+        downloadCountAfter: true,
+        viewCountAfter: true,
+      },
+    });
 
-    await Promise.all([
-      prisma.download.create({
-        data: { districtRateId: id, ipAddress: ip, userAgent, referer },
-      }),
-      prisma.$executeRaw`UPDATE district_rates SET "downloadCountAfter" = "downloadCountAfter" + 1 WHERE id = ${id}`,
-    ]);
+    const totalDownloads =
+      (updated.downloadCount ?? 0) +
+      (updated.viewCount ?? 0) +
+      (updated.downloadCountAfter ?? 0) +
+      (updated.viewCountAfter ?? 0);
 
-    return NextResponse.json({ success: true });
+    // Non-blocking download log entry
+    try {
+      const ip = req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? undefined;
+      const userAgent = req.headers.get("user-agent") ?? undefined;
+      const referer = req.headers.get("referer") ?? undefined;
+      prisma.download
+        .create({
+          data: { districtRateId: id, ipAddress: ip, userAgent, referer },
+        })
+        .catch(() => {});
+    } catch {
+      // Non-blocking
+    }
+
+    return NextResponse.json({
+      success: true,
+      totalDownloads,
+    });
   } catch (error) {
     console.error("Download tracking error:", error);
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ error: "Failed to record download" }, { status: 500 });
   }
 }

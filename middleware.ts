@@ -47,7 +47,7 @@ function applySecurityHeaders(response: NextResponse) {
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: blob: https:",
     "connect-src 'self' https://vitals.vercel-insights.com https://www.google-analytics.com https://www.clarity.ms https://static.cloudflareinsights.com https://cloudflareinsights.com",
-    "frame-src 'none'",
+    "frame-src 'self' https://docs.google.com https://drive.google.com",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Download } from "lucide-react";
 
 interface DownloadButtonProps {
@@ -9,28 +9,38 @@ interface DownloadButtonProps {
 }
 
 export function DownloadButton({ districtRateId, pdfUrl, fileName }: DownloadButtonProps) {
-  const [loading, setLoading] = useState(false);
+  const handleDownload = () => {
+    // Notify in-page components (e.g. DistrictStatsLive) immediately
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("district-rate-download-triggered", {
+          detail: { id: districtRateId },
+        })
+      );
+    }
 
-  const handleDownload = async () => {
-    setLoading(true);
+    // Record download on server with keepalive to survive tab/navigation changes
     try {
-      await fetch(`/api/district-rate/${districtRateId}/download`, {
+      fetch(`/api/district-rate/${districtRateId}/download`, {
         method: "POST",
+        keepalive: true,
       }).catch(() => {});
-    } finally {
-      setLoading(false);
+    } catch {
+      // Non-blocking
     }
   };
 
   return (
     <a
-      href={`/api/download-pdf?url=${encodeURIComponent(pdfUrl)}&name=${encodeURIComponent(fileName)}`}
+      href={pdfUrl}
       download={fileName}
       onClick={handleDownload}
-      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-navy-600 hover:bg-navy-700 text-white text-sm font-semibold rounded-lg transition-all"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-navy-600 hover:bg-navy-700 text-white text-sm font-semibold rounded-lg transition-all shadow-sm hover:shadow"
     >
       <Download className="w-4 h-4" />
-      {loading ? "Downloading..." : "Download PDF"}
+      Download PDF
     </a>
   );
 }

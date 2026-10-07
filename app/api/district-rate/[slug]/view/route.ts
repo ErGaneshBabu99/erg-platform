@@ -27,16 +27,18 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    // Increment viewCountAfter (without bumping updatedAt)
-    await prisma.$executeRaw`
-      UPDATE district_rates 
-      SET "viewCountAfter" = "viewCountAfter" + 1 
-      WHERE id = ${rate.id}
-    `;
+    // Atomically increment view counters
+    await prisma.districtRate.update({
+      where: { id: rate.id },
+      data: {
+        viewCount: { increment: 1 },
+        viewCountAfter: { increment: 1 },
+      },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("View tracking error:", error);
-    return NextResponse.json({ success: true }); // Graceful 200 so clients never fail
+    return NextResponse.json({ success: true }); // Return 200 so background tracking never disrupts UI
   }
 }

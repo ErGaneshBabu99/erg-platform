@@ -66,29 +66,42 @@ async function getDistrictRates(params: Record<string, string>) {
 
   const skip = (page - 1) * limit;
 
-  const [rates, total] = await Promise.all([
-    prisma.districtRate.findMany({
-      where,
-      orderBy,
-      skip,
-      take: limit,
-      include: {
-        district: { select: { name: true, slug: true, nameNp: true, province: { select: { name: true } } } },
-        fiscalYear: { select: { year: true } },
-      },
-    }),
-    prisma.districtRate.count({ where }),
-  ]);
+  try {
+    const [rates, total] = await Promise.all([
+      prisma.districtRate.findMany({
+        where,
+        orderBy,
+        skip,
+        take: limit,
+        include: {
+          district: { select: { name: true, slug: true, nameNp: true, province: { select: { name: true } } } },
+          fiscalYear: { select: { year: true } },
+        },
+      }),
+      prisma.districtRate.count({ where }),
+    ]);
 
-  return { rates, total, page, limit };
+    return { rates, total, page, limit };
+  } catch (error) {
+    console.warn("[getDistrictRates] Database error:", error);
+    return { rates: [], total: 0, page, limit };
+  }
 }
 
 async function getFilterData() {
-  const [provinces, fiscalYears] = await Promise.all([
-    prisma.province.findMany({ orderBy: { sortOrder: "asc" }, select: { name: true } }),
-    prisma.fiscalYear.findMany({ orderBy: { sortOrder: "desc" }, select: { year: true } }),
-  ]);
-  return { provinces: provinces.map((p: { name: string }) => p.name), fiscalYears: fiscalYears.map((f: { year: string }) => f.year) };
+  try {
+    const [provinces, fiscalYears] = await Promise.all([
+      prisma.province.findMany({ orderBy: { sortOrder: "asc" }, select: { name: true } }),
+      prisma.fiscalYear.findMany({ orderBy: { sortOrder: "desc" }, select: { year: true } }),
+    ]);
+    return {
+      provinces: provinces.map((p: { name: string }) => p.name),
+      fiscalYears: fiscalYears.map((f: { year: string }) => f.year),
+    };
+  } catch (error) {
+    console.warn("[getFilterData] Database error:", error);
+    return { provinces: [], fiscalYears: [] };
+  }
 }
 
 export default async function DistrictRatePage({ searchParams }: PageProps) {
