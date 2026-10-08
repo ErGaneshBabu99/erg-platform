@@ -108,14 +108,18 @@ export function DownloadCelebration() {
       // Prevent duplicate timers / animations if already running
       if (isRunningRef.current) return;
 
-      const customEvent = e as CustomEvent<{ originX?: number; originY?: number }>;
+      const customEvent = e as CustomEvent<{ originX?: number; originY?: number; x?: number; y?: number }>;
       const originX =
         typeof customEvent.detail?.originX === "number"
           ? customEvent.detail.originX
+          : typeof customEvent.detail?.x === "number"
+          ? customEvent.detail.x
           : window.innerWidth / 2;
       const originY =
         typeof customEvent.detail?.originY === "number"
           ? customEvent.detail.originY
+          : typeof customEvent.detail?.y === "number"
+          ? customEvent.detail.y
           : window.innerHeight * 0.75;
 
       originRef.current = { x: originX, y: originY };
@@ -172,8 +176,10 @@ export function DownloadCelebration() {
     };
 
     window.addEventListener("start-pdf-celebration", handleTrigger);
+    window.addEventListener("district-rate-download-triggered", handleTrigger);
     return () => {
       window.removeEventListener("start-pdf-celebration", handleTrigger);
+      window.removeEventListener("district-rate-download-triggered", handleTrigger);
     };
   }, []);
 

@@ -353,6 +353,7 @@ export default async function DistrictRatePage({ params }: PageProps) {
                   pdfUrl={rate.pdfUrl}
                   districtName={`${districtName} (${fiscalYear})`}
                   districtRateId={rate.id}
+                  fileName={`district-rate-${districtName.toLowerCase()}-${fiscalYear}.pdf`}
                 />
               </div>
             </div>
