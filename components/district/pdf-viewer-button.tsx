@@ -15,7 +15,25 @@ export function PdfViewerButton({
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
-  const directTabUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}`;
+  const directTabUrl = pdfUrl;
+
+  const handleDownloadTracking = () => {
+    if (districtRateId) {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("district-rate-download-triggered", {
+            detail: { id: districtRateId },
+          })
+        );
+      }
+      try {
+        fetch(`/api/district-rate/${districtRateId}/download`, {
+          method: "POST",
+          keepalive: true,
+        }).catch(() => {});
+      } catch {}
+    }
+  };
 
   // Close on Escape key
   useEffect(() => {
@@ -64,23 +82,7 @@ export function PdfViewerButton({
               <a
                 href={pdfUrl}
                 download
-                onClick={() => {
-                  if (districtRateId) {
-                    if (typeof window !== "undefined") {
-                      window.dispatchEvent(
-                        new CustomEvent("district-rate-download-triggered", {
-                          detail: { id: districtRateId },
-                        })
-                      );
-                    }
-                    try {
-                      fetch(`/api/district-rate/${districtRateId}/download`, {
-                        method: "POST",
-                        keepalive: true,
-                      }).catch(() => {});
-                    } catch {}
-                  }
-                }}
+                onClick={handleDownloadTracking}
                 className="inline-flex items-center gap-1.5 text-xs text-navy-200 hover:text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors"
                 title="Download file directly"
               >
@@ -91,6 +93,7 @@ export function PdfViewerButton({
                 href={directTabUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={handleDownloadTracking}
                 className="inline-flex items-center gap-1.5 text-xs text-navy-200 hover:text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors"
                 title="Open in new window"
               >
