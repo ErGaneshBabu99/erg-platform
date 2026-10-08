@@ -17,15 +17,32 @@ export function PdfViewerButton({
   const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
   const directTabUrl = pdfUrl;
 
-  const handleDownloadTracking = () => {
-    if (districtRateId) {
-      if (typeof window !== "undefined") {
+  const handleDownloadTracking = (e?: React.MouseEvent<HTMLAnchorElement>) => {
+    if (typeof window !== "undefined") {
+      let originX = window.innerWidth / 2;
+      let originY = window.innerHeight * 0.75;
+      if (e?.currentTarget) {
+        const rect = e.currentTarget.getBoundingClientRect();
+        originX = rect.left + rect.width / 2;
+        originY = rect.top + rect.height / 2;
+      }
+
+      window.dispatchEvent(
+        new CustomEvent("start-pdf-celebration", {
+          detail: { originX, originY },
+        })
+      );
+
+      if (districtRateId) {
         window.dispatchEvent(
           new CustomEvent("district-rate-download-triggered", {
             detail: { id: districtRateId },
           })
         );
       }
+    }
+
+    if (districtRateId) {
       try {
         fetch(`/api/district-rate/${districtRateId}/download`, {
           method: "POST",
@@ -82,7 +99,7 @@ export function PdfViewerButton({
               <a
                 href={pdfUrl}
                 download
-                onClick={handleDownloadTracking}
+                onClick={(e) => handleDownloadTracking(e)}
                 className="inline-flex items-center gap-1.5 text-xs text-navy-200 hover:text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors"
                 title="Download file directly"
               >
@@ -93,7 +110,7 @@ export function PdfViewerButton({
                 href={directTabUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={handleDownloadTracking}
+                onClick={(e) => handleDownloadTracking(e)}
                 className="inline-flex items-center gap-1.5 text-xs text-navy-200 hover:text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors"
                 title="Open in new window"
               >

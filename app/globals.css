@@ -581,3 +581,75 @@
 .animate-fade-bg-2 {
   animation: fade-bg-2 8s ease-in-out infinite;
 }
+
+/* ---------------------------------------------------------------------------
+ * PDF Download Celebration & Excel Offer Dialog
+ * --------------------------------------------------------------------------- */
+.pdf-success-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(4, 8, 20, 0.20);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.excel-offer {
+  position: relative;
+  width: min(50vw, 560px);
+  max-height: 80vh;
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 24px;
+  padding: 32px;
+  color: #fff;
+  text-align: center;
+  background: linear-gradient(145deg, #10263d, #22214d 58%, #422248);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4), 0 0 48px rgba(105, 223, 255, 0.2);
+  animation: excel-offer-pop 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes excel-offer-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.excel-offer__cta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 52px;
+  margin-top: 20px;
+  border-radius: 14px;
+  color: #09281c;
+  background: linear-gradient(105deg, #a6ffcf, #5ceda4 56%, #69f5c4);
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(92, 237, 164, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.excel-offer__cta:hover {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(92, 237, 164, 0.5);
+}
+
+.excel-offer__cta:active {
+  transform: translateY(0) scale(0.99);
+}
+
+@media (max-width: 640px) {
+  .excel-offer {
+    width: min(92vw, 480px);
+    padding: 28px 20px 22px;
+  }
+}
