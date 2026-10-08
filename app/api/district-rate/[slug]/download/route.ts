@@ -1,20 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 interface RouteContext {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 export async function POST(req: NextRequest, { params }: RouteContext) {
   try {
-    const { id } = await params;
-    if (!id) {
-      return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    const { slug } = await params;
+    if (!slug) {
+      return NextResponse.json({ error: "Missing identifier" }, { status: 400 });
+    }
+
+    // Lookup district rate by id or slug
+    const rate = await prisma.districtRate.findFirst({
+      where: {
+        OR: [{ id: slug }, { slug: slug }],
+      },
+      select: { id: true },
+    });
+
+    if (!rate) {
+      return NextResponse.json({ error: "District rate not found" }, { status: 404 });
     }
 
     // Atomically increment download counters in PostgreSQL
     const updated = await prisma.districtRate.update({
-      where: { id },
+      where: { id: rate.id },
       data: {
         downloadCount: { increment: 1 },
         downloadCountAfter: { increment: 1 },
@@ -41,7 +55,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       const referer = req.headers.get("referer") ?? undefined;
       prisma.download
         .create({
-          data: { districtRateId: id, ipAddress: ip, userAgent, referer },
+          data: { districtRateId: rate.id, ipAddress: ip, userAgent, referer },
         })
         .catch(() => {});
     } catch {
