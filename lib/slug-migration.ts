@@ -98,9 +98,9 @@ export const BATCH_4: string[] = [
 
 /**
  * ACTIVE MIGRATED DISTRICTS:
- * Active: BATCH_1 + BATCH_2 (50 districts total).
+ * Active: BATCH_1 + BATCH_2 + BATCH_3 + BATCH_4 (All 77 districts total).
  */
-export const MIGRATED_DISTRICT_SLUGS = new Set<string>([...BATCH_1, ...BATCH_2]);
+export const MIGRATED_DISTRICT_SLUGS = new Set<string>([...BATCH_1, ...BATCH_2, ...BATCH_3, ...BATCH_4]);
 
 export function isDistrictMigrated(districtSlug: string): boolean {
   return MIGRATED_DISTRICT_SLUGS.has(districtSlug);

@@ -30,7 +30,7 @@ const nextConfig: NextConfig = {
 
   // Redirects for old URLs (permanent: true emits 308/301 for search engines)
   async redirects() {
-    // 50 districts migrating from -2083-84 to -2083-2084 (Batch 1 + Batch 2)
+    // All 77 districts migrating from -2083-84 to -2083-2084 (Batch 1 + Batch 2 + Batch 3 + Batch 4)
     const migratedDistricts = [
       // Batch 1 (25 districts)
       "kathmandu", "lalitpur", "bhaktapur", "kaski", "morang",
@@ -44,6 +44,14 @@ const nextConfig: NextConfig = {
       "bara", "mahottari", "rautahat", "saptari", "sarlahi",
       "siraha", "dolakha", "ramechhap", "rasuwa", "sindhuli",
       "sindhupalchok", "baglung", "lamjung", "manang", "mustang",
+      // Batch 3 (25 districts)
+      "myagdi", "nawalpur", "parbat", "arghakhanchi", "bardiya",
+      "eastern-rukum", "gulmi", "kapilvastu", "nawalparasi-west", "pyuthan",
+      "rolpa", "dailekh", "dolpa", "humla", "jajarkot",
+      "jumla", "kalikot", "mugu", "salyan", "western-rukum",
+      "achham", "baitadi", "bajhang", "bajura", "dadeldhura",
+      // Batch 4 (2 districts - full 77 complete)
+      "darchula", "doti",
     ];
 
     return migratedDistricts.map((district) => ({
