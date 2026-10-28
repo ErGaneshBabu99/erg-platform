@@ -24,11 +24,10 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    // Atomically increment view counters
+    // Atomically increment genuine view counter in PostgreSQL (preserves frozen baseline)
     await prisma.districtRate.update({
       where: { id: rate.id },
       data: {
-        viewCount: { increment: 1 },
         viewCountAfter: { increment: 1 },
       },
     });

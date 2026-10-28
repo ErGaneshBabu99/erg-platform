@@ -32,12 +32,18 @@ export function DownloadButton({ districtRateId, pdfUrl, fileName }: DownloadBut
       );
     }
 
-    // Record download on server with keepalive to survive tab/navigation changes
+    // Record genuine download on server (debounced so rapid multi-clicks only register 1 download)
     try {
-      fetch(`/api/district-rate/${districtRateId}/download`, {
-        method: "POST",
-        keepalive: true,
-      }).catch(() => {});
+      const dlKey = `dl_rate_${districtRateId}`;
+      const lastDl = sessionStorage.getItem(dlKey);
+      const now = Date.now();
+      if (!lastDl || now - parseInt(lastDl, 10) > 15 * 1000) {
+        sessionStorage.setItem(dlKey, now.toString());
+        fetch(`/api/district-rate/${districtRateId}/download`, {
+          method: "POST",
+          keepalive: true,
+        }).catch(() => {});
+      }
     } catch {
       // Non-blocking
     }

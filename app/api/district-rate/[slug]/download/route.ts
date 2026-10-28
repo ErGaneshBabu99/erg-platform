@@ -26,11 +26,10 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: "District rate not found" }, { status: 404 });
     }
 
-    // Atomically increment download counters in PostgreSQL
+    // Atomically increment genuine download counter in PostgreSQL (preserves frozen baseline)
     const updated = await prisma.districtRate.update({
       where: { id: rate.id },
       data: {
-        downloadCount: { increment: 1 },
         downloadCountAfter: { increment: 1 },
       },
       select: {
@@ -42,11 +41,11 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       },
     });
 
-    const totalDownloads =
-      (updated.downloadCount ?? 0) +
-      (updated.viewCount ?? 0) +
-      (updated.downloadCountAfter ?? 0) +
-      (updated.viewCountAfter ?? 0);
+    const directDownloads =
+      (updated.downloadCount ?? 0) + (updated.downloadCountAfter ?? 0);
+    const totalViews =
+      (updated.viewCount ?? 0) + (updated.viewCountAfter ?? 0);
+    const totalDownloads = directDownloads + totalViews;
 
     // Non-blocking download log entry
     try {

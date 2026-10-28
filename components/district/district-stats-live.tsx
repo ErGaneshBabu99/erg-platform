@@ -26,13 +26,19 @@ export function DistrictStatsLive({
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    // 1. Record view (once per session per slug)
-    const sessionKey = `viewed_rate_${slug}`;
-    if (!sessionStorage.getItem(sessionKey)) {
-      sessionStorage.setItem(sessionKey, "1");
-      fetch(`/api/district-rate/${encodeURIComponent(slug)}/view`, {
-        method: "POST",
-      }).catch(() => {});
+    // 1. Record view (genuinely once per 30 minutes per user for this district)
+    try {
+      const viewKey = `viewed_rate_${slug}`;
+      const lastViewed = localStorage.getItem(viewKey);
+      const now = Date.now();
+      if (!lastViewed || now - parseInt(lastViewed, 10) > 30 * 60 * 1000) {
+        localStorage.setItem(viewKey, now.toString());
+        fetch(`/api/district-rate/${encodeURIComponent(slug)}/view`, {
+          method: "POST",
+        }).catch(() => {});
+      }
+    } catch {
+      // Non-blocking fallback
     }
 
     // 2. Fetch fresh live numbers from server

@@ -49,10 +49,16 @@ export function PdfViewerButton({
 
     if (districtRateId) {
       try {
-        fetch(`/api/district-rate/${encodeURIComponent(districtRateId)}/download`, {
-          method: "POST",
-          keepalive: true,
-        }).catch(() => {});
+        const dlKey = `dl_rate_${districtRateId}`;
+        const lastDl = sessionStorage.getItem(dlKey);
+        const now = Date.now();
+        if (!lastDl || now - parseInt(lastDl, 10) > 15 * 1000) {
+          sessionStorage.setItem(dlKey, now.toString());
+          fetch(`/api/district-rate/${encodeURIComponent(districtRateId)}/download`, {
+            method: "POST",
+            keepalive: true,
+          }).catch(() => {});
+        }
       } catch {
         // Non-blocking download tracking
       }
