@@ -22,7 +22,7 @@
 - **Instant Direct Downloads**: High-speed, resilient CDN downloads for BOQ and tender estimation.
 
 ### 2. 🔍 Advanced SEO & Crawl Discovery Architecture
-- **Canonical 4-Digit Fiscal Slugs**: Rolling migration from `[district]-2083-84` to canonical `[district]-2083-2084` with single-hop 301 redirects.
+- **Consistent Canonical District Slugs**: Unified `[district]-2083-84` canonical URLs matching official database records with zero redirects.
 - **Rich Structured Data**: Fully compliant `DigitalDocument` and `BreadcrumbList` JSON-LD schemas verified for Google Search and Rich Results.
 - **Dynamic Sitemap & Directory Hubs**: Automated `sitemap.xml` with priority weighting, static fallbacks, and internal province cross-linking directories on the homepage, `/district-rate`, and global footer.
 

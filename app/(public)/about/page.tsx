@@ -1,15 +1,16 @@
 // Existing imports mathi yei add gara
 import { buildPersonSchema, buildWebPageSchema } from "@/lib/schema";
 import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { FounderTimeline } from "@/components/home/founder-timeline";
 import { Target, Users, Award } from "lucide-react";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "About Er. Ganesh Chapagain — Civil Engineer | Er G Platform",
   description:
     "Ganesh Chapagain is a Registered Civil Engineer and founder of Er G Platform. Providing district rates, engineering consultancy, and construction resources across Nepal.",
-  alternates: { canonical: "/about" },
+  path: "/about",
   keywords: [
     "Ganesh Chapagain",
     "Er Ganesh Chapagain",
@@ -24,12 +25,8 @@ export const metadata: Metadata = {
     "civil engineer Nepal Ganesh",
     "Er G Platform founder",
   ],
-  openGraph: {
-    title: "Er. Ganesh Chapagain — Registered Civil Engineer Nepal",
-    description: "Founder of Er G Platform. District rates, engineering consultancy, Nepal.",
-    images: [{ url: "/ganesh.jpg", width: 400, height: 400, alt: "Ganesh Chapagain" }],
-  },
-};
+  ogImage: "/ganesh.jpg",
+});
 
 const breadcrumbs = [
   { label: "Home", href: "/" },

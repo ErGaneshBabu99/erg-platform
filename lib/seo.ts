@@ -15,7 +15,9 @@ import type { Metadata } from "next";
 // Core constants
 // ---------------------------------------------------------------------------
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.erganesh.com.np";
+  process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_SITE_URL?.includes("localhost")
+    ? process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")
+    : "https://www.erganesh.com.np";
 
 export const SITE_NAME = "ER G Platform";
 export const SITE_NAME_FULL = "ER G – Engineering Hub Nepal";
@@ -53,11 +55,17 @@ export const NOINDEX_ROBOTS: Metadata["robots"] = {
 
 // ---------------------------------------------------------------------------
 // Canonical URL helper
-// Always returns an absolute URL.
+// Always returns an absolute URL with https://www.erganesh.com.np.
+// Root returns trailing slash https://www.erganesh.com.np/ (matching GSC property).
+// Subpages return non-trailing slash (matching trailingSlash: false).
 // ---------------------------------------------------------------------------
 export function canonicalUrl(path: string): string {
-  const clean = path.startsWith("/") ? path : `/${path}`;
-  return `${SITE_URL}${clean}`;
+  const trimmed = path.trim();
+  if (!trimmed || trimmed === "/") {
+    return `${SITE_URL}/`;
+  }
+  const clean = trimmed.replace(/\/+$/, "").replace(/^\/+/, "");
+  return `${SITE_URL}/${clean}`;
 }
 
 // ---------------------------------------------------------------------------

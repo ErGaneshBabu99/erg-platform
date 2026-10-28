@@ -18,7 +18,22 @@ import BlogSidebar from "@/components/blog/blog-sidebar";
 import { NewsletterCard } from "@/components/blog/newsletter-card";
 import { BlogCardSkeleton } from "@/components/blog/blog-card-skeleton";
 import { ExternalLink, Rss } from "lucide-react";
+import type { Metadata } from "next";
 import { buildMetadata, SITE_URL } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "The Ganesh Post | Civil Engineering Blog Nepal",
+  description:
+    "Engineering insights, infrastructure analysis, and professional knowledge from Nepal's civil engineering community.",
+  path: "/blog",
+  keywords: [
+    "civil engineering blog nepal",
+    "nepal engineering articles",
+    "the ganesh post",
+    "infrastructure nepal",
+    "ganesh chapagain blog",
+  ],
+});
 
 // ─── Skeleton fallback ─────────────────────────────────────────────────────────
 

@@ -3,9 +3,7 @@ import { fetchBloggerPosts } from "@/lib/blogger";
 import { prisma } from "@/lib/prisma";
 import { getCanonicalRateSlug } from "@/lib/slug-migration";
 import { ALL_77_DISTRICTS } from "@/lib/district-nepali-names";
-
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.erganesh.com.np";
+import { SITE_URL } from "@/lib/seo";
 
 // Revalidate sitemap cache every hour
 export const revalidate = 3600;
@@ -22,11 +20,12 @@ interface StaticRoute {
 }
 
 const STATIC_ROUTES: StaticRoute[] = [
-  { path: "",              changeFrequency: "daily",   priority: 1.0 },
+  { path: "/",             changeFrequency: "daily",   priority: 1.0 },
   { path: "/district-rate", changeFrequency: "daily",   priority: 0.9 },
   { path: "/blog",          changeFrequency: "daily",   priority: 0.6 },
   { path: "/about",         changeFrequency: "yearly",  priority: 0.4 },
   { path: "/contact",       changeFrequency: "yearly",  priority: 0.4 },
+  { path: "/report-check",  changeFrequency: "monthly", priority: 0.5 },
   { path: "/privacy",       changeFrequency: "yearly",  priority: 0.2 },
   { path: "/terms",         changeFrequency: "yearly",  priority: 0.2 },
 ];

@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { ReportCheckClient } from "@/components/report-check/ReportCheckClient";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "AI Report Reviewer – Er G Engineering Hub Nepal",
   description:
     "Upload your PDF or DOCX report, thesis, DPR, BOQ, or estimate. Our AI reviews it issue by issue — grammar, citations, formatting, and more.",
-  alternates: { canonical: "/report-check" },
-};
+  path: "/report-check",
+});
 
 const breadcrumbs = [
   { label: "Home", href: "/" },

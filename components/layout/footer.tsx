@@ -25,7 +25,7 @@ const footerLinks = {
     { label: "Terms of Service", href: "/terms" },
   ],
   resources: [
-    { label: "BOQ Preparation Guide", href: "/blog/boq-preparation-guide" },
+    { label: "BOQ Preparation Guide", href: "/blog" },
     { label: "District Rate FAQs", href: "/district-rate" },
     { label: "Engineering Career Tips", href: "/blog" },
   ],

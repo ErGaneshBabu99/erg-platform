@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     ...(DEFAULT_OG_IMAGE ? { images: [DEFAULT_OG_IMAGE] } : {}),
   },
   alternates: {
-    canonical: SITE_URL,
+    canonical: `${SITE_URL}/`,
   },
   icons: {
   icon: "/favicon.ico",

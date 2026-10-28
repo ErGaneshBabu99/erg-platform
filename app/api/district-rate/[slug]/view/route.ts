@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getLegacyLookupSlug } from "@/lib/slug-migration";
 
 interface RouteContext {
   params: Promise<{ slug: string }>;
@@ -13,12 +12,10 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: "Missing slug" }, { status: 400 });
     }
 
-    const legacySlug = getLegacyLookupSlug(slug);
-
     const rate = await prisma.districtRate.findFirst({
       where: {
         status: "PUBLISHED",
-        OR: [{ slug }, { slug: legacySlug }],
+        slug,
       },
       select: { id: true },
     });

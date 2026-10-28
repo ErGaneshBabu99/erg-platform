@@ -97,49 +97,36 @@ export const BATCH_4: string[] = [
 ];
 
 /**
- * ACTIVE MIGRATED DISTRICTS:
- * Active: BATCH_1 + BATCH_2 + BATCH_3 + BATCH_4 (All 77 districts total).
+ * Slug migration disabled.
+ * All canonical district rate URLs match database records: `[district]-2083-84`.
+ * No redirects are emitted.
  */
-export const MIGRATED_DISTRICT_SLUGS = new Set<string>([...BATCH_1, ...BATCH_2, ...BATCH_3, ...BATCH_4]);
+export const MIGRATED_DISTRICT_SLUGS = new Set<string>();
 
-export function isDistrictMigrated(districtSlug: string): boolean {
-  return MIGRATED_DISTRICT_SLUGS.has(districtSlug);
+export function isDistrictMigrated(_districtSlug: string): boolean {
+  return false;
 }
 
 /**
  * Returns the active canonical slug for a district's rate.
- * - If migrated: returns `${districtSlug}-2083-2084`
- * - If pending: returns `${districtSlug}-2083-84`
- * - For older fiscal years (e.g. 2082-83): returns `${districtSlug}-${fiscalYear}`
+ * Matches DB entries directly: `${districtSlug}-2083-84` for FY 2083-84.
  */
 export function getCanonicalRateSlug(districtSlug: string, fiscalYear: string = "2083-84"): string {
-  if (fiscalYear === "2083-84" || fiscalYear === "2083-2084") {
-    return isDistrictMigrated(districtSlug)
-      ? `${districtSlug}-2083-2084`
-      : `${districtSlug}-2083-84`;
-  }
-  return `${districtSlug}-${fiscalYear}`;
+  const fy = fiscalYear === "2083-2084" ? "2083-84" : fiscalYear;
+  return `${districtSlug}-${fy}`;
 }
 
 /**
- * Checks if a requested slug is a legacy `-2083-84` slug that should 301 redirect
- * to `-2083-2084`. Returns the target slug if redirect is needed, null otherwise.
+ * No redirect target — redirects have been removed to preserve indexation of canonical URLs.
  */
-export function getMigratedRedirectTarget(slug: string): string | null {
-  if (!slug.endsWith("-2083-84")) return null;
-  const districtSlug = slug.replace(/-2083-84$/, "");
-  if (isDistrictMigrated(districtSlug)) {
-    return `${districtSlug}-2083-2084`;
-  }
+export function getMigratedRedirectTarget(_slug: string): string | null {
   return null;
 }
 
 /**
- * Returns the fallback/legacy DB slug if the record in the DB hasn't been renamed yet.
+ * Slugs match database directly.
  */
 export function getLegacyLookupSlug(slug: string): string {
-  if (slug.endsWith("-2083-2084")) {
-    return slug.replace(/-2083-2084$/, "-2083-84");
-  }
   return slug;
 }
+
