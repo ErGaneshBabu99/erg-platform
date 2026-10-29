@@ -17,6 +17,7 @@
     "type-check": "tsc --noEmit",
     "upload-rates": "tsx scripts/uploadDistrictRates.ts",
     "sync-rates": "tsx scripts/syncDistrictRates.ts",
+    "sync-local-rates": "tsx scripts/upload-local-pdfs-to-github.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
