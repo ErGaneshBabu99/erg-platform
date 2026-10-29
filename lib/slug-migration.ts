@@ -117,9 +117,12 @@ export function getCanonicalRateSlug(districtSlug: string, fiscalYear: string = 
 }
 
 /**
- * No redirect target — redirects have been removed to preserve indexation of canonical URLs.
+ * Redirect target for retired -2083-2084 alias slugs -> canonical -2083-84
  */
-export function getMigratedRedirectTarget(_slug: string): string | null {
+export function getMigratedRedirectTarget(slug: string): string | null {
+  if (slug.endsWith("-2083-2084")) {
+    return slug.replace(/-2083-2084$/, "-2083-84");
+  }
   return null;
 }
 
@@ -127,6 +130,9 @@ export function getMigratedRedirectTarget(_slug: string): string | null {
  * Slugs match database directly.
  */
 export function getLegacyLookupSlug(slug: string): string {
+  if (slug.endsWith("-2083-2084")) {
+    return slug.replace(/-2083-2084$/, "-2083-84");
+  }
   return slug;
 }
 

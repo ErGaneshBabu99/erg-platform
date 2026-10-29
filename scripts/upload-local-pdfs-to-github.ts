@@ -99,7 +99,7 @@ async function uploadAsset(
       "Content-Length": buffer.length.toString(),
       "User-Agent": "erg-platform-uploader",
     },
-    body: buffer,
+    body: buffer as unknown as BodyInit,
   });
 
   if (!res.ok) {

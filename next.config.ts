@@ -31,9 +31,15 @@ const nextConfig: NextConfig = {
   // URLs and internal links are written without trailing slashes
   trailingSlash: false,
 
-  // Redirects for old URLs
+  // Redirects for old/retired URLs (permanent 308/301 to avoid 404s on previously shared links)
   async redirects() {
-    return [];
+    return [
+      {
+        source: "/district-rate/:slug([\\w-]+)-2083-2084",
+        destination: "/district-rate/:slug-2083-84",
+        permanent: true,
+      },
+    ];
   },
 
   // Headers (additional security)

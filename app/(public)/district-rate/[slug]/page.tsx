@@ -2,7 +2,7 @@ import { cache } from "react";
 import { PdfViewerButton } from "@/components/district/pdf-viewer-button";
 import type { Metadata } from "next";
 import { buildMetadata, buildDistrictKeywords, SITE_URL } from "@/lib/seo";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
@@ -16,7 +16,7 @@ import { formatNumber, formatDate, formatFileSize } from "@/lib/utils";
 import { Download, Calendar, FileText, MapPin, ArrowLeft, Users, Landmark } from "lucide-react";
 import { getDistrictFact } from "@/lib/district-facts";
 import { getDistrictNepaliName, ALL_77_DISTRICTS } from "@/lib/district-nepali-names";
-import { getCanonicalRateSlug } from "@/lib/slug-migration";
+import { getCanonicalRateSlug, getMigratedRedirectTarget } from "@/lib/slug-migration";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -90,6 +90,12 @@ async function getRelatedRates(districtId: string, currentId: string) {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
+
+  const redirectTarget = getMigratedRedirectTarget(slug);
+  if (redirectTarget) {
+    permanentRedirect(`/district-rate/${redirectTarget}`);
+  }
+
   const rate = await getDistrictRate(slug);
 
   if (!rate) {
@@ -130,6 +136,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function DistrictRatePage({ params }: PageProps) {
   const { slug } = await params;
+
+  const redirectTarget = getMigratedRedirectTarget(slug);
+  if (redirectTarget) {
+    permanentRedirect(`/district-rate/${redirectTarget}`);
+  }
 
   const rate = await getDistrictRate(slug);
   if (!rate) notFound();
