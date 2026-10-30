@@ -13,8 +13,8 @@
 | **0.1 UI Changes** | Commit uncommitted quality badges on district rate page | ✅ Done |
 | **1. Audit** | Complete architectural and security audit (`AUDIT.md`) | ✅ Done |
 | **2. Adapter Setup** | Install `@opennextjs/cloudflare`, `wrangler`, config R2 incremental cache | ✅ Done |
-| **3. Database** | Prisma v6 + Hyperdrive + `@prisma/adapter-pg` | 🔄 Next |
-| **4. Storage & Proxy** | PDF proxy streaming with Edge caching + Range support, unoptimized next/image | ⏳ Pending |
+| **3. Database** | Prisma v6 + Hyperdrive + `@prisma/adapter-pg` | ✅ Done |
+| **4. Storage & Proxy** | PDF proxy streaming with Edge caching + Range support, unoptimized next/image | 🔄 Next |
 | **5. Counters & Load** | Asynchronous non-blocking counters via `after()` / `waitUntil`, bot filtering | ⏳ Pending |
 | **6. Dynamic Imports** | Isolate Three.js / R3F and Recharts with `ssr: false` | ⏳ Pending |
 | **7. Build & Test** | Full build, local `wrangler dev` tests, endpoint verification | ⏳ Pending |
