@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-
-export const runtime = "edge";
 import { SYSTEM_PROMPT } from "@/lib/prompt";
 
 export async function POST(req: NextRequest) {

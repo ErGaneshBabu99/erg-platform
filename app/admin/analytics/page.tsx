@@ -9,15 +9,8 @@ import {
   getTopDistrictRates,
   type DateRangeKey,
 } from "@/lib/analytics-server";
-import nextDynamic from "next/dynamic";
 import { DateRangeFilter } from "@/components/admin/date-range-filter";
-const AnalyticsViewsChart = nextDynamic(
-  () =>
-    import("@/components/admin/analytics-views-chart").then(
-      (m) => m.AnalyticsViewsChart
-    ),
-  { ssr: false }
-);
+import { AnalyticsViewsChart } from "@/components/admin/analytics-views-chart";
 
 export const metadata: Metadata = { title: "Analytics – Er G Admin" };
 export const dynamic = "force-dynamic";
