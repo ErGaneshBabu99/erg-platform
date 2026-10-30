@@ -10,6 +10,14 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
 
+  // Ensure Prisma and Postgres drivers are externalized so OpenNext can patch for Cloudflare Workers
+  serverExternalPackages: [
+    "@prisma/client",
+    ".prisma/client",
+    "pg",
+    "@prisma/adapter-pg",
+  ],
+
   // Strict mode for better development
   reactStrictMode: true,
 

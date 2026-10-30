@@ -30,7 +30,8 @@ function createPrismaClient(explicitUrl?: string): PrismaClient {
     connectionString =
       process.env.CF_HYPERDRIVE_URL ||
       process.env.CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE ||
-      process.env.DATABASE_URL;
+      process.env.DATABASE_URL ||
+      process.env.DIRECT_URL;
   }
 
   // When connection string is available, use @prisma/adapter-pg

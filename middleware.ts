@@ -12,7 +12,11 @@ export async function middleware(req: NextRequest) {
   applySecurityHeaders(response);
 
   // Safeguard: Prevent Google from indexing workers.dev / pages.dev preview domains
-  const host = req.headers.get("host") || "";
+  const host =
+    req.headers.get("x-forwarded-host") ||
+    req.headers.get("host") ||
+    req.nextUrl.hostname ||
+    "";
   if (host.includes(".workers.dev") || host.includes(".pages.dev")) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow");
   }
