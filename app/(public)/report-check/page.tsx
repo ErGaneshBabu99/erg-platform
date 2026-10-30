@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
+import dynamic from "next/dynamic";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
-import { ReportCheckClient } from "@/components/report-check/ReportCheckClient";
+const ReportCheckClient = dynamic(
+  () =>
+    import("@/components/report-check/ReportCheckClient").then(
+      (m) => m.ReportCheckClient
+    ),
+  { ssr: false }
+);
 
 export const metadata: Metadata = buildMetadata({
   title: "AI Report Reviewer – Er G Engineering Hub Nepal",

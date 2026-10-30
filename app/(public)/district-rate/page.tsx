@@ -7,8 +7,15 @@ import { DistrictRateGrid } from "@/components/district/district-rate-grid";
 import { SearchFilters } from "@/components/district/search-filters";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Download, Eye } from "lucide-react";
+import dynamic from "next/dynamic";
 import { DownloadLiveScene } from "@/components/district-rate/download-live-scene";
-import { DownloadLiveScene3D } from "@/components/district-rate/download-live-scene-3d";
+const DownloadLiveScene3D = dynamic(
+  () =>
+    import("@/components/district-rate/download-live-scene-3d").then(
+      (m) => m.DownloadLiveScene3D
+    ),
+  { ssr: false }
+);
 import { getPlatformStats } from "@/lib/site-visits";
 import { AllDistrictsDirectory } from "@/components/district/all-districts-directory";
 
