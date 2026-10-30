@@ -12,8 +12,8 @@
 | **0. Protection** | Create `backup-vercel` branch and `vercel-last-working` tag | ✅ Done |
 | **0.1 UI Changes** | Commit uncommitted quality badges on district rate page | ✅ Done |
 | **1. Audit** | Complete architectural and security audit (`AUDIT.md`) | ✅ Done |
-| **2. Adapter Setup** | Install `@opennextjs/cloudflare`, `wrangler`, config R2 incremental cache | 🔄 Next |
-| **3. Database** | Prisma v6 + Hyperdrive + `@prisma/adapter-pg` | ⏳ Pending |
+| **2. Adapter Setup** | Install `@opennextjs/cloudflare`, `wrangler`, config R2 incremental cache | ✅ Done |
+| **3. Database** | Prisma v6 + Hyperdrive + `@prisma/adapter-pg` | 🔄 Next |
 | **4. Storage & Proxy** | PDF proxy streaming with Edge caching + Range support, unoptimized next/image | ⏳ Pending |
 | **5. Counters & Load** | Asynchronous non-blocking counters via `after()` / `waitUntil`, bot filtering | ⏳ Pending |
 | **6. Dynamic Imports** | Isolate Three.js / R3F and Recharts with `ssr: false` | ⏳ Pending |
