@@ -13,7 +13,7 @@ import { RelatedRates } from "@/components/district/related-rates";
 import { NeighboringDistricts } from "@/components/district/neighboring-districts";
 import { DistrictStatsLive } from "@/components/district/district-stats-live";
 import { formatNumber, formatDate, formatFileSize } from "@/lib/utils";
-import { Download, Calendar, FileText, MapPin, ArrowLeft, Users, Landmark } from "lucide-react";
+import { Download, Calendar, FileText, MapPin, ArrowLeft, Users, Landmark, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { getDistrictFact } from "@/lib/district-facts";
 import { getDistrictNepaliName, ALL_77_DISTRICTS } from "@/lib/district-nepali-names";
 import { getCanonicalRateSlug, getMigratedRedirectTarget } from "@/lib/slug-migration";
@@ -290,6 +290,10 @@ export default async function DistrictRatePage({ params }: PageProps) {
                 {nameNp}
               </Badge>
             )}
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              Extra High Quality PDF
+            </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">
             District Rate of {districtName}
@@ -328,15 +332,19 @@ export default async function DistrictRatePage({ params }: PageProps) {
             {/* Download Card */}
             <div className="card-base p-6">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-14 h-14 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center justify-center">
+                <div className="w-14 h-14 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center justify-center flex-shrink-0">
                   <FileText className="w-7 h-7 text-red-500" />
                 </div>
                 <div>
-                  <div className="font-bold text-gray-900 dark:text-white">
-                    {districtName} {nameNp ? `(${nameNp})` : ""} District Rate {fiscalYear}
+                  <div className="font-bold text-gray-900 dark:text-white flex items-center gap-2 flex-wrap">
+                    <span>{districtName} {nameNp ? `(${nameNp})` : ""} District Rate {fiscalYear}</span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                      <ShieldCheck className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                      Extra High Quality
+                    </span>
                   </div>
-                  <div className="text-sm text-gray-500">
-                    Official PDF · {rate.pdfSize ? formatFileSize(rate.pdfSize) : "PDF"}
+                  <div className="text-sm text-gray-500 mt-1">
+                    Official Gazette Scan · {rate.pdfSize ? formatFileSize(rate.pdfSize) : "Original PDF"}
                     {rate.pdfPages ? ` · ${rate.pdfPages} pages` : ""}
                   </div>
                 </div>
@@ -354,6 +362,15 @@ export default async function DistrictRatePage({ params }: PageProps) {
                   fileName={`district-rate-${districtName.toLowerCase()}-${fiscalYear}.pdf`}
                 />
               </div>
+
+              {/* Authentic Verification & Quality Note */}
+              <div className="mt-5 pt-4 border-t border-gray-100 dark:border-gray-800/80 flex items-start gap-2.5 text-xs text-gray-600 dark:text-gray-300 leading-relaxed bg-gray-50/70 dark:bg-gray-800/30 p-3 rounded-xl">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <span className="font-semibold text-gray-900 dark:text-white">सक्कल प्रति तथा गुणस्तर प्रमाणीकरण (Extra High Quality PDF): </span>
+                  यो दररेट जिल्ला प्रशासन कार्यालय तथा दररेट निर्धारण समितिबाट प्रकाशित आधिकारिक पुस्तिकाबाट प्रत्यक्ष संकलन गरिएको हो। इन्जिनियरिङ लागत अनुमान (Estimate), BOQ तथा टेन्डर बिडिङमा कुनै पनि विवरण नछुटोस् भनेर सबै पानाहरू उच्च गुणस्तर (Clear High-Resolution Original Scan) मा राखिएको छ।
+                </div>
+              </div>
             </div>
 
             {/* Description / About This Rate */}
@@ -363,6 +380,10 @@ export default async function DistrictRatePage({ params }: PageProps) {
               </h2>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                 {nameNp ? `${nameNp} (${districtName})` : districtName} जिल्लाको आर्थिक वर्ष {fiscalYear} को आधिकारिक निर्माण सामग्री तथा ज्याला दररेट। Download the complete approved government rate list for BOQ preparation, tender bidding, and project cost estimation.
+              </p>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed mt-3 text-sm">
+                <strong className="text-gray-900 dark:text-white">गुणस्तर सम्बन्धी जानकारी: </strong> 
+                धमिलो वा आधा पाना काटिएका फाइलहरूले गर्दा निर्माण लागत अनुमानमा त्रुटि नहोस् भनी यहाँ उपलब्ध गराइएको फाइल पूर्ण पृष्ठहरू सहितको <strong>Extra High Quality PDF</strong> हो। यसमा निर्माण सामग्रीका दर, ढुवानी भाडा, मेसिनरी तथा दक्ष/अदक्ष श्रमिकको दैनिक ज्याला स्पष्ट रूपमा पढ्न सकिन्छ।
               </p>
               {fact && (
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed mt-3">
