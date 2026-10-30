@@ -11,6 +11,12 @@ export async function middleware(req: NextRequest) {
   // Security headers on all responses
   applySecurityHeaders(response);
 
+  // Safeguard: Prevent Google from indexing workers.dev / pages.dev preview domains
+  const host = req.headers.get("host") || "";
+  if (host.includes(".workers.dev") || host.includes(".pages.dev")) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  }
+
   // Admin panel protection
   if (pathname.startsWith(`/${ADMIN_PATH}`)) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -30,6 +36,7 @@ export async function middleware(req: NextRequest) {
   // API rate limiting headers
   if (pathname.startsWith("/api/")) {
     const ip =
+      req.headers.get("cf-connecting-ip") ??
       req.headers.get("x-forwarded-for") ??
       req.headers.get("x-real-ip") ??
       "unknown";

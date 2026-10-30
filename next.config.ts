@@ -5,13 +5,9 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
 
-  // Image optimization
+  // Image optimization - static assets served directly via Cloudflare Workers Assets
   images: {
-    formats: ["image/avif", "image/webp"],
-    domains: [
-      "files.erg.com.np",
-      // Add R2 domain here
-    ],
+    unoptimized: true,
   },
 
   // Strict mode for better development

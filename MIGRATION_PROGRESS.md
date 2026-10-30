@@ -16,8 +16,8 @@
 | **3. Database** | Prisma v6 + Hyperdrive + `@prisma/adapter-pg` | ✅ Done |
 | **4. Storage & Proxy** | PDF proxy streaming with Edge caching + Range support, unoptimized next/image | ✅ Done |
 | **5. Counters & Load** | Asynchronous non-blocking counters via `after()` / `waitUntil`, bot filtering | ✅ Done |
-| **6. Image, Auth & SEO** | `next/image` unoptimized, middleware preview noindex, auth | 🔄 Next |
-| **7. Build & Test** | Full build, local `wrangler dev` tests, endpoint verification | ⏳ Pending |
+| **6. Image, Auth & SEO** | `next/image` unoptimized, middleware preview noindex, auth | ✅ Done |
+| **7. Dynamic Imports** | Isolate Three.js / R3F and Recharts with `ssr: false` | 🔄 Next |
 | **8. Documentation** | Final `MIGRATION_REPORT.md` and manual dashboard click-by-click instructions | ⏳ Pending |
 
 ---
