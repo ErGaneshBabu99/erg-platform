@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { isBot } from "@/lib/security/bot-detection";
 
 export const dynamic = "force-dynamic";
 
@@ -8,65 +9,60 @@ interface RouteContext {
 }
 
 export async function POST(req: NextRequest, { params }: RouteContext) {
-  try {
-    const { slug } = await params;
-    if (!slug) {
-      return NextResponse.json({ error: "Missing identifier" }, { status: 400 });
-    }
+  const userAgent = req.headers.get("user-agent");
 
-    // Lookup district rate by id or slug
-    const rate = await prisma.districtRate.findFirst({
-      where: {
-        OR: [{ id: slug }, { slug: slug }],
-      },
-      select: { id: true },
-    });
-
-    if (!rate) {
-      return NextResponse.json({ error: "District rate not found" }, { status: 404 });
-    }
-
-    // Atomically increment genuine download counter in PostgreSQL (preserves frozen baseline)
-    const updated = await prisma.districtRate.update({
-      where: { id: rate.id },
-      data: {
-        downloadCountAfter: { increment: 1 },
-      },
-      select: {
-        id: true,
-        downloadCount: true,
-        viewCount: true,
-        downloadCountAfter: true,
-        viewCountAfter: true,
-      },
-    });
-
-    const directDownloads =
-      (updated.downloadCount ?? 0) + (updated.downloadCountAfter ?? 0);
-    const totalViews =
-      (updated.viewCount ?? 0) + (updated.viewCountAfter ?? 0);
-    const totalDownloads = directDownloads + totalViews;
-
-    // Non-blocking download log entry
-    try {
-      const ip = req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? undefined;
-      const userAgent = req.headers.get("user-agent") ?? undefined;
-      const referer = req.headers.get("referer") ?? undefined;
-      prisma.download
-        .create({
-          data: { districtRateId: rate.id, ipAddress: ip, userAgent, referer },
-        })
-        .catch(() => {});
-    } catch {
-      // Non-blocking
-    }
-
-    return NextResponse.json({
-      success: true,
-      totalDownloads,
-    });
-  } catch (error) {
-    console.error("Download tracking error:", error);
-    return NextResponse.json({ error: "Failed to record download" }, { status: 500 });
+  // Ignore search bots, social crawlers, and scrapers
+  if (isBot(userAgent)) {
+    return NextResponse.json({ success: true, ignored: "bot" });
   }
+
+  const { slug } = await params;
+  if (!slug) {
+    return NextResponse.json({ error: "Missing identifier" }, { status: 400 });
+  }
+
+  const ip =
+    req.headers.get("cf-connecting-ip") ??
+    req.headers.get("x-forwarded-for") ??
+    req.headers.get("x-real-ip") ??
+    undefined;
+  const referer = req.headers.get("referer") ?? undefined;
+
+  // Asynchronous execution via after() / ctx.waitUntil()
+  // The response is returned to the client immediately without waiting for the DB write.
+  after(async () => {
+    try {
+      const rate = await prisma.districtRate.findFirst({
+        where: {
+          OR: [{ id: slug }, { slug: slug }],
+        },
+        select: { id: true },
+      });
+
+      if (!rate) return;
+
+      // Increment live counter without touching baseline
+      await prisma.districtRate.update({
+        where: { id: rate.id },
+        data: {
+          downloadCountAfter: { increment: 1 },
+        },
+      });
+
+      // Best-effort download log
+      await prisma.download.create({
+        data: {
+          districtRateId: rate.id,
+          ipAddress: ip,
+          userAgent: userAgent ?? undefined,
+          referer,
+        },
+      });
+    } catch (err) {
+      // Non-blocking: database outages or connection limits must NEVER fail user downloads
+      console.error("[download-counter] asynchronous increment error:", err);
+    }
+  });
+
+  return NextResponse.json({ success: true });
 }
