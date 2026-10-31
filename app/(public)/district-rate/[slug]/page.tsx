@@ -292,9 +292,13 @@ export default async function DistrictRatePage({ params }: PageProps) {
                 {nameNp}
               </Badge>
             )}
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              Extra High Quality PDF
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs sm:text-[13px] font-extrabold bg-gradient-to-r from-amber-500/25 via-emerald-500/25 to-blue-500/25 text-amber-300 border-2 border-amber-400/90 shadow-[0_0_20px_rgba(251,191,36,0.35)] backdrop-blur-md animate-pulse">
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-80" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400" />
+              </span>
+              <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+              <span>High Quality Official PDF — Verified</span>
             </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">

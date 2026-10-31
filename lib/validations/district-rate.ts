@@ -20,7 +20,7 @@ export const searchDistrictRateSchema = z.object({
   fiscalYear: z.string().optional(),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().min(1).max(50).default(12),
-  sort: z.enum(["newest", "oldest", "downloads", "name"]).default("newest"),
+  sort: z.enum(["newest", "oldest", "downloads", "name"]).default("downloads"),
 });
 
 export type CreateDistrictRateInput = z.infer<typeof createDistrictRateSchema>;

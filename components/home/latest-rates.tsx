@@ -87,7 +87,7 @@ export function LatestRates({ rates, loading = false }: LatestRatesProps) {
           <div>
             <p className="text-xs font-semibold text-navy-600 dark:text-blue-400 uppercase tracking-widest mb-3">Recent</p>
             <h2 className="text-2xl md:text-3xl font-display font-bold text-gray-900 dark:text-white">
-              Latest District Rates
+              Most Downloaded District Rates
             </h2>
           </div>
           <Link

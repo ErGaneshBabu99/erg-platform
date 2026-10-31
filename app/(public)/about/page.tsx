@@ -54,7 +54,6 @@ const values = [
 const roadmap = [
   { label: "District Rate Database", status: "live" },
   { label: "Engineering Blog", status: "live" },
-  { label: "Vacancy Portal", status: "live" },
   { label: "Building Design Tools", status: "soon" },
   { label: "Valuation Calculator", status: "soon" },
   { label: "Online Courses", status: "soon" },

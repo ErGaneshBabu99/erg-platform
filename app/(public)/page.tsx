@@ -4,8 +4,7 @@ import { Hero } from "@/components/home/hero";
 import { FounderSection } from "@/components/home/founder-section";
 import { AboutMe } from "@/components/home/about-me";
 import { LatestRates } from "@/components/home/latest-rates";
-import  GaneshPostPreview  from "@/components/home/ganesh-post-preview";
-import { VacancyPreview } from "@/components/home/vacancy-preview";
+import GaneshPostPreview from "@/components/home/ganesh-post-preview";
 import { Features } from "@/components/home/features";
 import { ContactSection } from "@/components/home/contact-section";
 import { AllDistrictsDirectory } from "@/components/district/all-districts-directory";
@@ -37,7 +36,11 @@ async function getLatestRates() {
   try {
     return await prisma.districtRate.findMany({
       where: { status: "PUBLISHED" },
-      orderBy: { publishedAt: "desc" },
+      orderBy: [
+        { downloadCountAfter: "desc" },
+        { downloadCount: "desc" },
+        { publishedAt: "desc" },
+      ],
       take: 8,
       include: {
         district: { include: { province: { select: { name: true } } } },
@@ -62,7 +65,6 @@ export default async function HomePage() {
         <AllDistrictsDirectory />
       </div>
       <GaneshPostPreview />
-      <VacancyPreview />
       <Features />
       <ContactSection />
     </>

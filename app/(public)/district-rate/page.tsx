@@ -7,7 +7,6 @@ import { DistrictRateGrid } from "@/components/district/district-rate-grid";
 import { SearchFilters } from "@/components/district/search-filters";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Download, Eye } from "lucide-react";
-import { DownloadLiveScene } from "@/components/district-rate/download-live-scene";
 import { getPlatformStats } from "@/lib/site-visits";
 import { AllDistrictsDirectory } from "@/components/district/all-districts-directory";
 
@@ -40,7 +39,7 @@ async function getDistrictRates(params: Record<string, string>) {
   const parsed = searchDistrictRateSchema.safeParse(params);
   const { q, province, fiscalYear, page, limit, sort } = parsed.success
     ? parsed.data
-    : { q: "", province: "", fiscalYear: "", page: 1, limit: 12, sort: "newest" as const };
+    : { q: "", province: "", fiscalYear: "", page: 1, limit: 12, sort: "downloads" as const };
 
   const where: any = { status: "PUBLISHED" };
 
@@ -133,6 +132,15 @@ export default async function DistrictRatePage({ searchParams }: PageProps) {
         <div className="container-erg relative flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
           <div>
             <Breadcrumb items={breadcrumbs} className="mb-4 text-navy-300" />
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/25 via-emerald-500/25 to-blue-500/25 border-2 border-amber-400/90 shadow-[0_0_25px_rgba(251,191,36,0.35)] backdrop-blur-md mb-3 animate-pulse">
+              <span className="flex h-2.5 w-2.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-80" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-400" />
+              </span>
+              <span className="text-xs sm:text-[13px] font-extrabold tracking-wide text-amber-300 uppercase drop-shadow-sm">
+                ⚡ High Quality Official PDFs — 100% Government Verified
+              </span>
+            </div>
             <h1 className="text-3xl md:text-4xl font-display font-bold text-white mb-3">
               District Rate Database
             </h1>
@@ -174,9 +182,7 @@ export default async function DistrictRatePage({ searchParams }: PageProps) {
                 </div>
               </div>
             </div>
-            <div className="mt-2">
-              <DownloadLiveScene initialDownloads={stats.downloads} />
-            </div>
+            
           </div>
         </div>
       </div>

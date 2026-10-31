@@ -16,7 +16,6 @@ const footerLinks = {
   platform: [
     { label: "District Rate Database", href: "/district-rate" },
     { label: "Engineering Blog", href: "/blog" },
-    { label: "Vacancy Portal", href: "/vacancy" },
     { label: "Contact Us", href: "/contact" },
   ],
   company: [

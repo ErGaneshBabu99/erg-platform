@@ -70,7 +70,7 @@ export function SearchFilters({ provinces, fiscalYears, currentParams, total }: 
 
         {/* Sort */}
         <select
-          defaultValue={currentParams.sort ?? "newest"}
+          defaultValue={currentParams.sort ?? "downloads"}
           onChange={(e) => updateParams({ sort: e.target.value })}
           className="input-base lg:w-48 transition-all duration-200 focus:ring-4 focus:ring-navy-100 dark:focus:ring-navy-900/40 focus:border-navy-400"
           aria-label="Sort results"
