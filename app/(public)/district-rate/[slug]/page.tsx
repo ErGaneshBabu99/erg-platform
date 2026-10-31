@@ -13,7 +13,7 @@ import { RelatedRates } from "@/components/district/related-rates";
 import { NeighboringDistricts } from "@/components/district/neighboring-districts";
 import { DistrictStatsLive } from "@/components/district/district-stats-live";
 import { formatNumber, formatDate, formatFileSize } from "@/lib/utils";
-import { Download, Calendar, FileText, MapPin, ArrowLeft, Users, Landmark } from "lucide-react";
+import { Download, Calendar, FileText, MapPin, ArrowLeft, Users, Landmark, ShieldCheck } from "lucide-react";
 import { getDistrictFact } from "@/lib/district-facts";
 import { getDistrictNepaliName, ALL_77_DISTRICTS } from "@/lib/district-nepali-names";
 import { getCanonicalRateSlug, getMigratedRedirectTarget } from "@/lib/slug-migration";
