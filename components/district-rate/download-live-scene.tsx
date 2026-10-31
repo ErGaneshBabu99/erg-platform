@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const POLL_MS = 8000;
+const POLL_MS = 60000;
 const BREAK_AFTER_MS = 5 * 60 * 1000;
 const BUBBLE_MS = 3200;
 
@@ -51,10 +51,14 @@ export function DownloadLiveScene({ initialDownloads }: { initialDownloads: numb
     let cancelled = false;
 
     async function poll() {
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") {
+        return;
+      }
       try {
-        const res = await fetch("/api/district-rate/live-stats", { cache: "no-store" });
+        const res = await fetch("/api/district-rate/live-stats");
+        if (!res.ok) return;
         const data = await res.json();
-        if (cancelled) return;
+        if (cancelled || !data || typeof data.downloads !== "number") return;
 
         const diff = data.downloads - lastCountRef.current;
         if (diff > 0) {
@@ -90,10 +94,18 @@ export function DownloadLiveScene({ initialDownloads }: { initialDownloads: numb
       }
     }
 
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        poll();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
     const id = window.setInterval(poll, POLL_MS);
     return () => {
       cancelled = true;
       window.clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);

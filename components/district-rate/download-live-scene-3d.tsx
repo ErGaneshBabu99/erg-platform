@@ -5,7 +5,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
 
-const POLL_MS = 4000;
+const POLL_MS = 60000;
 const IDLE_BEFORE_BREAK_MS = 20000; // real trigger; bubble text still says "5 min"
 const BREAK_DURATION_MS = 10000;
 const CLIMB_MS = 3200;
@@ -445,8 +445,6 @@ export function DownloadLiveScene3D({ initialDownloads }: { initialDownloads: nu
 
   useEffect(() => {
     armIdleTimer();
-    const onVis = () => { visibleRef.current = document.visibilityState === "visible"; };
-    document.addEventListener("visibilitychange", onVis);
 
     const introTimer = setTimeout(async () => {
       if (busyRef.current || pendingRef.current <= 0) return;
@@ -466,7 +464,6 @@ export function DownloadLiveScene3D({ initialDownloads }: { initialDownloads: nu
       if (breakTimerRef.current) clearTimeout(breakTimerRef.current);
       if (animRafRef.current) cancelAnimationFrame(animRafRef.current);
       clearTimeout(introTimer);
-      document.removeEventListener("visibilitychange", onVis);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -476,7 +473,7 @@ export function DownloadLiveScene3D({ initialDownloads }: { initialDownloads: nu
     async function poll() {
       if (!visibleRef.current) return;
       try {
-        const res = await fetch("/api/district-rate/live-stats", { cache: "no-store" });
+        const res = await fetch("/api/district-rate/live-stats");
         if (!res.ok) return;
         const data = await res.json();
         if (cancelled || !data || typeof data.downloads !== "number") return;
@@ -501,8 +498,21 @@ export function DownloadLiveScene3D({ initialDownloads }: { initialDownloads: nu
         // decorative only - silently ignore network hiccup
       }
     }
+
+    const onVis = () => {
+      visibleRef.current = document.visibilityState === "visible";
+      if (visibleRef.current) {
+        poll();
+      }
+    };
+    document.addEventListener("visibilitychange", onVis);
+
     const id = window.setInterval(poll, POLL_MS);
-    return () => { cancelled = true; window.clearInterval(id); };
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", onVis);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 

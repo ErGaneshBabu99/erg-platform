@@ -49,6 +49,69 @@ interface ChatWindowProps {
   onClose: () => void;
 }
 
+function renderMessageContent(text: string) {
+  const lines = text.split("\n");
+  const regex = /(\*\*\*(?!\s)(?:[^*]+?)(?<!\s)\*\*\*|\*\*(?!\s)(?:[^*]+?)(?<!\s)\*\*|\*(?!\s)(?:[^*]+?)(?<!\s)\*|\*+)/g;
+
+  return lines.map((line, lineIdx) => {
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+    const parts: React.ReactNode[] = [];
+
+    regex.lastIndex = 0;
+
+    while ((match = regex.exec(line)) !== null) {
+      if (match.index > lastIndex) {
+        const textChunk = line.slice(lastIndex, match.index).replace(/\*/g, "");
+        if (textChunk) parts.push(textChunk);
+      }
+
+      const token = match[0];
+      const inner = token.replace(/\*/g, "");
+
+      // If token consists only of asterisks, strip it
+      if (!inner) {
+        lastIndex = regex.lastIndex;
+        continue;
+      }
+
+      if (token.startsWith("***") && token.endsWith("***") && token.length > 6) {
+        parts.push(
+          <strong key={`bi-${match.index}`} className="font-semibold italic">
+            {token.slice(3, -3)}
+          </strong>
+        );
+      } else if (token.startsWith("**") && token.endsWith("**") && token.length > 4) {
+        parts.push(
+          <strong key={`b-${match.index}`} className="font-semibold">
+            {token.slice(2, -2)}
+          </strong>
+        );
+      } else if (token.startsWith("*") && token.endsWith("*") && token.length > 2) {
+        parts.push(
+          <em key={`i-${match.index}`} className="italic">
+            {token.slice(1, -1)}
+          </em>
+        );
+      }
+
+      lastIndex = regex.lastIndex;
+    }
+
+    if (lastIndex < line.length) {
+      const trailingChunk = line.slice(lastIndex).replace(/\*/g, "");
+      if (trailingChunk) parts.push(trailingChunk);
+    }
+
+    return (
+      <React.Fragment key={lineIdx}>
+        {lineIdx > 0 && <br />}
+        {parts.length > 0 ? parts : null}
+      </React.Fragment>
+    );
+  });
+}
+
 export function ChatWindow({ onClose }: ChatWindowProps) {
   const [messages, setMessages] = useState<Message[]>([INTRO_MESSAGE]);
   const [input, setInput] = useState("");
@@ -171,7 +234,7 @@ export function ChatWindow({ onClose }: ChatWindowProps) {
                   : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-bl-sm"
               )}
             >
-              {msg.text}
+              {renderMessageContent(msg.text)}
             </div>
           </div>
         ))}
