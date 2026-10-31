@@ -19,45 +19,54 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const response = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
+    const primaryModel = "llama-3.3-70b-versatile";
+    const fallbackModel = "llama-3.1-8b-instant";
+
+    const makeGroqRequest = async (model: string) => {
+      return fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: "openai/gpt-oss-120b", // सबैभन्दा राम्रो free model
+          model,
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
             ...messages,
           ],
-          max_tokens: 600,
+          max_tokens: 700,
           temperature: 0.7,
         }),
-      }
-    );
+      });
+    };
+
+    let response = await makeGroqRequest(primaryModel);
 
     if (!response.ok) {
-      const error = await response.text();
-      console.error("Groq API error:", error);
-      return NextResponse.json({ error }, { status: response.status });
+      console.warn(
+        `Groq primary model (${primaryModel}) failed with status ${response.status}. Retrying fallback (${fallbackModel})...`
+      );
+      response = await makeGroqRequest(fallbackModel);
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Groq API error:", errorText);
+      return NextResponse.json({ error: errorText }, { status: response.status });
     }
 
     const data = await response.json();
     const text =
       data.choices?.[0]?.message?.content ??
-      "Sorry, could not generate a response.";
+      "Namaste! Could not generate a response right now. Please try asking again.";
 
     return NextResponse.json({ text });
-  } catch (err: any) {
-    console.error("Chat route error:", err);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("Chat route error:", message);
     return NextResponse.json(
-      {
-        error: err?.message || String(err),
-        stack: process.env.NODE_ENV === "development" ? err?.stack : undefined,
-      },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

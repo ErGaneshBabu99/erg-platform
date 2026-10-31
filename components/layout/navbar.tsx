@@ -10,7 +10,6 @@ import { useTheme } from "next-themes";
 const navLinks = [
   { label: "District Rates", href: "/district-rate" },
   { label: "Blog", href: "/blog" },
-  { label: "Vacancies", href: "/vacancy" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
   { label: "Report Check", href: "/report-check" },
