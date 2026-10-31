@@ -25,20 +25,24 @@ The `erganesh.com.np` platform has been migrated from Vercel to **Cloudflare Wor
 
 | File | Change Type | Purpose |
 |---|---|---|
-| `open-next.config.ts` | **NEW** | OpenNext adapter configuration enabling `kvIncrementalCache` for Next.js ISR/prerender caching (100% Free Tier, zero credit card). |
-| `wrangler.jsonc` | **NEW** | Cloudflare Workers configuration: `nodejs_compat`, assets binding (`ASSETS`), `HYPERDRIVE` binding, and KV namespace binding (`NEXT_INC_CACHE_KV`). |
+| `open-next.config.ts` | **NEW** | OpenNext adapter configuration enabling `kvIncrementalCache` and `memoryQueue` for Next.js ISR/prerender caching and revalidation (100% Free Tier, zero credit card). |
+| `wrangler.jsonc` | **NEW** | Cloudflare Workers configuration: `nodejs_compat`, assets binding (`ASSETS`), `HYPERDRIVE` binding, `WORKER_SELF_REFERENCE`, and KV namespace binding (`NEXT_INC_CACHE_KV`). |
 | `package.json` | **MODIFIED** | Added dependencies (`@opennextjs/cloudflare`, `wrangler`, `@prisma/adapter-pg`, `pg`, `@types/pg`) and scripts (`build:worker`, `preview`, `deploy`). |
 | `prisma/schema.prisma` | **MODIFIED** | Added `previewFeatures = ["driverAdapters"]` to generate an engine-less, driver-adapter-ready Prisma client. |
-| `lib/prisma.ts` | **MODIFIED** | Implemented `@prisma/adapter-pg` with dynamic Hyperdrive connection resolution and request-scoped `ExecutionContext` attachment (`ctx.ctx.__prisma`) to prevent cross-request socket collisions. |
+| `lib/prisma.ts` | **MODIFIED** | Imports `PrismaClient` from `@prisma/client/wasm` with `@prisma/adapter-pg` and dynamic Hyperdrive connection resolution (`ctx.env.HYPERDRIVE.connectionString`). Client is request-scoped on ExecutionContext (`ctx.ctx.__prisma`), completely eliminating Node native engine and `fs.readdir` errors. |
+| `lib/security/audit.ts` | **MODIFIED** | Converted to `import type { Prisma }` to avoid dragging Node runtime code into server builds. |
 | `lib/security/bot-detection.ts` | **NEW** | Utility to detect search engine bots (Googlebot, Bingbot, etc.) and synthetic crawler user agents. |
+| `app/api/districts/route.ts` | **MODIFIED** | Queries PostgreSQL with Prisma WASM. Exposes `X-Data-Source: db` on success and `X-Data-Source: fallback` on error. Sanitizes credentials in error logs. |
+| `app/api/district-rate/live-stats/route.ts` | **MODIFIED** | Returns real database aggregate downloads (status 200) or explicit 500 error status instead of masking failures with fake zeros. |
+| `app/(public)/district-rate/page.tsx` | **MODIFIED** | Switched from 3D to 2D scene. Rethrows database errors so Next.js aborts and never writes empty/failed results to KV cache. |
+| `app/(public)/district-rate/[slug]/page.tsx` | **MODIFIED** | Rethrows database errors so Next.js never caches 404/empty responses in KV cache when DB is temporarily unreachable. |
+| `next.config.ts` | **MODIFIED** | Added `images: { unoptimized: true }` and removed Prisma/pg from `serverExternalPackages` so WASM query engine is properly compiled into worker bundle without native fs engine lookups. |
 | `app/api/download-pdf/route.ts` | **MODIFIED** | Follows GitHub release redirects, forwards incoming `Range` headers, returns 206 Partial Content or 200 OK, and sets 1-year immutable edge cache headers. |
 | `app/api/district-rate/[slug]/download/route.ts` | **MODIFIED** | Uses `after()` (`waitUntil`) for non-blocking counter increments and bypasses bot requests. |
 | `app/api/district-rate/[slug]/view/route.ts` | **MODIFIED** | Uses `after()` (`waitUntil`) for non-blocking view counter increments and bypasses bot requests. |
 | `app/api/track-visit/route.ts` | **MODIFIED** | Uses `after()` (`waitUntil`) for non-blocking visit logging and bypasses bot requests. |
-| `next.config.ts` | **MODIFIED** | Added `images: { unoptimized: true }` and `serverExternalPackages` exclusions for server-only libraries (`@prisma/client`, `.prisma/client`, `pg`, `@prisma/adapter-pg`, `pdfjs-dist`, `jspdf`) to optimize worker bundle size. |
 | `middleware.ts` | **MODIFIED** | Injects `X-Robots-Tag: noindex, nofollow` on preview domains (`.workers.dev`, `.pages.dev`) using `x-forwarded-host` and `host` inspection. |
 | `app/api/chat/route.ts` | **MODIFIED** | Removed `export const runtime = "edge"` so it bundles seamlessly into the unified OpenNext Node-compatible worker. |
-| `app/(public)/district-rate/page.tsx` | **MODIFIED** | Switched from heavyweight 3D scene (`@react-three/fiber` / Three.js) to ultra-fast 2D canvas scene, stripping ~3 MB of unused dependencies from bundle. |
 | `components/report-check/ReportUploader.tsx` | **MODIFIED** | Converted `compressPdf` to dynamic on-demand `import()`, avoiding loading PDF compression code until user actually uploads a PDF. |
 | `app/(public)/report-check/page.tsx` | **MODIFIED** | Direct client component import for `ReportCheckClient`. |
 | `app/admin/analytics/page.tsx` | **MODIFIED** | Direct client component import for `AnalyticsViewsChart`. |
@@ -146,12 +150,44 @@ Hyperdrive accelerates PostgreSQL queries by pooling connections and caching dat
 1. Click **Security** > **Bots** in the left menu.
 2. Toggle **Bot Fight Mode** to **ON**. (This defends against scraper bots without blocking search engines).
 
-### Step 6: Deploy the Worker
-You can deploy directly using Wrangler from your machine:
+### Step 6: Clear Old KV Cache and Deploy the Worker
+
+If you previously tested a build where queries failed, the KV namespace might contain cached empty pages. Follow these steps to purge the old cache and deploy cleanly:
+
+#### Part A: Clear Old Pages from KV Cache
+**Via Cloudflare Web Dashboard:**
+1. In Cloudflare Dashboard, go to **Storage & Databases** > **KV**.
+2. Click on your KV namespace: `erg-platform-cache`.
+3. Click the **KV Pairs** tab.
+4. Select all keys (or delete each cached HTML/JSON key) and click **Delete**.
+
+**Via Wrangler CLI (if preferred):**
 ```bash
-npm run deploy
+# List all keys in your KV cache:
+npx wrangler kv key list --binding=NEXT_INC_CACHE_KV
+
+# Or clear all keys:
+npx wrangler kv bulk delete --binding=NEXT_INC_CACHE_KV
 ```
-Or connect your GitHub repository to Cloudflare Workers via the Cloudflare dashboard.
+
+#### Part B: Build & Deploy Cleanly
+During build/deploy, Cloudflare Wrangler requires the local Hyperdrive environment variable to be exported. Run the following commands:
+
+**On Windows PowerShell:**
+```powershell
+$env:CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE = "postgresql://postgres.pngfoiugheajfvitrwdu:YOUR_PASSWORD@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres"
+npm run build:worker
+npx wrangler deploy
+```
+
+**On Linux / macOS:**
+```bash
+export CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE="postgresql://postgres.pngfoiugheajfvitrwdu:YOUR_PASSWORD@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres"
+npm run build:worker
+npx wrangler deploy
+```
+
+*(Replace `YOUR_PASSWORD` with your actual Supabase database password when running in your terminal).*
 
 ---
 

@@ -10,13 +10,8 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
 
-  // Ensure Prisma, Postgres drivers, and client-heavy packages are externalized
-  // so they are never inlined into the server worker bundle.
+  // Client-heavy packages externalized from server functions
   serverExternalPackages: [
-    "@prisma/client",
-    ".prisma/client",
-    "pg",
-    "@prisma/adapter-pg",
     "pdfjs-dist",
     "jspdf",
   ],

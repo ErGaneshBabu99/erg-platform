@@ -17,13 +17,23 @@
   "kv_namespaces": [
     {
       "binding": "NEXT_INC_CACHE_KV",
-      "id": "REPLACE_WITH_KV_NAMESPACE_ID"
+      "id": "09c33e24bdbc46018bf27eae427ec2eb"
     }
   ],
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
-      "id": "REPLACE_WITH_HYPERDRIVE_ID"
+      "id": "6c0dbec80f0a4fc493b6361b68a36e67"
     }
-  ]
+  ],
+  "vars": {
+    "GITHUB_REPO": "ErGaneshBabu99/erg-platform",
+    "NEXT_PUBLIC_SITE_URL": "https://www.erganesh.com.np",
+    "NEXT_PUBLIC_SUPABASE_URL": "https://pngfoiugheajfvitrwdu.supabase.co",
+    "NEXT_PUBLIC_WHATSAPP_NUMBER": "+9779847805353",
+    "OPENROUTER_MODEL": "meta-llama/llama-3.3-70b-instruct:free",
+    "PUBLIC_EMAIL": "contact@erganesh.com.np",
+    "PUBLIC_PHONE_NUMBER": "+9779847805353",
+    "REPORT_CHECK_AI_PROVIDER": "gemini"
+  }
 }

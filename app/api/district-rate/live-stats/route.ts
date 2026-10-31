@@ -32,15 +32,15 @@ export async function GET() {
       { headers: NO_CACHE }
     );
   } catch (error) {
-    console.error("[live-stats] error:", error);
+    const errMessage = error instanceof Error ? error.message : String(error);
+    const sanitized = errMessage.replace(/:[^:@]+@/, ":***@");
+    console.error("[live-stats] DB error:", sanitized);
     return NextResponse.json(
       {
-        downloads: FALLBACK_TOTAL_DOWNLOADS,
-        warning: "db_unavailable",
-        // Temporary: remove this line after the problem is fixed.
-        detail: error instanceof Error ? error.message : String(error),
+        error: "database_error",
+        detail: sanitized,
       },
-      { status: 200, headers: NO_CACHE }
+      { status: 500, headers: NO_CACHE }
     );
   }
 }

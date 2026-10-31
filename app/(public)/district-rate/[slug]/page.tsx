@@ -62,8 +62,10 @@ const getDistrictRate = cache(async (slug: string) => {
       },
     });
   } catch (error) {
-    console.warn(`[getDistrictRate] DB query failed for slug ${slug}:`, error);
-    return null;
+    const errMessage = error instanceof Error ? error.message : String(error);
+    const sanitized = errMessage.replace(/:[^:@]+@/, ":***@");
+    console.error(`[getDistrictRate] DB query failed for slug ${slug}:`, sanitized);
+    throw new Error(`Failed to fetch district rate for ${slug}: ${sanitized}`);
   }
 });
 

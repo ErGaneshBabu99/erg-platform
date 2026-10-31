@@ -82,8 +82,10 @@ async function getDistrictRates(params: Record<string, string>) {
 
     return { rates, total, page, limit };
   } catch (error) {
-    console.warn("[getDistrictRates] Database error:", error);
-    return { rates: [], total: 0, page, limit };
+    const errMessage = error instanceof Error ? error.message : String(error);
+    const sanitized = errMessage.replace(/:[^:@]+@/, ":***@");
+    console.error("[getDistrictRates] Database error:", sanitized);
+    throw new Error(`Failed to load district rates: ${sanitized}`);
   }
 }
 
@@ -98,8 +100,10 @@ async function getFilterData() {
       fiscalYears: fiscalYears.map((f: { year: string }) => f.year),
     };
   } catch (error) {
-    console.warn("[getFilterData] Database error:", error);
-    return { provinces: [], fiscalYears: [] };
+    const errMessage = error instanceof Error ? error.message : String(error);
+    const sanitized = errMessage.replace(/:[^:@]+@/, ":***@");
+    console.error("[getFilterData] Database error:", sanitized);
+    throw new Error(`Failed to load filter data: ${sanitized}`);
   }
 }
 

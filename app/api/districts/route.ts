@@ -14,7 +14,10 @@ const CACHE_TTL_MS = 5 * 60 * 1000;
 
 export async function GET() {
   if (cache && cache.expiresAt > Date.now()) {
-    return NextResponse.json({ districts: cache.data });
+    return NextResponse.json(
+      { districts: cache.data },
+      { headers: { "X-Data-Source": "db" } }
+    );
   }
 
   try {
@@ -37,10 +40,15 @@ export async function GET() {
       }));
 
       cache = { data, expiresAt: Date.now() + CACHE_TTL_MS };
-      return NextResponse.json({ districts: data });
+      return NextResponse.json(
+        { districts: data },
+        { headers: { "X-Data-Source": "db" } }
+      );
     }
   } catch (error) {
-    console.warn("[districts] DB error, using verified 77 static districts fallback:", error);
+    const errMessage = error instanceof Error ? error.message : String(error);
+    const sanitized = errMessage.replace(/:[^:@]+@/, ":***@");
+    console.warn("[districts] DB error, using verified 77 static districts fallback:", sanitized);
   }
 
   // Resilient fallback: all 77 districts with 200 OK so UI never breaks
@@ -50,5 +58,8 @@ export async function GET() {
     province: d.provinceName,
   }));
 
-  return NextResponse.json({ districts: fallbackData }, { status: 200 });
+  return NextResponse.json(
+    { districts: fallbackData },
+    { status: 200, headers: { "X-Data-Source": "fallback" } }
+  );
 }
