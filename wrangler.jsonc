@@ -14,12 +14,6 @@
       "service": "erg-platform"
     }
   ],
-  "kv_namespaces": [
-    {
-      "binding": "NEXT_INC_CACHE_KV",
-      "id": "09c33e24bdbc46018bf27eae427ec2eb"
-    }
-  ],
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",

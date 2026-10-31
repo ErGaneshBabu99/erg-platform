@@ -80,6 +80,36 @@ const INTRO_MESSAGE: Message = {
   userReaction: null,
 };
 
+// --- LaTeX Stripping ---
+
+function cleanLatex(raw: string): string {
+  return raw
+    // Remove display math delimiters \[ ... \]
+    .replace(/\\\[/g, "").replace(/\\\]/g, "")
+    // Remove inline math delimiters \( ... \)
+    .replace(/\\\(/g, "").replace(/\\\)/g, "")
+    // Remove \begin{...} and \end{...}
+    .replace(/\\begin\{[a-z*]+\}/gi, "").replace(/\\end\{[a-z*]+\}/gi, "")
+    // \text{X} → X
+    .replace(/\\text\{([^}]+)\}/g, "$1")
+    // \frac{a}{b} → (a) / (b)
+    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, "($1) / ($2)")
+    // \times → ×
+    .replace(/\\times/g, "×")
+    // \cdot → ·
+    .replace(/\\cdot/g, "·")
+    // \% → %
+    .replace(/\\%/g, "%")
+    // \\ → newline (aligned environment line breaks)
+    .replace(/\\\\/g, "\n")
+    // &= → = and stray & alignment chars
+    .replace(/&=/g, "=").replace(/&/g, "")
+    // Remove remaining \command sequences (e.g. \approx, \leq, \geq, \alpha …)
+    .replace(/\\[a-zA-Z]+/g, "")
+    // Collapse 3+ blank lines to 2
+    .replace(/\n{3,}/g, "\n\n");
+}
+
 // --- Table & Text Parsing Helpers ---
 
 function splitTableRow(line: string): string[] {
@@ -162,7 +192,7 @@ function renderInlineFormatted(text: string): React.ReactNode {
 }
 
 function renderMessageContent(text: string): React.ReactNode {
-  const lines = text.split("\n");
+  const lines = cleanLatex(text).split("\n");
   const nodes: React.ReactNode[] = [];
   let i = 0;
 
@@ -208,12 +238,52 @@ function renderMessageContent(text: string): React.ReactNode {
       i = nextIdx;
     } else {
       const line = lines[i];
-      nodes.push(
-        <React.Fragment key={`line-${i}`}>
-          {i > 0 && <br />}
-          {renderInlineFormatted(line)}
-        </React.Fragment>
-      );
+      // Headings
+      if (line.startsWith("### ")) {
+        nodes.push(
+          <p key={`h3-${i}`} className="font-bold text-sm text-navy-900 dark:text-white mt-3 mb-1">
+            {renderInlineFormatted(line.slice(4))}
+          </p>
+        );
+      } else if (line.startsWith("## ")) {
+        nodes.push(
+          <p key={`h2-${i}`} className="font-bold text-sm text-navy-900 dark:text-white mt-3 mb-1">
+            {renderInlineFormatted(line.slice(3))}
+          </p>
+        );
+      } else if (line.startsWith("# ")) {
+        nodes.push(
+          <p key={`h1-${i}`} className="font-bold text-base text-navy-900 dark:text-white mt-3 mb-1">
+            {renderInlineFormatted(line.slice(2))}
+          </p>
+        );
+      // Bullet lists
+      } else if (line.startsWith("- ") || line.startsWith("• ")) {
+        nodes.push(
+          <p key={`li-${i}`} className="flex gap-1.5 ml-2">
+            <span className="text-blue-500 mt-0.5 flex-shrink-0">•</span>
+            <span>{renderInlineFormatted(line.slice(2))}</span>
+          </p>
+        );
+      // Numbered lists e.g. "1. " "12. "
+      } else if (/^\d+\.\s/.test(line)) {
+        const dotIdx = line.indexOf(". ");
+        const num = line.slice(0, dotIdx + 1);
+        const rest = line.slice(dotIdx + 2);
+        nodes.push(
+          <p key={`ol-${i}`} className="flex gap-1.5 ml-2">
+            <span className="text-blue-500 font-semibold flex-shrink-0 min-w-[1.5rem]">{num}</span>
+            <span>{renderInlineFormatted(rest)}</span>
+          </p>
+        );
+      } else {
+        nodes.push(
+          <React.Fragment key={`line-${i}`}>
+            {i > 0 && <br />}
+            {renderInlineFormatted(line)}
+          </React.Fragment>
+        );
+      }
       i++;
     }
   }
