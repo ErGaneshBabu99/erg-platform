@@ -5,14 +5,16 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
 
-  // Image optimization
+  // Image optimization - static assets served directly via Cloudflare Workers Assets
   images: {
-    formats: ["image/avif", "image/webp"],
-    domains: [
-      "files.erg.com.np",
-      // Add R2 domain here
-    ],
+    unoptimized: true,
   },
+
+  // Client-heavy packages externalized from server functions
+  serverExternalPackages: [
+    "pdfjs-dist",
+    "jspdf",
+  ],
 
   // Strict mode for better development
   reactStrictMode: true,
@@ -51,6 +53,11 @@ const nextConfig: NextConfig = {
           {
             key: "X-DNS-Prefetch-Control",
             value: "on",
+          },
+          {
+            // HSTS: browsers always use HTTPS for 2 years, subdomains included
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
           },
         ],
       },
