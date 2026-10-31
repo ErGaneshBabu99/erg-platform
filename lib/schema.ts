@@ -1,3 +1,4 @@
+import { getCanonicalRateSlug } from './slug-migration';
 /**
  * lib/schema.ts
  * JSON-LD schema builders for ER G Platform.
@@ -400,7 +401,7 @@ export function buildItemListSchema(
       "@type": "ListItem",
       position: index + 1,
       name: `District Rate of ${rate.districtName} ${rate.fiscalYear}`,
-      url: `${SITE_URL}/district-rate/${rate.slug}`,
+      url: `${SITE_URL}/district-rate/${getCanonicalRateSlug(rate.slug.replace(/-\d{4}-\d{2,4}$/, ''), rate.fiscalYear)}`,  // canonical slug
     })),
   };
 }

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FileText, Download, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatNumber } from "@/lib/utils";
+import { getCanonicalRateSlug } from "@/lib/slug-migration";
 
 interface RelatedRate {
   id: string;
@@ -30,7 +31,7 @@ export function RelatedRates({ rates, districtName }: RelatedRatesProps) {
         {rates.map((rate) => (
           <Link
             key={rate.id}
-            href={`/district-rate/${rate.slug}`}
+            href={`/district-rate/${getCanonicalRateSlug(rate.slug.replace(/-\d{4}-\d{2,4}$/, ''), rate.fiscalYear.year)}`}
             className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
           >
             <div className="w-9 h-9 bg-red-50 dark:bg-red-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
