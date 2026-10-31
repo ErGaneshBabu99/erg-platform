@@ -8,7 +8,6 @@ import { SearchFilters } from "@/components/district/search-filters";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Download, Eye } from "lucide-react";
 import { DownloadLiveScene } from "@/components/district-rate/download-live-scene";
-import { DownloadLiveScene3DWrapper as DownloadLiveScene3D } from "@/components/district-rate/download-live-scene-3d-wrapper";
 import { getPlatformStats } from "@/lib/site-visits";
 import { AllDistrictsDirectory } from "@/components/district/all-districts-directory";
 
@@ -172,7 +171,7 @@ export default async function DistrictRatePage({ searchParams }: PageProps) {
               </div>
             </div>
             <div className="mt-2">
-              <DownloadLiveScene3D initialDownloads={stats.downloads} />
+              <DownloadLiveScene initialDownloads={stats.downloads} />
             </div>
           </div>
         </div>

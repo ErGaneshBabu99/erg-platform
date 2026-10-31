@@ -10,12 +10,15 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
 
-  // Ensure Prisma and Postgres drivers are externalized so OpenNext can patch for Cloudflare Workers
+  // Ensure Prisma, Postgres drivers, and client-heavy packages are externalized
+  // so they are never inlined into the server worker bundle.
   serverExternalPackages: [
     "@prisma/client",
     ".prisma/client",
     "pg",
     "@prisma/adapter-pg",
+    "pdfjs-dist",
+    "jspdf",
   ],
 
   // Strict mode for better development

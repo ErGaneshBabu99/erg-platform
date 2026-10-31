@@ -4,7 +4,6 @@ import React, { useCallback, useRef, useState } from "react";
 import { UploadCloud, FileText, X, ArrowRight, Loader2 } from "lucide-react";
 import { cn, formatFileSize } from "@/lib/utils";
 import { MAX_FILE_SIZE_BYTES, COMPRESS_TARGET_BYTES } from "@/lib/report-check/validation";
-import { compressPdf } from "@/lib/report-check/pdfCompress";
 import { ReviewLoading } from "./ReviewLoading";
 
 const ACCEPTED_EXTENSIONS = [".pdf", ".docx"];
@@ -112,6 +111,7 @@ export function ReportUploader({ onDone, onFail, disabled }: ReportUploaderProps
       setStage("compressing");
       setProgress(0);
       try {
+        const { compressPdf } = await import("@/lib/report-check/pdfCompress");
         const result = await compressPdf(workingFile, COMPRESS_TARGET_BYTES, (p) => {
           setProgress(Math.round((p.pageIndex / p.pageCount) * 100));
         });
