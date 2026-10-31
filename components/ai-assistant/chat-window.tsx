@@ -18,6 +18,7 @@ import {
   ThumbsUp,
   Lightbulb,
   Rocket,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { chatSound } from "./chat-sound";
@@ -36,6 +37,15 @@ const REACTION_OPTIONS = [
   { id: "love", label: "Love", icon: Heart, color: "text-rose-500 fill-rose-500" },
   { id: "idea", label: "Insightful", icon: Lightbulb, color: "text-amber-500 fill-amber-500" },
   { id: "rocket", label: "Brilliant", icon: Rocket, color: "text-indigo-500" },
+];
+
+const DYNAMIC_PROMPTS = [
+  "Ask Anything You Want...",
+  "Ask about Nepal District Rates...",
+  "Ask about BOQ Preparation & Estimation...",
+  "Ask about Rate Analysis & DoR Norms...",
+  "Ask about Nepal Building Code (NBC)...",
+  "Ask about Hydropower & Bridge Engineering...",
 ];
 
 const SUGGESTED_QUESTIONS = [
@@ -223,6 +233,14 @@ export function ChatWindow({ onClose }: ChatWindowProps) {
   const [isTyping, setIsTyping] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [promptIdx, setPromptIdx] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setPromptIdx((prev) => (prev + 1) % DYNAMIC_PROMPTS.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -377,7 +395,7 @@ export function ChatWindow({ onClose }: ChatWindowProps) {
 
   return (
     <div
-      className="fixed bottom-24 right-5 sm:right-6 z-50 w-[calc(100vw-2.5rem)] sm:w-[480px] md:w-[500px] h-[min(680px,82vh)] bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl rounded-3xl shadow-[0_20px_60px_-15px_rgba(26,58,107,0.45)] border border-white/60 dark:border-white/10 flex flex-col overflow-hidden animate-erg-scale-in ring-1 ring-black/10"
+      className="fixed bottom-24 right-5 sm:right-6 z-50 w-[calc(100vw-1.5rem)] sm:w-[540px] md:w-[600px] lg:w-[640px] h-[min(740px,86vh)] bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl rounded-3xl shadow-[0_20px_60px_-15px_rgba(26,58,107,0.45)] border border-white/60 dark:border-white/10 flex flex-col overflow-hidden animate-erg-scale-in ring-1 ring-black/10"
       role="dialog"
       aria-modal="true"
       aria-label="Er. Ganesh AI Assistant"
@@ -642,15 +660,24 @@ export function ChatWindow({ onClose }: ChatWindowProps) {
           e.preventDefault();
           sendMessage(input);
         }}
-        className="p-3 bg-white/90 dark:bg-gray-900/90 border-t border-gray-150 dark:border-white/5 flex flex-col gap-1.5 flex-shrink-0"
+        className="p-3 bg-white/90 dark:bg-gray-900/90 border-t border-gray-150 dark:border-white/5 flex flex-col gap-2 flex-shrink-0"
       >
+        <div className="flex items-center justify-between px-1">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-blue-950/60 px-2.5 py-0.5 rounded-full border border-blue-200/60 dark:border-blue-800/60">
+            <Sparkles className="w-3 h-3 text-amber-500 animate-pulse" />
+            <span>{DYNAMIC_PROMPTS[promptIdx]}</span>
+          </span>
+          <span className="text-[10px] text-gray-400 hidden sm:inline">
+            Ask Anything You Want
+          </span>
+        </div>
         <div className="flex items-center gap-2">
           <input
             ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask Er. Ganesh about civil engineering..."
+            placeholder={isTyping ? "Er. Ganesh is formulating a thoughtful reply..." : DYNAMIC_PROMPTS[promptIdx]}
             className="flex-1 px-4 py-2.5 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
             aria-label="Type your message"
           />
