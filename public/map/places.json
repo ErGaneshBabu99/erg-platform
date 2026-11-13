@@ -4,8 +4,9 @@
     "district": "Panchthar - Ilam",
     "last_updated": "2026-11-13",
     "maintained_by": "Er. Ganesh Chapagain (erganesh.com.np)",
+    "why_charrate": "चारराते (३,४५० मिटर) पाँचथर र इलामको सीमामा अवस्थित एक अद्वितीय, शान्त र मनोरम उच्च हिमाली डाँडा हो। यहाँबाट विश्वको तेस्रो अग्लो शिखर कञ्चनजङ्घा (८,५८६m), कुम्भकर्ण (जन्नु), मकालु तथा सगरमाथा हिमशृङ्खलाको ३६०-डिग्री खुला दृश्यावलोकन गर्न सकिन्छ। भीडभाडबाट टाढा रहेको यो पदमार्गमा चौँरी र याक चरेका खुला हिमाली खर्कहरू, गुराँसको जङ्गल, परम्परागत किराँती र शेर्पा आतिथ्य, तथा पुरानो ल्याण्ड रोभर (4WD) सफारीको रोमाञ्चक अनुभव लिन सकिन्छ। यहाँ रहेको याक लज पदयात्रीहरूका लागि न्यानो बास, स्थानीय परिकार र सूर्योदय हेर्ने उत्कृष्ट विश्रामस्थल हो।",
     "start_point": {
-      "name_en": "Phidim Bazar Trailhead",
+      "name_en": "Phidim Bazar",
       "name_np": "फिदिम बजार",
       "elevation_m": 1180,
       "coordinates": {
@@ -25,7 +26,49 @@
   },
   "places": [
     {
-      "id": "GV-001",
+      "id": "PB-001",
+      "name_en": "Phidim Bazar",
+      "name_np": "फिदिम बजार",
+      "location_name": "Phidim Municipality, Panchthar District",
+      "coordinates": {
+        "lat": 27.142431,
+        "lng": 87.766814,
+        "elevation_m": 1180
+      },
+      "categories": [
+        "essentials",
+        "tea_food",
+        "fuel",
+        "garage"
+      ],
+      "owner_name": "Trailhead Gateway",
+      "phones": [
+        {
+          "label": "Trek Info & Assistance",
+          "number": "+9779814065193"
+        }
+      ],
+      "website": "https://erganesh.com.np",
+      "opening_hours": "5:00 AM - 9:00 PM",
+      "facilities": {
+        "wifi_available": true,
+        "online_payment_qr": true,
+        "home_delivery": true,
+        "emergency_fuel": true
+      },
+      "items_available": [
+        "Trailhead Starting Point",
+        "Hotels, Lodging & Food",
+        "Full ATM & Banking Services",
+        "Vehicle Parking & Repairs",
+        "Trekking Supplies & Gear"
+      ],
+      "image": "/images/places/ganesh-varieties.webp",
+      "description": "Headquarters of Panchthar district and the official trailhead (1,180m) of the Phidim to Charrate trek. Stock up on supplies, fuel, cash, and gear here before beginning the climb.",
+      "is_featured_partner": true
+    },
+    {
+      "id": "GV-002",
       "name_en": "Ganesh Varieties",
       "name_np": "गणेश भेराइटिज",
       "location_name": "Phidim-12, Pulbhanjyang (Dairy Bazar), Panchthar",
@@ -72,10 +115,50 @@
       "is_featured_partner": true
     },
     {
-      "id": "YL-002",
-      "name_en": "Yak Lodge & Restaurant",
+      "id": "PR-003",
+      "name_en": "Prangbung Bazar",
+      "name_np": "प्राङबुङ बजार",
+      "location_name": "Yangwarak Rural Municipality, Panchthar",
+      "coordinates": {
+        "lat": 27.167913,
+        "lng": 87.891638,
+        "elevation_m": 2150
+      },
+      "categories": [
+        "tea_food",
+        "essentials"
+      ],
+      "owner_name": "Local Community",
+      "phones": [
+        {
+          "label": "Prangbung Local Contact",
+          "number": "+9779814065193"
+        }
+      ],
+      "website": "https://erganesh.com.np",
+      "opening_hours": "6:00 AM - 7:30 PM",
+      "facilities": {
+        "wifi_available": false,
+        "online_payment_qr": true,
+        "home_delivery": false,
+        "emergency_fuel": false
+      },
+      "items_available": [
+        "Scenic Village Marketplace",
+        "Local Tea, Organic Snacks & Milk",
+        "Warm Lodges & Homestays",
+        "Cultural Heritage of Limbuwan",
+        "Midway Acclimatization Rest Stop"
+      ],
+      "image": "/images/places/charrate-yak-lodge_3.webp",
+      "description": "Scenic traditional settlement situated at 2,150m along the ridge. Known for warm community hospitality, organic cardamom gardens, and a crucial midway resting point before ascending towards the Charrate alpine pastures.",
+      "is_featured_partner": false
+    },
+    {
+      "id": "YL-004",
+      "name_en": "Yak Lodge, Charrate",
       "name_np": "याक लज, चारराते",
-      "location_name": "Charrate (3,450m), Ilam - Panchthar Border",
+      "location_name": "Charrate Ridge (3,450m), Ilam - Panchthar Border",
       "coordinates": {
         "lat": 27.140386,
         "lng": 88.000166,
@@ -88,8 +171,8 @@
       "owner_name": "Sherpa Family",
       "phones": [
         {
-          "label": "Yak Lodge Front Desk",
-          "number": "+9779842600000"
+          "label": "Yak Lodge Charrate Front Desk",
+          "number": "+9779814065193"
         }
       ],
       "website": "https://erganesh.com.np",
@@ -102,13 +185,14 @@
       },
       "items_available": [
         "Hot Himalayan Tea & Coffee",
-        "Sherpa Traditional Khana & Dal Bhat",
+        "Authentic Sherpa Khana & Dal Bhat",
         "Warm Thukpa & Soups",
         "Heated Rooms & Heavy Blankets",
-        "Charrate Ridge Viewpoint Guidance"
+        "Spectacular Kanchenjunga Sunrise View",
+        "Yak Pasture & Safari Trail Guidance"
       ],
-      "image": "/images/places/ganesh-varieties_2.webp",
-      "description": "Cozy high-altitude mountain lodge situated at Charrate (3,450m). The current endpoint of the Phidim-Charrate trek, offering 360-degree panoramic Himalayan views. (Sandakpur trail continues ~7km further up).",
+      "image": "/images/places/charrate-yak-lodge.webp",
+      "description": "Iconic high-altitude mountain lodge situated at Charrate (3,450m). The ultimate endpoint of the Phidim-Charrate trek, offering breathtaking 360-degree panoramic views of Mt. Kanchenjunga, Kumbhakarna (Jannu), Makalu, and the Singalila ridge. Cozy shelter, roaring hearth fire, and authentic mountain hospitality.",
       "is_featured_partner": true
     }
   ]

@@ -46,6 +46,11 @@
     </div>
   </div>
   <div class="top-bar-right">
+    <!-- Why Charrate Spotlight Button -->
+    <button id="btn-why-charrate" class="btn-icon btn-why" aria-label="Why Charrate Info" title="किन चारराते? / Why Charrate?">
+      <span class="btn-why-icon">🏔️</span>
+      <span class="btn-why-text">Why Charrate?</span>
+    </button>
     <!-- Google Maps-style Directions Button -->
     <button id="btn-directions" class="btn-icon btn-directions" aria-label="Get Directions" title="Directions / दिशानिर्देश">
       <svg class="dir-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
@@ -283,6 +288,70 @@
     </span>
   </div>
 </aside>
+
+<!-- ===================================================================
+     WHY CHARRATE MODAL / SPOTLIGHT
+     Rich overview of Charrate (3,450m), Kanchenjunga vistas & hospitality
+     =================================================================== -->
+<div id="why-charrate-modal" class="why-modal hidden" role="dialog" aria-modal="true" aria-label="Why Charrate?">
+  <div class="why-modal-backdrop" id="why-modal-backdrop"></div>
+  <div class="why-modal-dialog">
+    <button id="btn-close-why" class="why-close-btn" aria-label="बन्द गर्नुहोस्">✕</button>
+    <div class="why-hero-img-wrap">
+      <img src="images/places/charrate-yak-lodge.webp" alt="Charrate Ridge with Mt Kanchenjunga" class="why-hero-img" />
+      <div class="why-hero-badge">3,450m • Panchthar - Ilam Border</div>
+    </div>
+    <div class="why-content">
+      <span class="why-tag">🏔️ DESTINATION SPOTLIGHT</span>
+      <h2 class="why-title">किन चारराते पदमार्ग? | Why Charrate?</h2>
+      
+      <p class="why-p-np">
+        <strong>चारराते (३,४५० मिटर)</strong> पाँचथर र इलामको सीमामा अवस्थित एक अद्वितीय, शान्त र मनोरम उच्च हिमाली डाँडा हो। यहाँबाट विश्वको तेस्रो अग्लो शिखर <strong>कञ्चनजङ्घा (८,५८६m)</strong>, <strong>कुम्भकर्ण (जन्नु)</strong>, <strong>मकालु</strong> तथा सगरमाथा हिमशृङ्खलाको ३६०-डिग्री खुला दृश्यावलोकन गर्न सकिन्छ।
+      </p>
+
+      <p class="why-p-np">
+        भीडभाडबाट टाढा रहेको यो पदमार्गमा चौँरी र याक चरेका खुला हिमाली खर्कहरू, गुराँसको जङ्गल, परम्परागत किराँती र शेर्पा आतिथ्य, तथा पुरानो ल्याण्ड रोभर (4WD) सफारीको रोमाञ्चक अनुभव लिन सकिन्छ। यहाँ रहेको <strong>याक लज (Yak Lodge, Charrate)</strong> पदयात्रीहरूका लागि न्यानो बास, स्थानीय परिकार र सूर्योदय हेर्ने उत्कृष्ट विश्रामस्थल हो।
+      </p>
+
+      <div class="why-highlights-grid">
+        <div class="why-hl-card">
+          <span class="why-hl-icon">🏔️</span>
+          <h4>360° Himal Vistas</h4>
+          <p>Kanchenjunga, Jannu, Makalu &amp; Everest range.</p>
+        </div>
+        <div class="why-hl-card">
+          <span class="why-hl-icon">🌿</span>
+          <h4>Alpine Meadows</h4>
+          <p>Pristine yak pastures &amp; rhododendron forests.</p>
+        </div>
+        <div class="why-hl-card">
+          <span class="why-hl-icon">🚙</span>
+          <h4>4WD Safari Trail</h4>
+          <p>Iconic vintage Land Rover mountain route.</p>
+        </div>
+        <div class="why-hl-card">
+          <span class="why-hl-icon">🍵</span>
+          <h4>Yak Lodge Hospitality</h4>
+          <p>Hot Himalayan tea, Sherpa food &amp; hearth fires.</p>
+        </div>
+      </div>
+
+      <!-- Photo Gallery -->
+      <div class="why-gallery-title">📸 Charrate Photo Gallery</div>
+      <div class="why-gallery">
+        <img src="images/places/charrate-yak-lodge.webp" alt="Kanchenjunga over Yak Lodge Charrate" class="why-gal-img" />
+        <img src="images/places/charrate-yak-lodge_2.webp" alt="Vintage 4WD Jeep at Charrate" class="why-gal-img" />
+        <img src="images/places/charrate-yak-lodge_3.webp" alt="Alpine Meadow Lodge at Charrate" class="why-gal-img" />
+      </div>
+
+      <div class="why-actions">
+        <button id="btn-why-start-nav" class="btn-why-nav">
+          <span>🚀 Start GPS Navigation to Charrate (57.4 km)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ===================================================================
      SILAM SAKMA QR POSTER MODAL
