@@ -4,10 +4,10 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "Phidim to Charrate - Sandakpur Route",
-        "district": "Panchthar - Ilam",
+        "name": "Phidim to Yak Lodge, Charrate Route",
+        "district": "Panchthar (Falelung)",
         "start_location": "Phidim Bazar",
-        "end_location": "Charrate / Sandakpur Summit",
+        "end_location": "Yak Lodge, Charrate",
         "end_elevation_m": 3450,
         "distance_km": 57.44
       },

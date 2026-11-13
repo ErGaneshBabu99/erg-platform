@@ -60,7 +60,7 @@
 <!-- Title -->
 <text x="500" y="115" text-anchor="middle" fill="#ffffff" font-size="34" font-weight="900" letter-spacing="0.5">सिलम साक्मा | SILAM SAKMA</text>
 <text x="500" y="155" text-anchor="middle" fill="#f59e0b" font-size="22" font-weight="700">Phidim to Charrate Trek</text>
-<text x="500" y="185" text-anchor="middle" fill="#94a3b8" font-size="15">Panchthar &amp; Ilam, Nepal • 57.44 km Scenic Trail (1,180m - 3,450m)</text>
+<text x="500" y="185" text-anchor="middle" fill="#94a3b8" font-size="15">Panchthar (Phidim → Falelung-4, Charrate) • 57.44 km Trail (1,180m - 3,450m)</text>
 
 <!-- Top Line -->
 <line x1="280" y1="210" x2="475" y2="210" stroke="rgba(245,158,11,0.4)" stroke-width="2"/>

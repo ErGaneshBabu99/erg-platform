@@ -1,10 +1,10 @@
 {
   "route_info": {
     "route_name": "Phidim to Charrate Route",
-    "district": "Panchthar - Ilam",
+    "district": "Panchthar (Falelung)",
     "last_updated": "2026-11-13",
     "maintained_by": "Er. Ganesh Chapagain (erganesh.com.np)",
-    "why_charrate": "चारराते (३,४५० मिटर) पाँचथर र इलामको सीमामा अवस्थित एक अद्वितीय, शान्त र मनोरम उच्च हिमाली डाँडा हो। यहाँबाट विश्वको तेस्रो अग्लो शिखर कञ्चनजङ्घा (८,५८६m), कुम्भकर्ण (जन्नु), मकालु तथा सगरमाथा हिमशृङ्खलाको ३६०-डिग्री खुला दृश्यावलोकन गर्न सकिन्छ। भीडभाडबाट टाढा रहेको यो पदमार्गमा चौँरी र याक चरेका खुला हिमाली खर्कहरू, गुराँसको जङ्गल, परम्परागत किराँती र शेर्पा आतिथ्य, तथा पुरानो ल्याण्ड रोभर (4WD) सफारीको रोमाञ्चक अनुभव लिन सकिन्छ। यहाँ रहेको याक लज पदयात्रीहरूका लागि न्यानो बास, स्थानीय परिकार र सूर्योदय हेर्ने उत्कृष्ट विश्रामस्थल हो।",
+    "why_charrate": "चारराते (३,४५० मिटर) पाँचथरको फालेलुङ गाउँपालिका र भारत (सिक्किम–पश्चिम बङ्गाल) को सीमामा अवस्थित एक अद्वितीय, शान्त र मनोरम उच्च हिमाली गन्तव्य हो। यहाँबाट विश्वको तेस्रो अग्लो शिखर कञ्चनजङ्घा (८,५८६ मिटर), कुम्भकर्ण (जन्नु) तथा मकालु हिमशृङ्खलाको मनमोहक दृश्यावलोकन गर्न सकिन्छ। भीडभाडबाट टाढा रहेको यस क्षेत्रमा चौँरी र याक चर्ने खुला हिमाली खर्कहरू, गुराँसको जङ्गल, तथा आतिथ्यको रोमाञ्चक अनुभव लिन सकिन्छ। यहाँका स्थानीय लज तथा होमस्टेहरू पदयात्रीहरूका लागि न्यानो बास, स्थानीय परिकार र सूर्योदय हेर्ने उत्कृष्ट विश्रामस्थल हुन्। • सीमाको विवरण: चारराते पाँचथर (फालेलुङ गाउँपालिका-४) र भारत (सिक्किम र पश्चिम बङ्गाल) को सीमामा अवस्थित छ। यो पाँचथर र इलामको सीमामा होइन (सन्दकपुरचाहिँ पाँचथर, इलाम र भारतको सीमामा पर्छ)।",
     "start_point": {
       "name_en": "Phidim Bazar",
       "name_np": "फिदिम बजार",
@@ -158,7 +158,7 @@
       "id": "YL-004",
       "name_en": "Yak Lodge, Charrate",
       "name_np": "याक लज, चारराते",
-      "location_name": "Charrate Ridge (3,450m), Ilam - Panchthar Border",
+      "location_name": "Charrate Ridge (3,450m), Falelung-4, Panchthar & India (Sikkim-WB) Border",
       "coordinates": {
         "lat": 27.140386,
         "lng": 88.000166,
@@ -192,7 +192,7 @@
         "Yak Pasture & Safari Trail Guidance"
       ],
       "image": "/images/places/charrate-yak-lodge.webp",
-      "description": "Iconic high-altitude mountain lodge situated at Charrate (3,450m). The ultimate endpoint of the Phidim-Charrate trek, offering breathtaking 360-degree panoramic views of Mt. Kanchenjunga, Kumbhakarna (Jannu), Makalu, and the Singalila ridge. Cozy shelter, roaring hearth fire, and authentic mountain hospitality.",
+      "description": "Iconic high-altitude mountain lodge situated at Charrate (3,450m), Falelung-4, Panchthar on the India (Sikkim–West Bengal) border ridge. The ultimate endpoint of the Phidim-Charrate trek, offering breathtaking 360-degree panoramic views of Mt. Kanchenjunga, Kumbhakarna (Jannu), Makalu, and the Singalila ridge. Cozy shelter, roaring hearth fire, and authentic mountain hospitality.",
       "is_featured_partner": true
     }
   ]
