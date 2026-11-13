@@ -37,30 +37,36 @@ const CONFIG = {
   offlineZoomMin: 11,
   offlineZoomMax: 15,
   
-  // Tile URLs (Esri Satellite is DEFAULT)
-  // maxNativeZoom ensures tiles are automatically upscaled beyond native zoom,
-  // preventing blank/gray screens on laptop pinch/scroll zoom
+  // Tile URLs (Google Hybrid Satellite is DEFAULT for 20x deep zoom without gray screen)
   tiles: {
+    googleHybrid: {
+      url: 'https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+      attribution: '&copy; Google Satellite &amp; Maxar',
+      subdomains: ['0', '1', '2', '3'],
+      maxNativeZoom: 20,
+      maxZoom: 22,
+      name: '🛰️ Satellite Hybrid (High-Res)'
+    },
     satellite: {
       url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       attribution: '&copy; Esri, Maxar, Earthstar Geographics',
-      maxNativeZoom: 18,
+      maxNativeZoom: 16,
       maxZoom: 22,
-      name: '🛰️ Satellite (Default)'
+      name: '🌍 Esri World Imagery'
     },
     osm: {
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       maxNativeZoom: 19,
       maxZoom: 22,
-      name: '🗺️ Street Map'
+      name: '🗺️ OpenStreetMap'
     },
     topo: {
       url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a>',
       maxNativeZoom: 17,
       maxZoom: 22,
-      name: '🏔️ Topo Map'
+      name: '🏔️ Mountain Topo'
     }
   }
 };
@@ -345,7 +351,7 @@ const MarkerManager = {
     const featured = place.is_featured_partner;
     const imgSrc = place.image || 'images/places/ganesh-varieties.webp';
 
-    // Real photo circular pin with user's verified photo
+    // Real photo circular pin with user's verified photo and visible name label
     return L.divIcon({
       className: 'custom-photo-pin-container',
       html: `
@@ -355,6 +361,10 @@ const MarkerManager = {
           </div>
           <span class="photo-pin-badge">${iconDef.emoji}</span>
           <div class="photo-pin-tip"></div>
+          <div class="marker-name-label">
+            <span class="mnl-title">${place.name_en}</span>
+            <span class="mnl-elev">${place.coordinates.elevation_m}m</span>
+          </div>
         </div>
       `,
       iconSize: [44, 52],
@@ -685,27 +695,42 @@ const MapManager = {
     // Position zoom control top-left
     this._map.zoomControl.setPosition('topleft');
 
-    // Build base layers — Esri Satellite is DEFAULT
-    // maxNativeZoom ensures tiles upscale smoothly without turning gray on high zoom
+    // Build base layers — Google Hybrid is DEFAULT for crystal clear 20x zoom without grey screens
+    const hybridLayer = L.tileLayer(CONFIG.tiles.googleHybrid.url, {
+      attribution: CONFIG.tiles.googleHybrid.attribution,
+      subdomains: CONFIG.tiles.googleHybrid.subdomains,
+      maxNativeZoom: CONFIG.tiles.googleHybrid.maxNativeZoom,
+      maxZoom: CONFIG.tiles.googleHybrid.maxZoom,
+      keepBuffer: 8,
+      updateWhenZooming: false,
+      updateWhenIdle: true
+    }).addTo(this._map);
+
     const satelliteLayer = L.tileLayer(CONFIG.tiles.satellite.url, {
       attribution: CONFIG.tiles.satellite.attribution,
       maxNativeZoom: CONFIG.tiles.satellite.maxNativeZoom,
-      maxZoom: CONFIG.tiles.satellite.maxZoom
-    }).addTo(this._map);
+      maxZoom: CONFIG.tiles.satellite.maxZoom,
+      keepBuffer: 6,
+      updateWhenZooming: false,
+      updateWhenIdle: true
+    });
 
     const osmLayer = L.tileLayer(CONFIG.tiles.osm.url, {
       attribution: CONFIG.tiles.osm.attribution,
       maxNativeZoom: CONFIG.tiles.osm.maxNativeZoom,
-      maxZoom: CONFIG.tiles.osm.maxZoom
+      maxZoom: CONFIG.tiles.osm.maxZoom,
+      keepBuffer: 6
     });
 
     const topoLayer = L.tileLayer(CONFIG.tiles.topo.url, {
       attribution: CONFIG.tiles.topo.attribution,
       maxNativeZoom: CONFIG.tiles.topo.maxNativeZoom,
-      maxZoom: CONFIG.tiles.topo.maxZoom
+      maxZoom: CONFIG.tiles.topo.maxZoom,
+      keepBuffer: 6
     });
 
     this._baseLayers = {
+      [CONFIG.tiles.googleHybrid.name]: hybridLayer,
       [CONFIG.tiles.satellite.name]: satelliteLayer,
       [CONFIG.tiles.osm.name]: osmLayer,
       [CONFIG.tiles.topo.name]: topoLayer
@@ -1155,6 +1180,47 @@ const SilamModal = {
   }
 };
 
+// ============ WHY CHARRATE MODAL ============
+const WhyCharrateModal = {
+  modal: null,
+  backdrop: null,
+  init() {
+    this.modal = document.getElementById('why-charrate-modal');
+    this.backdrop = document.getElementById('why-modal-backdrop');
+    const btnOpen = document.getElementById('btn-why-charrate');
+    const btnClose = document.getElementById('btn-close-why');
+    const btnNav = document.getElementById('btn-why-start-nav');
+
+    if (btnOpen) {
+      btnOpen.addEventListener('click', () => this.open());
+    }
+    if (btnClose) {
+      btnClose.addEventListener('click', () => this.close());
+    }
+    if (this.backdrop) {
+      this.backdrop.addEventListener('click', () => this.close());
+    }
+    if (btnNav) {
+      btnNav.addEventListener('click', () => {
+        this.close();
+        GPSTracker.start(true);
+        Toast.show('🚀 Live Navigation started to Charrate (3,450m)!', 'success', 3000);
+      });
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.modal && !this.modal.classList.contains('hidden')) {
+        this.close();
+      }
+    });
+  },
+  open() {
+    if (this.modal) this.modal.classList.remove('hidden');
+  },
+  close() {
+    if (this.modal) this.modal.classList.add('hidden');
+  }
+};
+
 // ============ MAIN INIT ============
 async function init() {
   // 1. Initialize map
@@ -1167,6 +1233,7 @@ async function init() {
   initFilterBar();
   DirectionsManager.init();
   SilamModal.init();
+  WhyCharrateModal.init();
 
   // 3. Fit route button
   document.getElementById('btn-fit-route').addEventListener('click', () => MapManager.fitRoute());
