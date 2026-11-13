@@ -89,11 +89,11 @@ export async function middleware(req: NextRequest) {
 function applySecurityHeaders(response: NextResponse) {
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.clarity.ms https://www.google-analytics.com https://static.cloudflareinsights.com",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.clarity.ms https://www.google-analytics.com https://static.cloudflareinsights.com https://unpkg.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com",
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: blob: https:",
-    "connect-src 'self' https://vitals.vercel-insights.com https://www.google-analytics.com https://www.clarity.ms https://static.cloudflareinsights.com https://cloudflareinsights.com",
+    "connect-src 'self' https://vitals.vercel-insights.com https://www.google-analytics.com https://www.clarity.ms https://static.cloudflareinsights.com https://cloudflareinsights.com https://unpkg.com https://*.tile.openstreetmap.org https://*.tile.opentopomap.org https://server.arcgisonline.com",
     "frame-src 'self' https://docs.google.com https://drive.google.com",
     "object-src 'none'",
     "base-uri 'self'",
@@ -107,7 +107,7 @@ function applySecurityHeaders(response: NextResponse) {
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   response.headers.set(
     "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=()"
+    "camera=(), microphone=(), geolocation=(self)"
   );
 }
 

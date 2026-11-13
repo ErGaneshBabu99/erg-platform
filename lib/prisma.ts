@@ -1,7 +1,21 @@
-import { PrismaClient } from "@prisma/client/wasm";
+import type { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { cache } from "react";
+
+// In Node.js (next dev / local CLI), use standard @prisma/client.
+// In Cloudflare Workers (Edge runtime), use @prisma/client/wasm.
+function getPrismaClientClass(): any {
+  try {
+    if (typeof process !== "undefined" && process.versions?.node) {
+      return require("@prisma/client").PrismaClient;
+    }
+    return require("@prisma/client/wasm").PrismaClient;
+  } catch {
+    return require("@prisma/client").PrismaClient;
+  }
+}
+const PrismaClientConstructor = getPrismaClientClass();
 
 /**
  * Creates a PrismaClient instance.
@@ -42,7 +56,7 @@ function createPrismaClient(explicitUrl?: string): PrismaClient {
       connectionTimeoutMillis: 10000,
     });
     const adapter = new PrismaPg(pool);
-    return new PrismaClient({
+    return new PrismaClientConstructor({
       adapter,
       log:
         process.env.NODE_ENV === "development"
@@ -52,7 +66,7 @@ function createPrismaClient(explicitUrl?: string): PrismaClient {
   }
 
   // Standard fallback
-  return new PrismaClient({
+  return new PrismaClientConstructor({
     log:
       process.env.NODE_ENV === "development"
         ? ["query", "error", "warn"]

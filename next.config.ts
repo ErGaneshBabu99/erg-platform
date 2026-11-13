@@ -33,6 +33,20 @@ const nextConfig: NextConfig = {
   // URLs and internal links are written without trailing slashes
   trailingSlash: false,
 
+  // Rewrites for standalone static PWA map
+  async rewrites() {
+    return [
+      {
+        source: "/map",
+        destination: "/map/index.html",
+      },
+      {
+        source: "/map/",
+        destination: "/map/index.html",
+      },
+    ];
+  },
+
   // Redirects for old/retired URLs (permanent 308/301 to avoid 404s on previously shared links)
   async redirects() {
     return [
