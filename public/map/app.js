@@ -265,7 +265,7 @@ const GPSTracker = {
       if (stats.onTrail) {
         remainingEl.innerHTML = `${stats.remainingKm.toFixed(1)} <small>km</small>`;
       } else {
-        remainingEl.innerHTML = `${stats.distToSandakpurKm.toFixed(1)} <small>km</small>`;
+        remainingEl.innerHTML = `${stats.distToCharrateKm.toFixed(1)} <small>km</small>`;
       }
     }
 
@@ -631,7 +631,7 @@ const MapManager = {
         remainingKm: 57.4,
         coveredKm: 0,
         distToPhidimKm: 0,
-        distToSandakpurKm: 57.4,
+        distToCharrateKm: 57.4,
         nearestPlace: null,
         distToPlaceKm: 999,
         altitudeM: null
@@ -641,7 +641,7 @@ const MapManager = {
     const startPt = trail[0];
     const endPt = trail[trail.length - 1];
     const distToPhidim = this.haversine(userLat, userLng, startPt[1], startPt[0]);
-    const distToSandakpur = this.haversine(userLat, userLng, endPt[1], endPt[0]);
+    const distToCharrate = this.haversine(userLat, userLng, endPt[1], endPt[0]);
 
     // Find closest point on trail
     let minD = Infinity;
@@ -656,8 +656,8 @@ const MapManager = {
 
     const onTrail = minD <= 4.0; // Within 4km of trail corridor
     const remainingKm = onTrail
-      ? (this._cumDistFromSummit[closestIdx] || distToSandakpur)
-      : distToSandakpur;
+      ? (this._cumDistFromSummit[closestIdx] || distToCharrate)
+      : distToCharrate;
     const coveredKm = Math.max(0, this._totalTrailDist - remainingKm);
 
     // Closest verified place (e.g. Ganesh Varieties)
@@ -681,7 +681,7 @@ const MapManager = {
       remainingKm,
       coveredKm,
       distToPhidimKm: distToPhidim,
-      distToSandakpurKm: distToSandakpur,
+      distToCharrateKm: distToCharrate,
       nearestPlace,
       distToPlaceKm,
       altitudeM
@@ -770,7 +770,7 @@ const MapManager = {
           iconAnchor: [45, 16]
         });
         L.marker([start[1], start[0]], { icon: makeEndpointIcon('Phidim Bazar (RL 1,180m)', '#16a34a', '🟢') }).addTo(this._map);
-        L.marker([end[1], end[0]], { icon: makeEndpointIcon('Yak Lodge, Sandakpur (RL 3,450m)', '#dc2626', '🔴') }).addTo(this._map);
+        L.marker([end[1], end[0]], { icon: makeEndpointIcon('Yak Lodge, Charrate (RL 3,450m)', '#dc2626', '🔴') }).addTo(this._map);
       }
 
       this._routeBounds = this._routeLayer.getBounds();
