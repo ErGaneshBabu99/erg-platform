@@ -1,6 +1,6 @@
 /* ============================================
    Trek Map PWA - app.js
-   Phidim → Sandakpur | erganesh.com.np
+   Phidim → Charrate | erganesh.com.np
    ============================================
    
    Architecture:
@@ -20,12 +20,12 @@ const CONFIG = {
   // Dynamically switch data sources via ?route= param
   get routeKey() {
     const p = new URLSearchParams(window.location.search).get('route');
-    return p || 'phidim-sandakpur';
+    return p || 'phidim-charrate';
   },
   get dataBase() {
     // Robust absolute base for /map/
     const key = this.routeKey;
-    if (key === 'phidim-sandakpur') return '/map/';
+    if (key === 'phidim-charrate' || key === 'phidim-sandakpur') return '/map/';
     return `/map/routes/${key}/`;
   },
   get routeGeoJSON() { return this.dataBase + 'route.geojson'; },
@@ -573,22 +573,6 @@ const MarkerManager = {
         ${navBtn}
       </div>
     `;
-  }
-        <div class="meta-row"><span class="meta-icon">📍</span> ${p.location_name || ''}</div>
-        ${p.opening_hours ? `<div class="meta-row"><span class="meta-icon">🕐</span> ${p.opening_hours}</div>` : ''}
-        ${p.owner_name ? `<div class="meta-row"><span class="meta-icon">👤</span> ${p.owner_name}</div>` : ''}
-      </div>
-      ${facBadges ? `<div class="facility-badges">${facBadges}</div>` : ''}
-      ${p.description ? `<p class="shop-description">${p.description}</p>` : ''}
-      ${itemsHTML ? `<div class="section-label">Available</div><ul class="items-list">${itemsHTML}</ul>` : ''}
-      <div class="section-label">Contact</div>
-      <div class="action-buttons">
-        ${phonesHTML}
-        <div class="btn-action-row">
-          ${websiteBtn}
-          ${navBtn}
-        </div>
-      </div>`;
   }
 };
 
@@ -1142,8 +1126,8 @@ const SilamModal = {
     if (btnShare) {
       btnShare.addEventListener('click', async () => {
         const shareData = {
-          title: 'Phidim to Sandakpur Trek Map (Offline GPS)',
-          text: 'Explore the Phidim to Charrate / Sandakpur trekking trail with live offline GPS and verified stops:',
+          title: 'Phidim to Charrate Trek Map (Offline GPS)',
+          text: 'Explore the Phidim to Charrate trekking trail with live offline GPS and verified stops:',
           url: 'https://www.erganesh.com.np/map'
         };
         if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
