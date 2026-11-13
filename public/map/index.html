@@ -46,6 +46,13 @@
     </div>
   </div>
   <div class="top-bar-right">
+    <!-- Google Maps-style Directions Button -->
+    <button id="btn-directions" class="btn-icon btn-directions" aria-label="Get Directions" title="Directions / दिशानिर्देश">
+      <svg class="dir-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+        <path d="M22.43 10.59l-9.01-9.01c-.75-.75-2.07-.75-2.83 0l-9 9c-.78.78-.78 2.04 0 2.82l9 9c.39.39.9.58 1.41.58.51 0 1.02-.2 1.41-.59l9.01-9.01c.8-.8.8-2.05.02-2.82zm-8.42 4.4v-2.5H9.5c-.55 0-1-.45-1-1V8.5h2v2h3.51V8l4 3.5-4 3.49z"/>
+      </svg>
+      <span class="btn-dir-label">Route</span>
+    </button>
     <!-- Silam Sakma QR Poster Button -->
     <button id="btn-silam-qr" class="btn-icon btn-silam" aria-label="सिलम साक्मा QR पोस्टर" title="सिलम साक्मा QR">
       <span class="silam-icon" aria-hidden="true">🪬</span>
@@ -93,6 +100,87 @@
      =================================================================== -->
 <main id="map-container" role="main" aria-label="Interactive trekking route map">
   <div id="map" aria-label="Map"></div>
+
+  <!-- ===== GOOGLE MAPS STYLE DIRECTIONS PANEL ===== -->
+  <section id="directions-card" class="directions-card hidden" aria-label="Route Directions">
+    <div class="dir-header">
+      <div class="dir-title-row">
+        <span class="dir-badge">🧭 Google Maps Style Navigation</span>
+        <button id="btn-close-directions" class="dir-close-btn" aria-label="Close directions">✕</button>
+      </div>
+
+      <!-- Real 2D Vector Silhouette Mode Selector (Foot, Bike, Car) -->
+      <div class="dir-mode-selector" role="tablist">
+        <button class="dir-mode-btn active" data-mode="foot" role="tab" aria-selected="true" title="Trekking / Walking">
+          <svg class="mode-2d-svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/>
+          </svg>
+          <span>Foot</span>
+          <small id="time-foot">~15h</small>
+        </button>
+        <button class="dir-mode-btn" data-mode="bike" role="tab" aria-selected="false" title="Motorcycle / Bike">
+          <svg class="mode-2d-svg" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M5 17c0-2.21 1.79-4 4-4s4 1.79 4 4-1.79 4-4 4-4-1.79-4-4zm4 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm10-2c0-2.21 1.79-4 4-4s4 1.79 4 4-1.79 4-4 4-4-1.79-4-4zm4 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-5.65-8.83l-2.03-3.05c-.35-.52-.93-.84-1.56-.84H9.42c-.85 0-1.61.54-1.89 1.34L6.16 11.5H3v2h4.54l1.1-3.32.74 1.11C8.2 12.06 7.42 13.43 7.15 15h2.05c.5-1.74 2.07-3 3.93-3 1.11 0 2.12.45 2.87 1.18l2.12-2.12c-.22-.32-.47-.61-.74-.89zM18.8 6.5l-1.37-2.05c-.37-.56-.98-.95-1.66-1.07l-2.07-.38-.36 1.97 2.07.38c.2.04.38.16.49.33l1.19 1.79-2.29 2.29 1.41 1.41 2.59-2.67z"/>
+          </svg>
+          <span>Bike</span>
+          <small id="time-bike">~3.5h</small>
+        </button>
+        <button class="dir-mode-btn" data-mode="car" role="tab" aria-selected="false" title="4WD Jeep / Car">
+          <svg class="mode-2d-svg" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.04 3H5.81l1.04-3zM19 17H5v-4.66l.12-.34h13.77l.11.34V17zM7.5 15c.83 0 1.5-.67 1.5-1.5S8.33 12 7.5 12 6 12.67 6 13.5 6.67 15 7.5 15zm9 0c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5z"/>
+          </svg>
+          <span>Jeep / Car</span>
+          <small id="time-car">~4.5h</small>
+        </button>
+      </div>
+    </div>
+
+    <!-- Waypoints List -->
+    <div class="dir-waypoints">
+      <div class="dir-stop">
+        <span class="stop-dot dot-start"></span>
+        <div class="stop-info">
+          <span class="stop-role">Starting Point</span>
+          <span class="stop-name">Phidim Bazar Trailhead</span>
+          <span class="stop-rl">RL 1,180m</span>
+        </div>
+      </div>
+      <div class="dir-line-connector">
+        <span class="via-badge">via Ganesh Varieties, Pulbhanjyang (1,800m)</span>
+      </div>
+      <div class="dir-stop">
+        <span class="stop-dot dot-end"></span>
+        <div class="stop-info">
+          <span class="stop-role">Destination (Summit)</span>
+          <span class="stop-name">Yak Lodge, Sandakpur</span>
+          <span class="stop-rl">RL 3,450m</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats & Action Footer -->
+    <div class="dir-footer">
+      <div class="dir-stats">
+        <span class="dir-dist">57.44 km</span>
+        <span class="dir-elev">▲ +2,270m Climb</span>
+      </div>
+      <div class="dir-buttons">
+        <button id="btn-start-nav" class="btn-dir-action primary">
+          <span>🚀 Start GPS Track</span>
+        </button>
+        <button id="btn-dir-view-route" class="btn-dir-action secondary">
+          <span>📍 View Full Route</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SHOP QUICK ORDER / CATEGORY DRAWER ===== -->
+  <aside id="shop-quick-drawer" class="shop-quick-drawer hidden" aria-label="Verified Shop Information">
+    <div class="sq-card" id="sq-card-content">
+      <!-- Populated dynamically when user clicks filter pills -->
+    </div>
+  </aside>
 
   <!-- ===== LIVE TREK HUD (Speed, Distance, Elevation, Live Location) ===== -->
   <aside id="trek-hud" class="trek-hud" aria-label="Live trek dashboard">

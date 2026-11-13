@@ -38,23 +38,28 @@ const CONFIG = {
   offlineZoomMax: 15,
   
   // Tile URLs (Esri Satellite is DEFAULT)
+  // maxNativeZoom ensures tiles are automatically upscaled beyond native zoom,
+  // preventing blank/gray screens on laptop pinch/scroll zoom
   tiles: {
     satellite: {
       url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       attribution: '&copy; Esri, Maxar, Earthstar Geographics',
-      maxZoom: 18,
+      maxNativeZoom: 18,
+      maxZoom: 22,
       name: '🛰️ Satellite (Default)'
     },
     osm: {
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19,
+      maxNativeZoom: 19,
+      maxZoom: 22,
       name: '🗺️ Street Map'
     },
     topo: {
       url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a>',
-      maxZoom: 17,
+      maxNativeZoom: 17,
+      maxZoom: 22,
       name: '🏔️ Topo Map'
     }
   }
@@ -338,14 +343,23 @@ const MarkerManager = {
     const primaryCat = place.categories?.[0] || 'default';
     const iconDef = this.ICONS[primaryCat] || this.ICONS.default;
     const featured = place.is_featured_partner;
+    const imgSrc = place.image || 'images/places/ganesh-varieties.webp';
+
+    // Real photo circular pin with user's verified photo
     return L.divIcon({
-      className: '',
-      html: `<div class="map-marker marker-${primaryCat}${featured ? ' marker-featured' : ''}" title="${place.name_en}">
-               <span class="marker-inner">${iconDef.emoji}</span>
-             </div>`,
-      iconSize: [36, 36],
-      iconAnchor: [18, 36],
-      popupAnchor: [0, -38]
+      className: 'custom-photo-pin-container',
+      html: `
+        <div class="photo-pin ${featured ? 'featured-pin' : ''} pin-cat-${primaryCat}" title="${place.name_en} (${place.coordinates.elevation_m || ''}m)">
+          <div class="photo-pin-circle">
+            <img src="${imgSrc}" alt="${place.name_en}" class="photo-pin-img" onerror="this.onerror=null;this.src='images/places/ganesh-varieties.webp';" />
+          </div>
+          <span class="photo-pin-badge">${iconDef.emoji}</span>
+          <div class="photo-pin-tip"></div>
+        </div>
+      `,
+      iconSize: [44, 52],
+      iconAnchor: [22, 52],
+      popupAnchor: [0, -52]
     });
   },
 
@@ -366,20 +380,124 @@ const MarkerManager = {
       if (show) this._map.addLayer(layer);
       else this._map.removeLayer(layer);
     });
+    this.showShopOrderDrawer(category);
+  },
+
+  showShopOrderDrawer(category) {
+    const drawer = document.getElementById('shop-quick-drawer');
+    const content = document.getElementById('sq-card-content');
+    if (!drawer || !content) return;
+
+    if (category === 'all') {
+      drawer.classList.add('hidden');
+      return;
+    }
+
+    const matching = this._markers
+      .map(m => m.place)
+      .filter(p => p.categories && p.categories.includes(category));
+
+    if (matching.length === 0) {
+      content.innerHTML = `
+        <div class="sq-drawer-header">
+          <span class="sq-drawer-title">ℹ️ यस वर्गमा अझै पसल दर्ता भएको छैन</span>
+          <button class="sq-drawer-close" onclick="document.getElementById('shop-quick-drawer').classList.add('hidden')">✕</button>
+        </div>
+        <div class="sq-drawer-empty">
+          <p>यो पदमार्गमा आफ्नो पसल/सेवा दर्ता गर्न एडमिनलाई सम्पर्क गर्नुहोस्।</p>
+        </div>
+      `;
+      drawer.classList.remove('hidden');
+      return;
+    }
+
+    const cardsHTML = matching.map(p => {
+      const primaryPhone = p.phones?.[0]?.number || '+9779814065193';
+      const phoneLabel = p.phones?.[0]?.label || 'Call for Order';
+      const imgSrc = p.image || 'images/places/ganesh-varieties.webp';
+      
+      // Calculate live distance from user GPS or Phidim Trailhead
+      let distText = '';
+      if (GPSTracker._lastLatLng) {
+        const d = MapManager.haversine(
+          GPSTracker._lastLatLng[0], GPSTracker._lastLatLng[1],
+          p.coordinates.lat, p.coordinates.lng
+        );
+        distText = ` · 📍 <strong>${d.toFixed(1)} km</strong> तपाईंको स्थानबाट`;
+      } else {
+        const dPhidim = MapManager.haversine(27.142431, 87.766814, p.coordinates.lat, p.coordinates.lng);
+        distText = ` · 📍 <strong>${dPhidim.toFixed(1)} km</strong> फिदिम बजारबाट`;
+      }
+
+      return `
+        <div class="sq-shop-item" onclick="MarkerManager.focusPlace('${p.id}')">
+          <div class="sq-shop-thumb-wrap">
+            <img src="${imgSrc}" alt="${p.name_en}" class="sq-shop-thumb" onerror="this.onerror=null;this.src='images/places/ganesh-varieties.webp';" />
+            <span class="sq-elev-pill">${p.coordinates.elevation_m}m</span>
+          </div>
+          <div class="sq-shop-details">
+            <div class="sq-shop-top">
+              <h4 class="sq-shop-name">${p.name_en} <span class="sq-np-name">(${p.name_np || ''})</span></h4>
+              <button class="sq-btn-view" onclick="event.stopPropagation(); MarkerManager.openDetails('${p.id}')">विवरण</button>
+            </div>
+            <p class="sq-shop-loc">${p.location_name}${distText}</p>
+            <div class="sq-shop-action">
+              <a href="tel:${primaryPhone}" class="sq-call-btn" onclick="event.stopPropagation();">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                <span>अर्डर / सेवाको लागि कल: ${primaryPhone}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    content.innerHTML = `
+      <div class="sq-drawer-header">
+        <span class="sq-drawer-title">🏪 प्रमाणीकृत सेवा तथा पसल (${matching.length})</span>
+        <button class="sq-drawer-close" onclick="document.getElementById('shop-quick-drawer').classList.add('hidden')">✕</button>
+      </div>
+      <div class="sq-drawer-body">
+        ${cardsHTML}
+      </div>
+    `;
+    drawer.classList.remove('hidden');
+  },
+
+  focusPlace(placeId) {
+    const item = this._markers.find(m => m.place.id === placeId);
+    if (item) {
+      this._map.setView([item.place.coordinates.lat, item.place.coordinates.lng], 16, { animate: true });
+    }
+  },
+
+  openDetails(placeId) {
+    const item = this._markers.find(m => m.place.id === placeId);
+    if (item) {
+      BottomSheet.open(this._buildSheetHTML(item.place));
+    }
   },
 
   _buildSheetHTML(p) {
     const coords = p.coordinates;
-    const imgSrc = p.image || '';
+    const imgSrc = p.image || 'images/places/ganesh-varieties.webp';
     
-    // Image section with robust fallback between relative and root paths
-    const imgHTML = imgSrc
-      ? `<img src="${imgSrc}" alt="${p.name_en}" loading="lazy" onerror="this.onerror=null;if(this.src.startsWith('/')&&!this.src.includes('./')){this.src='.'+this.getAttribute('src');}else if(!this.src.includes('ganesh-varieties_1')){this.src='./images/places/ganesh-varieties_1.webp';}else{this.parentElement.innerHTML='<div class=shop-image-placeholder><span class=ph-icon>🏪</span><span>No image available</span></div>';}">`
-      : `<div class="shop-image-placeholder"><span class="ph-icon">🏪</span><span>No image available</span></div>`;
+    // Image section with verified photo
+    const imgHTML = `<img src="${imgSrc}" alt="${p.name_en}" class="sheet-main-photo" loading="lazy" onerror="this.onerror=null;this.src='images/places/ganesh-varieties.webp';">`;
     
     const featuredHTML = p.is_featured_partner
       ? `<div class="featured-badge">⭐ Featured Partner</div>`
       : '';
+
+    // Calculate distance
+    let distBadge = '';
+    if (GPSTracker._lastLatLng) {
+      const d = MapManager.haversine(GPSTracker._lastLatLng[0], GPSTracker._lastLatLng[1], coords.lat, coords.lng);
+      distBadge = `<div class="sheet-dist-pill">📍 तपाईंको स्थानबाट <strong>${d.toFixed(1)} km</strong> टाढा</div>`;
+    } else {
+      const dPhidim = MapManager.haversine(27.142431, 87.766814, coords.lat, coords.lng);
+      distBadge = `<div class="sheet-dist-pill">📍 फिदिम बजारबाट <strong>${dPhidim.toFixed(1)} km</strong> टाढा</div>`;
+    }
 
     // Facilities
     const fac = p.facilities || {};
@@ -393,6 +511,10 @@ const MarkerManager = {
     // Items
     const itemsHTML = (p.items_available || [])
       .map(i => `<li>${i}</li>`).join('');
+
+    // Primary Call for Order box
+    const primaryPhone = p.phones?.[0]?.number || '+9779814065193';
+    const phoneLabel = p.phones?.[0]?.label || 'Kamala Chapagain';
 
     // Phone buttons
     const phonesHTML = (p.phones || []).map(ph => `
@@ -422,7 +544,36 @@ const MarkerManager = {
         </div>
         <div class="shop-name-np">${p.name_np || ''}</div>
       </div>
+
+      ${distBadge}
+
+      <!-- Dedicated Highlighted Order & Service Call Box -->
+      <div class="shop-order-call-box">
+        <a href="tel:${primaryPhone}" class="btn-primary-order-call">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          <div class="btn-order-text">
+            <span class="order-action-label">अर्डर तथा सोधपुछको लागि सिधै कल गर्नुहोस्:</span>
+            <span class="order-phone-number">${primaryPhone} (${phoneLabel})</span>
+          </div>
+        </a>
+      </div>
+
       <div class="shop-meta">
+        <div class="meta-row"><span class="meta-icon">📍</span> ${p.location_name || ''}</div>
+        ${p.opening_hours ? `<div class="meta-row"><span class="meta-icon">🕐</span> ${p.opening_hours}</div>` : ''}
+        ${p.owner_name ? `<div class="meta-row"><span class="meta-icon">👤</span> ${p.owner_name}</div>` : ''}
+      </div>
+      ${facBadges ? `<div class="facility-badges">${facBadges}</div>` : ''}
+      ${p.description ? `<p class="shop-description">${p.description}</p>` : ''}
+      ${itemsHTML ? `<div class="section-label">Available Items / सुविधाहरू</div><ul class="items-list">${itemsHTML}</ul>` : ''}
+      <div class="section-label">All Contacts / सम्पर्क नम्बरहरू</div>
+      <div class="action-buttons">
+        ${phonesHTML}
+        ${websiteBtn}
+        ${navBtn}
+      </div>
+    `;
+  }
         <div class="meta-row"><span class="meta-icon">📍</span> ${p.location_name || ''}</div>
         ${p.opening_hours ? `<div class="meta-row"><span class="meta-icon">🕐</span> ${p.opening_hours}</div>` : ''}
         ${p.owner_name ? `<div class="meta-row"><span class="meta-icon">👤</span> ${p.owner_name}</div>` : ''}
@@ -541,6 +692,8 @@ const MapManager = {
     this._map = L.map('map', {
       center: CONFIG.defaultCenter,
       zoom: CONFIG.defaultZoom,
+      minZoom: 6,
+      maxZoom: 21,
       zoomControl: true,
       attributionControl: true
     });
@@ -549,18 +702,22 @@ const MapManager = {
     this._map.zoomControl.setPosition('topleft');
 
     // Build base layers — Esri Satellite is DEFAULT
+    // maxNativeZoom ensures tiles upscale smoothly without turning gray on high zoom
     const satelliteLayer = L.tileLayer(CONFIG.tiles.satellite.url, {
       attribution: CONFIG.tiles.satellite.attribution,
+      maxNativeZoom: CONFIG.tiles.satellite.maxNativeZoom,
       maxZoom: CONFIG.tiles.satellite.maxZoom
     }).addTo(this._map);
 
     const osmLayer = L.tileLayer(CONFIG.tiles.osm.url, {
       attribution: CONFIG.tiles.osm.attribution,
+      maxNativeZoom: CONFIG.tiles.osm.maxNativeZoom,
       maxZoom: CONFIG.tiles.osm.maxZoom
     });
 
     const topoLayer = L.tileLayer(CONFIG.tiles.topo.url, {
       attribution: CONFIG.tiles.topo.attribution,
+      maxNativeZoom: CONFIG.tiles.topo.maxNativeZoom,
       maxZoom: CONFIG.tiles.topo.maxZoom
     });
 
@@ -602,13 +759,18 @@ const MapManager = {
       if (coords && coords.length >= 2) {
         const start = coords[0];
         const end = coords[coords.length - 1];
-        const makeEndpointIcon = (label, color) => L.divIcon({
-          className: '',
-          html: `<div style="background:${color};color:#fff;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.4)">${label}</div>`,
-          iconAnchor: [35, 12]
+        const makeEndpointIcon = (label, color, icon) => L.divIcon({
+          className: 'endpoint-marker-wrapper',
+          html: `
+            <div class="endpoint-pin" style="border-color:${color}">
+              <span class="ep-icon">${icon}</span>
+              <span class="ep-text" style="background:${color}">${label}</span>
+            </div>
+          `,
+          iconAnchor: [45, 16]
         });
-        L.marker([start[1], start[0]], { icon: makeEndpointIcon('🚩 Phidim Trailhead (~1,180m)', '#dc2626') }).addTo(this._map);
-        L.marker([end[1], end[0]], { icon: makeEndpointIcon('🏔️ Sandakpur / Charrate (3,450m)', '#16a34a') }).addTo(this._map);
+        L.marker([start[1], start[0]], { icon: makeEndpointIcon('Phidim Bazar (RL 1,180m)', '#16a34a', '🟢') }).addTo(this._map);
+        L.marker([end[1], end[0]], { icon: makeEndpointIcon('Yak Lodge, Sandakpur (RL 3,450m)', '#dc2626', '🔴') }).addTo(this._map);
       }
 
       this._routeBounds = this._routeLayer.getBounds();
@@ -879,6 +1041,78 @@ function initFilterBar() {
   });
 }
 
+// ============ DIRECTIONS MANAGER ============
+const DirectionsManager = {
+  panel: null,
+  btnToggle: null,
+  btnClose: null,
+  currentMode: 'foot',
+
+  MODES: {
+    foot: { name: 'Foot / Trekking', speedKmH: 3.8, label: '~15h' },
+    bike: { name: 'Motorcycle / Bike', speedKmH: 16.5, label: '~3.5h' },
+    car:  { name: '4WD Jeep / Vehicle', speedKmH: 12.8, label: '~4.5h' }
+  },
+
+  init() {
+    this.panel = document.getElementById('directions-card');
+    this.btnToggle = document.getElementById('btn-directions');
+    this.btnClose = document.getElementById('btn-close-directions');
+    const btnStartNav = document.getElementById('btn-start-nav');
+    const btnViewRoute = document.getElementById('btn-dir-view-route');
+
+    if (this.btnToggle) {
+      this.btnToggle.addEventListener('click', () => this.toggle());
+    }
+    if (this.btnClose) {
+      this.btnClose.addEventListener('click', () => this.close());
+    }
+    if (btnViewRoute) {
+      btnViewRoute.addEventListener('click', () => {
+        MapManager.fitRoute();
+        this.close();
+      });
+    }
+    if (btnStartNav) {
+      btnStartNav.addEventListener('click', () => {
+        this.close();
+        GPSTracker.start(true);
+        Toast.show('🚀 Live Navigation started along trail!', 'success', 3000);
+      });
+    }
+
+    // Mode Selector buttons
+    document.querySelectorAll('.dir-mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.dir-mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.currentMode = btn.dataset.mode;
+        this.updateMode(this.currentMode);
+      });
+    });
+  },
+
+  toggle() {
+    if (!this.panel) return;
+    if (this.panel.classList.contains('hidden')) this.open();
+    else this.close();
+  },
+
+  open() {
+    if (this.panel) this.panel.classList.remove('hidden');
+    MapManager.fitRoute();
+  },
+
+  close() {
+    if (this.panel) this.panel.classList.add('hidden');
+  },
+
+  updateMode(modeKey) {
+    const mode = this.MODES[modeKey] || this.MODES.foot;
+    Toast.show(`Mode: ${mode.name} (${mode.label})`, 'info', 2000);
+  }
+};
+
 // ============ SILAM SAKMA MODAL ============
 const SilamModal = {
   modal: null,
@@ -947,6 +1181,7 @@ async function init() {
   GPSTracker.init(map);
   MarkerManager.init(map);
   initFilterBar();
+  DirectionsManager.init();
   SilamModal.init();
 
   // 3. Fit route button
