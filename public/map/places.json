@@ -3,7 +3,25 @@
     "route_name": "Phidim to Charrate - Sandakpur Route",
     "district": "Panchthar - Ilam",
     "last_updated": "2026-11-13",
-    "maintained_by": "Er. Ganesh Chapagain (erganesh.com.np)"
+    "maintained_by": "Er. Ganesh Chapagain (erganesh.com.np)",
+    "start_point": {
+      "name_en": "Phidim Bazar Trailhead",
+      "name_np": "फिदिम बजार",
+      "elevation_m": 1180,
+      "coordinates": {
+        "lat": 27.142431,
+        "lng": 87.766814
+      }
+    },
+    "end_point": {
+      "name_en": "Yak Lodge, Sandakpur",
+      "name_np": "याक लज, सन्दकपुर",
+      "elevation_m": 3450,
+      "coordinates": {
+        "lat": 27.140386,
+        "lng": 88.000166
+      }
+    }
   },
   "places": [
     {
@@ -24,7 +42,7 @@
       "owner_name": "Kamala Chapagain",
       "phones": [
         {
-          "label": "Kamala Chapagain",
+          "label": "Kamala Chapagain (Order/Enquiry)",
           "number": "+9779814065193"
         },
         {
@@ -51,6 +69,46 @@
       ],
       "image": "/images/places/ganesh-varieties.webp",
       "description": "Trusted one-stop shop at Pulbhanjyang (Phidim-12) operating since 2055 B.S. Ideal last-minute stop for trekking essentials, warm tea, snacks, and emergency fuel before heading towards Prangbung and Charrate.",
+      "is_featured_partner": true
+    },
+    {
+      "id": "YL-002",
+      "name_en": "Yak Lodge & Restaurant",
+      "name_np": "याक लज एण्ड रेस्टुरेन्ट",
+      "location_name": "Sandakpur Summit (3,450m), Ilam - Indo-Nepal Border",
+      "coordinates": {
+        "lat": 27.140386,
+        "lng": 88.000166,
+        "elevation_m": 3450
+      },
+      "categories": [
+        "tea_food",
+        "essentials"
+      ],
+      "owner_name": "Sherpa Family",
+      "phones": [
+        {
+          "label": "Yak Lodge Front Desk",
+          "number": "+9779842600000"
+        }
+      ],
+      "website": "https://erganesh.com.np",
+      "opening_hours": "5:00 AM - 9:00 PM",
+      "facilities": {
+        "wifi_available": false,
+        "online_payment_qr": false,
+        "home_delivery": false,
+        "emergency_fuel": false
+      },
+      "items_available": [
+        "Hot Himalayan Tea & Coffee",
+        "Sherpa Traditional Khana & Dal Bhat",
+        "Warm Thukpa & Soups",
+        "Heated Rooms & Heavy Blankets",
+        "Sunrise Viewpoint Guidance"
+      ],
+      "image": "/images/places/ganesh-varieties_2.webp",
+      "description": "Cozy high-altitude mountain lodge situated at the highest peak of Sandakpur (3,450m). The ultimate endpoint of the Phidim-Charrate trek, offering 360-degree panoramic views of Mt. Kanchenjunga, Makalu, and Mt. Everest.",
       "is_featured_partner": true
     }
   ]
