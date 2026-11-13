@@ -1014,6 +1014,188 @@ html, body {
 }
 
 /* ================================================================
+   SILAM SAKMA QR POSTER MODAL & BUTTON
+   ================================================================ */
+.btn-silam {
+  border-color: rgba(245, 158, 11, 0.5) !important;
+  background: rgba(245, 158, 11, 0.18) !important;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.25) !important;
+  transition: all 0.2s ease;
+}
+.btn-silam:hover {
+  background: rgba(245, 158, 11, 0.35) !important;
+  transform: scale(1.05);
+}
+.silam-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.silam-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.25s ease;
+}
+.silam-modal.hidden {
+  display: none !important;
+}
+
+.silam-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.silam-modal-dialog {
+  position: relative;
+  z-index: 10;
+  max-width: 460px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: #0f172a;
+  border: 1.5px solid rgba(245, 158, 11, 0.5);
+  border-radius: 20px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(245, 158, 11, 0.2);
+  padding: 24px 20px;
+  text-align: center;
+  color: #fff;
+  animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.silam-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e2e8f0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.silam-close-btn:hover {
+  background: rgba(239, 68, 68, 0.8);
+  color: #fff;
+}
+
+.silam-culture-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #f59e0b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+}
+
+.silam-dialog-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+  letter-spacing: 0.3px;
+}
+
+.silam-dialog-sub {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0 0 16px 0;
+}
+
+.silam-poster-preview {
+  margin: 0 auto 18px auto;
+  max-width: 320px;
+}
+.silam-poster-img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  display: block;
+}
+
+.silam-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.btn-silam-dl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+.btn-silam-dl.primary {
+  background: #d72638;
+  color: #ffffff;
+  border: 1px solid rgba(245, 158, 11, 0.6);
+  box-shadow: 0 4px 14px rgba(215, 38, 56, 0.4);
+}
+.btn-silam-dl.primary:hover {
+  background: #b71c1c;
+  transform: translateY(-1px);
+}
+.btn-silam-dl.secondary {
+  background: rgba(30, 41, 59, 0.9);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+.btn-silam-dl.secondary:hover {
+  background: rgba(51, 65, 85, 0.9);
+  color: #fbbf24;
+}
+.btn-silam-dl.share {
+  background: rgba(16, 185, 129, 0.18);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+.btn-silam-dl.share:hover {
+  background: rgba(16, 185, 129, 0.3);
+}
+
+.silam-dialog-footer {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.5;
+  border-top: 1px solid rgba(51, 65, 85, 0.6);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+/* ================================================================
    UTILITY
    ================================================================ */
 .hidden { display: none !important; }

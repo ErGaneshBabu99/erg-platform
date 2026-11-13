@@ -879,6 +879,64 @@ function initFilterBar() {
   });
 }
 
+// ============ SILAM SAKMA MODAL ============
+const SilamModal = {
+  modal: null,
+  backdrop: null,
+  init() {
+    this.modal = document.getElementById('silam-modal');
+    this.backdrop = document.getElementById('silam-modal-backdrop');
+    const btnOpen = document.getElementById('btn-silam-qr');
+    const btnClose = document.getElementById('btn-close-silam');
+    const btnShare = document.getElementById('btn-share-silam-link');
+
+    if (btnOpen) {
+      btnOpen.addEventListener('click', () => this.open());
+    }
+    if (btnClose) {
+      btnClose.addEventListener('click', () => this.close());
+    }
+    if (this.backdrop) {
+      this.backdrop.addEventListener('click', () => this.close());
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.modal && !this.modal.classList.contains('hidden')) {
+        this.close();
+      }
+    });
+
+    if (btnShare) {
+      btnShare.addEventListener('click', async () => {
+        const shareData = {
+          title: 'Phidim to Sandakpur Trek Map (Offline GPS)',
+          text: 'Explore the Phidim to Charrate / Sandakpur trekking trail with live offline GPS and verified stops:',
+          url: 'https://www.erganesh.com.np/map'
+        };
+        if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+          try {
+            await navigator.share(shareData);
+          } catch (e) {
+            // Cancelled
+          }
+        } else {
+          try {
+            await navigator.clipboard.writeText('https://www.erganesh.com.np/map');
+            Toast.show('✓ Map link copied to clipboard!', 'success', 3000);
+          } catch {
+            Toast.show('Map link: https://www.erganesh.com.np/map', 'info', 5000);
+          }
+        }
+      });
+    }
+  },
+  open() {
+    if (this.modal) this.modal.classList.remove('hidden');
+  },
+  close() {
+    if (this.modal) this.modal.classList.add('hidden');
+  }
+};
+
 // ============ MAIN INIT ============
 async function init() {
   // 1. Initialize map
@@ -889,6 +947,7 @@ async function init() {
   GPSTracker.init(map);
   MarkerManager.init(map);
   initFilterBar();
+  SilamModal.init();
 
   // 3. Fit route button
   document.getElementById('btn-fit-route').addEventListener('click', () => MapManager.fitRoute());
