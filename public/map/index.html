@@ -46,6 +46,10 @@
     </div>
   </div>
   <div class="top-bar-right">
+    <!-- Silam Sakma QR Poster Button -->
+    <button id="btn-silam-qr" class="btn-icon btn-silam" aria-label="सिलम साक्मा QR पोस्टर" title="सिलम साक्मा QR">
+      <span class="silam-icon" aria-hidden="true">🪬</span>
+    </button>
     <!-- Appears once map is saved offline -->
     <div id="offline-badge" class="offline-badge hidden" aria-live="polite">
       <span>✓ Offline Ready</span>
@@ -191,6 +195,42 @@
     </span>
   </div>
 </aside>
+
+<!-- ===================================================================
+     SILAM SAKMA QR POSTER MODAL
+     Cultural QR Code framed inside traditional Limbu Silam Sakma
+     =================================================================== -->
+<div id="silam-modal" class="silam-modal hidden" role="dialog" aria-modal="true" aria-label="सिलम साक्मा QR पोस्टर">
+  <div class="silam-modal-backdrop" id="silam-modal-backdrop"></div>
+  <div class="silam-modal-dialog">
+    <button id="btn-close-silam" class="silam-close-btn" aria-label="बन्द गर्नुहोस्">✕</button>
+    <div class="silam-dialog-header">
+      <span class="silam-culture-badge">🪬 KIRAT CULTURAL SYMBOL • SILAM SAKMA</span>
+      <h2 class="silam-dialog-title">सिलम साक्मा पदमार्ग QR</h2>
+      <p class="silam-dialog-sub">Phidim to Charrate — Sandakpur Trek (57.44 km)</p>
+    </div>
+
+    <div class="silam-poster-preview">
+      <img src="images/silam-sakma-qr.png" alt="Silam Sakma QR Poster" class="silam-poster-img" id="silam-poster-img" />
+    </div>
+
+    <div class="silam-actions">
+      <a href="images/silam-sakma-qr.png" download="Silam-Sakma-Phidim-Sandakpur-Map-QR.png" class="btn-silam-dl primary">
+        <span>⬇️ Download Poster (PNG)</span>
+      </a>
+      <a href="images/silam-sakma-qr.svg" download="Silam-Sakma-Phidim-Sandakpur-Map-QR.svg" class="btn-silam-dl secondary">
+        <span>🖨️ Vector for Print (SVG)</span>
+      </a>
+      <button id="btn-share-silam-link" class="btn-silam-dl share">
+        <span>🔗 Share Map Link</span>
+      </button>
+    </div>
+
+    <div class="silam-dialog-footer">
+      <p>💡 स्थानीय पसल, होटल, वा पदयात्रीहरूले यो QR स्क्यान गरेर सिधै लाइभ GPS अफलाइन म्याप खोल्न सक्नुहुन्छ।</p>
+    </div>
+  </div>
+</div>
 
 <!-- ===================================================================
      TOAST NOTIFICATION
