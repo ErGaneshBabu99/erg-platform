@@ -1,6 +1,6 @@
 {
   "route_info": {
-    "route_name": "Phidim to Charrate - Sandakpur Route",
+    "route_name": "Phidim to Charrate Route",
     "district": "Panchthar - Ilam",
     "last_updated": "2026-11-13",
     "maintained_by": "Er. Ganesh Chapagain (erganesh.com.np)",
@@ -14,8 +14,8 @@
       }
     },
     "end_point": {
-      "name_en": "Yak Lodge, Sandakpur",
-      "name_np": "याक लज, सन्दकपुर",
+      "name_en": "Yak Lodge, Charrate",
+      "name_np": "याक लज, चारराते",
       "elevation_m": 3450,
       "coordinates": {
         "lat": 27.140386,
@@ -74,8 +74,8 @@
     {
       "id": "YL-002",
       "name_en": "Yak Lodge & Restaurant",
-      "name_np": "याक लज एण्ड रेस्टुरेन्ट",
-      "location_name": "Sandakpur Summit (3,450m), Ilam - Indo-Nepal Border",
+      "name_np": "याक लज, चारराते",
+      "location_name": "Charrate (3,450m), Ilam - Panchthar Border",
       "coordinates": {
         "lat": 27.140386,
         "lng": 88.000166,
@@ -105,10 +105,10 @@
         "Sherpa Traditional Khana & Dal Bhat",
         "Warm Thukpa & Soups",
         "Heated Rooms & Heavy Blankets",
-        "Sunrise Viewpoint Guidance"
+        "Charrate Ridge Viewpoint Guidance"
       ],
       "image": "/images/places/ganesh-varieties_2.webp",
-      "description": "Cozy high-altitude mountain lodge situated at the highest peak of Sandakpur (3,450m). The ultimate endpoint of the Phidim-Charrate trek, offering 360-degree panoramic views of Mt. Kanchenjunga, Makalu, and Mt. Everest.",
+      "description": "Cozy high-altitude mountain lodge situated at Charrate (3,450m). The current endpoint of the Phidim-Charrate trek, offering 360-degree panoramic Himalayan views. (Sandakpur trail continues ~7km further up).",
       "is_featured_partner": true
     }
   ]

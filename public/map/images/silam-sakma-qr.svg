@@ -59,7 +59,7 @@
 
 <!-- Title -->
 <text x="500" y="115" text-anchor="middle" fill="#ffffff" font-size="34" font-weight="900" letter-spacing="0.5">सिलम साक्मा | SILAM SAKMA</text>
-<text x="500" y="155" text-anchor="middle" fill="#f59e0b" font-size="22" font-weight="700">Phidim to Charrate — Sandakpur Trek</text>
+<text x="500" y="155" text-anchor="middle" fill="#f59e0b" font-size="22" font-weight="700">Phidim to Charrate Trek</text>
 <text x="500" y="185" text-anchor="middle" fill="#94a3b8" font-size="15">Panchthar &amp; Ilam, Nepal • 57.44 km Scenic Trail (1,180m - 3,450m)</text>
 
 <!-- Top Line -->
@@ -94,7 +94,7 @@
   <text x="415" y="33" text-anchor="middle" fill="#10b981" font-size="12" font-weight="700">2,150m</text>
   
   <rect x="510" y="0" width="150" height="42" rx="10" fill="#1e293b" stroke="#ef4444" stroke-width="1.5"/>
-  <text x="585" y="17" text-anchor="middle" fill="#ffffff" font-size="12" font-weight="600">Sandakpur Summit</text>
+  <text x="585" y="17" text-anchor="middle" fill="#ffffff" font-size="12" font-weight="600">Yak Lodge, Charrate</text>
   <text x="585" y="33" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="700">3,450m</text>
 </g>
 

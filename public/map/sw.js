@@ -1,6 +1,6 @@
 /* ============================================================
    Trek Map Service Worker — sw.js
-   Phidim → Sandakpur | erganesh.com.np
+   Phidim → Charrate | erganesh.com.np
    Offline-first caching for Leaflet tiles, GeoJSON, and UI
    ============================================================ */
 

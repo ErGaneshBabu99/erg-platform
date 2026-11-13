@@ -1,7 +1,7 @@
 {
-  "name": "Phidim to Sandakpur Trek Map",
+  "name": "Phidim to Charrate Trek Map",
   "short_name": "Trek Map",
-  "description": "Offline trail map for Phidim to Charrate-Sandakpur route, Panchthar-Ilam, Nepal",
+  "description": "Offline trail map for Phidim to Charrate route, Panchthar-Ilam, Nepal",
   "start_url": "/map/",
   "scope": "/map/",
   "display": "standalone",
