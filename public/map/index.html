@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <base href="/map/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Trek Map">
+  <meta name="description" content="Offline trail map for Phidim to Charrate-Sandakpur trekking route, Panchthar-Ilam, Nepal. Live GPS tracking, shop info, emergency contacts.">
+  <meta property="og:title" content="Phidim → Sandakpur Trek Map | erganesh.com.np">
+  <meta property="og:description" content="Your offline guide for the Phidim to Charrate-Sandakpur trail with live GPS, shop directories, and emergency contacts.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.erganesh.com.np/map/">
+  <title>Trek Map: Phidim → Sandakpur | erganesh.com.np</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/map/manifest.json">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="icon" href="/favicon-32x32.png" type="image/png">
+
+  <!-- Leaflet CSS (CDN with crossorigin for CORS tiles) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+
+  <!-- Local Stylesheet -->
+  <link rel="stylesheet" href="/map/style.css">
+</head>
+<body>
+
+<!-- ===================================================================
+     TOP HEADER BAR
+     Fixed at top — site logo, route title, offline badge, save button
+     =================================================================== -->
+<header class="top-bar" role="banner">
+  <div class="top-bar-left">
+    <a href="https://erganesh.com.np" class="site-logo" aria-label="Back to erganesh.com.np">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
+    </a>
+    <div class="route-title">
+      <span class="route-name">Phidim → Sandakpur</span>
+      <span class="route-sub">Panchthar – Ilam, Nepal</span>
+    </div>
+  </div>
+  <div class="top-bar-right">
+    <!-- Appears once map is saved offline -->
+    <div id="offline-badge" class="offline-badge hidden" aria-live="polite">
+      <span>✓ Offline Ready</span>
+    </div>
+    <!-- Save offline button -->
+    <button id="btn-save-offline" class="btn-icon btn-save" aria-label="Save map for offline use" title="Save Map Offline">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- ===================================================================
+     FILTER PILLS BAR
+     Horizontal scrollable category filter — below header
+     =================================================================== -->
+<nav class="filter-bar" role="navigation" aria-label="Filter markers by category">
+  <div class="filter-scroll" role="list">
+    <button class="filter-pill active" data-filter="all" role="listitem" aria-pressed="true">
+      <span class="pill-icon" aria-hidden="true">🗺️</span> All
+    </button>
+    <button class="filter-pill" data-filter="tea_food" role="listitem" aria-pressed="false">
+      <span class="pill-icon" aria-hidden="true">🍵</span> Tea &amp; Food
+    </button>
+    <button class="filter-pill" data-filter="essentials" role="listitem" aria-pressed="false">
+      <span class="pill-icon" aria-hidden="true">🎒</span> Trekking Gear
+    </button>
+    <button class="filter-pill" data-filter="fuel" role="listitem" aria-pressed="false">
+      <span class="pill-icon" aria-hidden="true">⛽</span> Emergency Fuel
+    </button>
+    <button class="filter-pill" data-filter="garage" role="listitem" aria-pressed="false">
+      <span class="pill-icon" aria-hidden="true">🔧</span> Garage
+    </button>
+  </div>
+</nav>
+
+<!-- ===================================================================
+     MAP CONTAINER
+     Full-screen Leaflet map between header+filter and ad banner
+     =================================================================== -->
+<main id="map-container" role="main" aria-label="Interactive trekking route map">
+  <div id="map" aria-label="Map"></div>
+
+  <!-- ===== LIVE TREK HUD (Speed, Distance, Elevation, Live Location) ===== -->
+  <aside id="trek-hud" class="trek-hud" aria-label="Live trek dashboard">
+    <div class="hud-main">
+      <div class="hud-stat">
+        <span class="hud-label">🏃 SPEED</span>
+        <span id="hud-speed" class="hud-val">0.0 <small>km/h</small></span>
+      </div>
+      <div class="hud-divider"></div>
+      <div class="hud-stat">
+        <span class="hud-label">🏁 TO SUMMIT</span>
+        <span id="hud-remaining" class="hud-val">57.4 <small>km</small></span>
+      </div>
+      <div class="hud-divider"></div>
+      <div class="hud-stat">
+        <span class="hud-label">🏔️ ALTITUDE</span>
+        <span id="hud-altitude" class="hud-val">-- <small>m</small></span>
+      </div>
+    </div>
+    <div class="hud-sub">
+      <div class="hud-loc-row">
+        <span class="hud-pulse-dot" aria-hidden="true"></span>
+        <span id="hud-location-text" class="hud-loc">Locating phone GPS...</span>
+      </div>
+      <span id="hud-accuracy-pill" class="hud-acc-pill">±--m</span>
+    </div>
+  </aside>
+
+  <!-- Floating Map Control Buttons -->
+  <div class="map-controls" role="group" aria-label="Map controls">
+    <!-- GPS / My Location -->
+    <button id="btn-gps" class="map-btn" aria-label="Show my current location" title="My Location (GPS)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+      </svg>
+    </button>
+    <!-- Fit to route -->
+    <button id="btn-fit-route" class="map-btn" aria-label="Zoom to show full trail route" title="Show Full Route">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M15 3l2.3 2.3-2.89 2.87 1.42 1.42L18.7 6.7 21 9V3h-6zM3 9l2.3-2.3 2.87 2.89 1.42-1.42L6.7 5.3 9 3H3v6zm6 12l-2.3-2.3 2.89-2.87-1.42-1.42L5.3 17.3 3 15v6h6zm12-6l-2.3 2.3-2.87-2.89-1.42 1.42 2.89 2.87L15 21h6v-6z"/>
+      </svg>
+    </button>
+  </div>
+</main>
+
+<!-- ===================================================================
+     DOWNLOAD / OFFLINE SAVE OVERLAY
+     Modal with animated progress bar shown during tile download
+     =================================================================== -->
+<div id="download-overlay" class="download-overlay hidden" role="dialog" aria-modal="true" aria-label="Saving map for offline use" aria-live="polite">
+  <div class="download-card">
+    <div class="download-header">
+      <span class="download-icon" aria-hidden="true">📥</span>
+      <h3>Saving Map Offline</h3>
+      <button id="btn-cancel-download" class="btn-cancel" aria-label="Cancel download">✕</button>
+    </div>
+    <p id="download-status" class="download-status">Preparing download...</p>
+    <div class="progress-bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div id="progress-bar" class="progress-bar-fill" style="width:0%"></div>
+    </div>
+    <p id="progress-label" class="progress-label">0%</p>
+    <div class="download-info">
+      <span>Zoom levels: 11–15</span>
+      <span id="tile-count-label">Calculating tiles...</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================
+     BOTTOM SHEET — Shop / Place Detail Card
+     Slides up from bottom when a marker is tapped
+     =================================================================== -->
+<div id="bottom-sheet" class="bottom-sheet" role="dialog" aria-modal="true" aria-label="Place details">
+  <div class="sheet-drag-handle" aria-hidden="true"></div>
+  <button id="btn-close-sheet" class="btn-close-sheet" aria-label="Close details">✕</button>
+  <div class="sheet-content" id="sheet-content">
+    <!-- Dynamically populated by app.js -->
+  </div>
+</div>
+<!-- Semi-transparent backdrop behind bottom sheet -->
+<div id="sheet-backdrop" class="sheet-backdrop hidden" aria-hidden="true"></div>
+
+<!-- ===================================================================
+     AD / SPONSOR BANNER SLOT
+     Fixed 320×50px banner at very bottom — non-blocking
+     Replace .ad-inner contents with AdSense tag or sponsor creative
+     =================================================================== -->
+<aside id="ad-banner" class="ad-banner" aria-label="Sponsor area">
+  <div class="ad-inner">
+    <!-- ★ ADMIN: Replace this comment block with your AdSense / sponsor code ★
+    Example AdSense:
+    <ins class="adsbygoogle"
+         style="display:inline-block;width:320px;height:50px"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    -->
+    <span class="ad-placeholder">
+      Advertisement &middot; <a href="https://erganesh.com.np/contact" target="_blank" rel="noopener noreferrer">Advertise on this map</a>
+    </span>
+  </div>
+</aside>
+
+<!-- ===================================================================
+     TOAST NOTIFICATION
+     Slides in for GPS status, offline status, errors
+     =================================================================== -->
+<div id="toast" class="toast hidden" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+<!-- ===================================================================
+     SCRIPTS
+     Leaflet → localForage → app.js (order matters)
+     =================================================================== -->
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<!-- localForage (IndexedDB abstraction for offline status flag) -->
+<script src="https://unpkg.com/localforage@1.10.0/dist/localforage.min.js"></script>
+<!-- Main App Logic -->
+<script src="/map/app.js"></script>
+
+</body>
+</html>
