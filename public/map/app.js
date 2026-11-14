@@ -37,35 +37,35 @@ const CONFIG = {
   offlineZoomMin: 11,
   offlineZoomMax: 15,
   
-  // Tile URLs (Google Hybrid Satellite is DEFAULT for 20x deep zoom without gray screen)
+  // Tile URLs (Google Hybrid Satellite is DEFAULT; maxNativeZoom: 16 ensures Leaflet upscales seamlessly without 404s)
   tiles: {
     googleHybrid: {
       url: 'https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
       attribution: '&copy; Google Satellite &amp; Maxar',
       subdomains: ['0', '1', '2', '3'],
-      maxNativeZoom: 20,
-      maxZoom: 22,
-      name: '🛰️ Satellite Hybrid (High-Res)'
+      maxNativeZoom: 16,
+      maxZoom: 21,
+      name: '🛰️ Google Hybrid Satellite'
     },
     satellite: {
       url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       attribution: '&copy; Esri, Maxar, Earthstar Geographics',
       maxNativeZoom: 16,
-      maxZoom: 22,
+      maxZoom: 21,
       name: '🌍 Esri World Imagery'
     },
     osm: {
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxNativeZoom: 19,
-      maxZoom: 22,
+      attribution: '&copy; OpenStreetMap contributors',
+      maxNativeZoom: 18,
+      maxZoom: 21,
       name: '🗺️ OpenStreetMap'
     },
     topo: {
       url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-      attribution: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a>',
-      maxNativeZoom: 17,
-      maxZoom: 22,
+      attribution: '&copy; OpenTopoMap',
+      maxNativeZoom: 16,
+      maxZoom: 21,
       name: '🏔️ Mountain Topo'
     }
   }
@@ -509,6 +509,49 @@ const MarkerManager = {
       distBadge = `<div class="sheet-dist-pill">📍 फिदिम बजारबाट <strong>${dPhidim.toFixed(1)} km</strong> टाढा</div>`;
     }
 
+    // Why Charrate Spotlight for Yak Lodge (YL-004)
+    let whyCharrateBlock = '';
+    if (p.id === 'YL-004') {
+      whyCharrateBlock = `
+        <div class="sheet-why-section">
+          <div class="sheet-why-head">
+            <span class="sheet-why-badge">🏔️ किन चारराते? | WHY CHARRATE?</span>
+            <h3 class="sheet-why-title">फालेलुङ–४, पाँचथर र भारत (सिक्किम–प.बङ्गाल) सीमा</h3>
+          </div>
+
+          <!-- Photo Gallery -->
+          <div class="sheet-why-gallery">
+            <img src="images/places/charrate-yak-lodge.webp" alt="Kanchenjunga over Yak Lodge Charrate" class="sheet-why-img" />
+            <img src="images/places/charrate-yak-lodge_2.webp" alt="Vintage 4WD Jeep Safari" class="sheet-why-img" />
+            <img src="images/places/charrate-yak-lodge_3.webp" alt="Alpine Meadow Lodge at Charrate" class="sheet-why-img" />
+          </div>
+
+          <p class="sheet-why-p">
+            <strong>चारराते (३,४५० मिटर)</strong> पाँचथरको फालेलुङ गाउँपालिका र भारत (सिक्किम–पश्चिम बङ्गाल) को सीमामा अवस्थित एक अद्वितीय, शान्त र मनोरम उच्च हिमाली गन्तव्य हो। यहाँबाट विश्वको तेस्रो अग्लो शिखर <strong>कञ्चनजङ्घा (८,५८६ मिटर)</strong>, <strong>कुम्भकर्ण (जन्नु)</strong> तथा <strong>मकालु</strong> हिमशृङ्खलाको मनमोहक दृश्यावलोकन गर्न सकिन्छ।
+          </p>
+
+          <p class="sheet-why-p">
+            भीडभाडबाट टाढा रहेको यस क्षेत्रमा चौँरी र याक चर्ने खुला हिमाली खर्कहरू, गुराँसको जङ्गल, तथा आतिथ्यको रोमाञ्चक अनुभव लिन सकिन्छ। यहाँका स्थानीय लज तथा होमस्टेहरू पदयात्रीहरूका लागि न्यानो बास, स्थानीय परिकार र सूर्योदय हेर्ने उत्कृष्ट विश्रामस्थल हुन्।
+          </p>
+
+          <div class="sheet-border-note">
+            <span class="sheet-border-icon">📍</span>
+            <div class="sheet-border-text">
+              <strong>सीमाको विवरण (पर्वत/जिल्ला सीमा):</strong>
+              चारराते पाँचथर (फालेलुङ गाउँपालिका-४) र भारत (सिक्किम र पश्चिम बङ्गाल) को सीमामा अवस्थित छ। यो पाँचथर र इलामको सीमामा होइन (सन्दकपुरचाहिँ पाँचथर, इलाम र भारतको सीमामा पर्छ)।
+            </div>
+          </div>
+
+          <div class="sheet-why-highlights">
+            <div class="sheet-hl-card"><span class="hl-ico">🏔️</span><strong>360° Himal Vistas</strong><p>Kanchenjunga, Jannu, Makalu</p></div>
+            <div class="sheet-hl-card"><span class="hl-ico">🌿</span><strong>Alpine Meadows</strong><p>Pristine yak pastures &amp; forests</p></div>
+            <div class="sheet-hl-card"><span class="hl-ico">🚙</span><strong>4WD Safari Trail</strong><p>Iconic vintage Land Rover route</p></div>
+            <div class="sheet-hl-card"><span class="hl-ico">☕</span><strong>Yak Lodge Hospitality</strong><p>Warm hearth fire &amp; local tea</p></div>
+          </div>
+        </div>
+      `;
+    }
+
     // Facilities
     const fac = p.facilities || {};
     const facBadges = [
@@ -573,6 +616,7 @@ const MarkerManager = {
         ${p.opening_hours ? `<div class="meta-row"><span class="meta-icon">🕐</span> ${p.opening_hours}</div>` : ''}
         ${p.owner_name ? `<div class="meta-row"><span class="meta-icon">👤</span> ${p.owner_name}</div>` : ''}
       </div>
+      ${whyCharrateBlock}
       ${facBadges ? `<div class="facility-badges">${facBadges}</div>` : ''}
       ${p.description ? `<p class="shop-description">${p.description}</p>` : ''}
       ${itemsHTML ? `<div class="section-label">Available Items / सुविधाहरू</div><ul class="items-list">${itemsHTML}</ul>` : ''}
@@ -695,39 +739,36 @@ const MapManager = {
     // Position zoom control top-left
     this._map.zoomControl.setPosition('topleft');
 
-    // Build base layers — Google Hybrid is DEFAULT for crystal clear 20x zoom without grey screens
-    const hybridLayer = L.tileLayer(CONFIG.tiles.googleHybrid.url, {
-      attribution: CONFIG.tiles.googleHybrid.attribution,
-      subdomains: CONFIG.tiles.googleHybrid.subdomains,
-      maxNativeZoom: CONFIG.tiles.googleHybrid.maxNativeZoom,
-      maxZoom: CONFIG.tiles.googleHybrid.maxZoom,
-      keepBuffer: 8,
-      updateWhenZooming: false,
-      updateWhenIdle: true
-    }).addTo(this._map);
+    // Lightweight inline SVG fallback tile so missing/offline tiles never show blank grey
+    const FALLBACK_TILE = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect width="256" height="256" fill="#0f172a"/>
+  <path d="M0 190 Q64 165 128 178 T256 168 L256 256 L0 256 Z" fill="#1e293b" opacity="0.8"/>
+  <path d="M0 220 Q64 200 128 212 T256 204 L256 256 L0 256 Z" fill="#334155" opacity="0.8"/>
+  <text x="128" y="128" fill="#475569" font-family="sans-serif" font-size="11" text-anchor="middle" font-weight="bold">🏔️ Phidim - Charrate Trail</text>
+</svg>
+    `);
 
-    const satelliteLayer = L.tileLayer(CONFIG.tiles.satellite.url, {
-      attribution: CONFIG.tiles.satellite.attribution,
-      maxNativeZoom: CONFIG.tiles.satellite.maxNativeZoom,
-      maxZoom: CONFIG.tiles.satellite.maxZoom,
-      keepBuffer: 6,
-      updateWhenZooming: false,
-      updateWhenIdle: true
+    // High performance tile configuration:
+    // keepBuffer: 16 keeps a large ring of tiles cached in memory
+    // updateWhenIdle: false loads tiles instantly during panning
+    // updateWhenZooming: true prevents tiles disappearing during zoom
+    const layerOpts = (cfg) => ({
+      attribution: cfg.attribution,
+      subdomains: cfg.subdomains || 'abc',
+      maxNativeZoom: cfg.maxNativeZoom,
+      maxZoom: cfg.maxZoom,
+      keepBuffer: 16,
+      updateWhenIdle: false,
+      updateWhenZooming: true,
+      errorTileUrl: FALLBACK_TILE
     });
 
-    const osmLayer = L.tileLayer(CONFIG.tiles.osm.url, {
-      attribution: CONFIG.tiles.osm.attribution,
-      maxNativeZoom: CONFIG.tiles.osm.maxNativeZoom,
-      maxZoom: CONFIG.tiles.osm.maxZoom,
-      keepBuffer: 6
-    });
-
-    const topoLayer = L.tileLayer(CONFIG.tiles.topo.url, {
-      attribution: CONFIG.tiles.topo.attribution,
-      maxNativeZoom: CONFIG.tiles.topo.maxNativeZoom,
-      maxZoom: CONFIG.tiles.topo.maxZoom,
-      keepBuffer: 6
-    });
+    // Build base layers — Google Hybrid is DEFAULT for crystal clear zoom without grey screens
+    const hybridLayer = L.tileLayer(CONFIG.tiles.googleHybrid.url, layerOpts(CONFIG.tiles.googleHybrid)).addTo(this._map);
+    const satelliteLayer = L.tileLayer(CONFIG.tiles.satellite.url, layerOpts(CONFIG.tiles.satellite));
+    const osmLayer = L.tileLayer(CONFIG.tiles.osm.url, layerOpts(CONFIG.tiles.osm));
+    const topoLayer = L.tileLayer(CONFIG.tiles.topo.url, layerOpts(CONFIG.tiles.topo));
 
     this._baseLayers = {
       [CONFIG.tiles.googleHybrid.name]: hybridLayer,
@@ -923,14 +964,19 @@ const OfflineManager = {
 
   async _cacheStaticFiles() {
     if (!('caches' in window)) return;
-    const cache = await caches.open('trek-map-static-v1.0.0');
+    const cache = await caches.open('trek-map-static-v2.0.0');
     const files = [
       './', './index.html', './style.css', './app.js', './sw.js',
       './manifest.json', CONFIG.routeGeoJSON, CONFIG.placesJSON,
       './images/places/ganesh-varieties_1.webp',
       './images/places/ganesh-varieties_2.webp',
       './images/places/ganesh-varieties.webp',
-      '/images/places/ganesh-varieties.webp',
+      './images/places/charrate-yak-lodge.webp',
+      './images/places/charrate-yak-lodge_1.webp',
+      './images/places/charrate-yak-lodge_2.webp',
+      './images/places/charrate-yak-lodge_3.webp',
+      './images/esewa-qr.webp',
+      './images/esewa-qr.png',
       'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
       'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
       'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -948,7 +994,7 @@ const OfflineManager = {
       Toast.show('⚠️ Cache API not available', 'error');
       return;
     }
-    const cache = await caches.open('trek-map-tiles-v1.0.0');
+    const cache = await caches.open('trek-map-tiles-v2.0.0');
     const total = tiles.length;
     let done = 0;
     const BATCH = 8; // parallel fetches
@@ -958,21 +1004,23 @@ const OfflineManager = {
       const batch = tiles.slice(i, i + BATCH);
       await Promise.all(batch.map(async tile => {
         try {
-          // Cache Satellite (Default Layer)
+          // 1. Cache Google Hybrid (Default Layer)
+          const hybridURL = this._tileURL(tile, 'googleHybrid');
+          const hybridCached = await cache.match(hybridURL);
+          if (!hybridCached) {
+            try {
+              const res = await fetch(hybridURL);
+              if (res && (res.ok || res.type === 'opaque')) await cache.put(hybridURL, res);
+            } catch (e) {}
+          }
+          // 2. Also cache Esri Satellite fallback
           const satURL = this._tileURL(tile, 'satellite');
           const satCached = await cache.match(satURL);
           if (!satCached) {
-            const res = await fetch(satURL, { mode: 'cors' });
-            if (res.ok) await cache.put(satURL, res);
-          }
-          // Also cache Topo for mountain elevation contours
-          const topoURL = this._tileURL(tile, 'topo');
-          const topoCached = await cache.match(topoURL);
-          if (!topoCached) {
             try {
-              const topoRes = await fetch(topoURL, { mode: 'cors' });
-              if (topoRes.ok) await cache.put(topoURL, topoRes);
-            } catch(e) {}
+              const satRes = await fetch(satURL);
+              if (satRes && (satRes.ok || satRes.type === 'opaque')) await cache.put(satURL, satRes);
+            } catch (e) {}
           }
         } catch(e) {}
         done++;
@@ -982,8 +1030,12 @@ const OfflineManager = {
     }
   },
 
-  _tileURL(tile, layer = 'satellite') {
+  _tileURL(tile, layer = 'googleHybrid') {
     const { z, x, y } = tile;
+    if (layer === 'googleHybrid') {
+      const s = Math.floor(Math.random() * 4);
+      return `https://mt${s}.google.com/vt/lyrs=y&x=${x}&y=${y}&z=${z}`;
+    }
     if (layer === 'satellite') {
       return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
     }
@@ -991,7 +1043,6 @@ const OfflineManager = {
       const s = ['a', 'b', 'c'][Math.floor(Math.random() * 3)];
       return `https://${s}.tile.opentopomap.org/${z}/${x}/${y}.png`;
     }
-    // OSM
     const s = ['a', 'b', 'c'][Math.floor(Math.random() * 3)];
     return `https://${s}.tile.openstreetmap.org/${z}/${x}/${y}.png`;
   },
@@ -1050,88 +1101,26 @@ function initFilterBar() {
   });
 }
 
-// ============ DIRECTIONS MANAGER ============
-const DirectionsManager = {
-  panel: null,
-  btnToggle: null,
-  btnClose: null,
-  currentMode: 'foot',
-
-  MODES: {
-    foot: { name: 'Foot / Trekking', speedKmH: 3.8, label: '~15h' },
-    bike: { name: 'Motorcycle / Bike', speedKmH: 16.5, label: '~3.5h' },
-    car:  { name: '4WD Jeep / Vehicle', speedKmH: 12.8, label: '~4.5h' }
-  },
-
-  init() {
-    this.panel = document.getElementById('directions-card');
-    this.btnToggle = document.getElementById('btn-directions');
-    this.btnClose = document.getElementById('btn-close-directions');
-    const btnStartNav = document.getElementById('btn-start-nav');
-    const btnViewRoute = document.getElementById('btn-dir-view-route');
-
-    if (this.btnToggle) {
-      this.btnToggle.addEventListener('click', () => this.toggle());
-    }
-    if (this.btnClose) {
-      this.btnClose.addEventListener('click', () => this.close());
-    }
-    if (btnViewRoute) {
-      btnViewRoute.addEventListener('click', () => {
-        MapManager.fitRoute();
-        this.close();
-      });
-    }
-    if (btnStartNav) {
-      btnStartNav.addEventListener('click', () => {
-        this.close();
-        GPSTracker.start(true);
-        Toast.show('🚀 Live Navigation started along trail!', 'success', 3000);
-      });
-    }
-
-    // Mode Selector buttons
-    document.querySelectorAll('.dir-mode-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.dir-mode-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        this.currentMode = btn.dataset.mode;
-        this.updateMode(this.currentMode);
-      });
-    });
-  },
-
-  toggle() {
-    if (!this.panel) return;
-    if (this.panel.classList.contains('hidden')) this.open();
-    else this.close();
-  },
-
-  open() {
-    if (this.panel) this.panel.classList.remove('hidden');
-    MapManager.fitRoute();
-  },
-
-  close() {
-    if (this.panel) this.panel.classList.add('hidden');
-  },
-
-  updateMode(modeKey) {
-    const mode = this.MODES[modeKey] || this.MODES.foot;
-    Toast.show(`Mode: ${mode.name} (${mode.label})`, 'info', 2000);
-  }
-};
-
-// ============ SILAM SAKMA MODAL ============
-const SilamModal = {
+// ============ BUY A COFFEE (ANTI-TAMPER ESEWA QR) ============
+const BuyCoffeeModal = {
   modal: null,
   backdrop: null,
+  _observer: null,
+
+  SECURITY: Object.freeze({
+    RECIPIENT_NAME: 'Ganesh Chapagain',
+    ESEWA_ID: '9817921231',
+    SHA256: '785983d0aca292443826168e42dd1791ee3580d25405cd70388dcbc1c0f1e60b',
+    IMG_PATH: 'images/esewa-qr.webp'
+  }),
+
   init() {
-    this.modal = document.getElementById('silam-modal');
-    this.backdrop = document.getElementById('silam-modal-backdrop');
-    const btnOpen = document.getElementById('btn-silam-qr');
-    const btnClose = document.getElementById('btn-close-silam');
-    const btnShare = document.getElementById('btn-share-silam-link');
+    this.modal = document.getElementById('coffee-modal');
+    this.backdrop = document.getElementById('coffee-modal-backdrop');
+    const btnOpen = document.getElementById('btn-buy-coffee');
+    const btnClose = document.getElementById('btn-close-coffee');
+    const btnDone = document.getElementById('btn-done-coffee');
+    const btnCopy = document.getElementById('btn-copy-esewa-id');
 
     if (btnOpen) {
       btnOpen.addEventListener('click', () => this.open());
@@ -1139,42 +1128,70 @@ const SilamModal = {
     if (btnClose) {
       btnClose.addEventListener('click', () => this.close());
     }
+    if (btnDone) {
+      btnDone.addEventListener('click', () => this.close());
+    }
     if (this.backdrop) {
       this.backdrop.addEventListener('click', () => this.close());
     }
+
+    if (btnCopy) {
+      btnCopy.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(this.SECURITY.ESEWA_ID);
+          Toast.show(`✓ eSewa ID copied: ${this.SECURITY.ESEWA_ID} (${this.SECURITY.RECIPIENT_NAME})`, 'success', 3500);
+        } catch {
+          Toast.show(`eSewa ID: ${this.SECURITY.ESEWA_ID}`, 'info', 4000);
+        }
+      });
+    }
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && this.modal && !this.modal.classList.contains('hidden')) {
         this.close();
       }
     });
 
-    if (btnShare) {
-      btnShare.addEventListener('click', async () => {
-        const shareData = {
-          title: 'Phidim to Charrate Trek Map (Offline GPS)',
-          text: 'Explore the Phidim to Charrate trekking trail with live offline GPS and verified stops:',
-          url: 'https://www.erganesh.com.np/map'
-        };
-        if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-          try {
-            await navigator.share(shareData);
-          } catch (e) {
-            // Cancelled
-          }
-        } else {
-          try {
-            await navigator.clipboard.writeText('https://www.erganesh.com.np/map');
-            Toast.show('✓ Map link copied to clipboard!', 'success', 3000);
-          } catch {
-            Toast.show('Map link: https://www.erganesh.com.np/map', 'info', 5000);
+    this._attachAntiTamperGuard();
+  },
+
+  _attachAntiTamperGuard() {
+    const container = document.getElementById('coffee-qr-container');
+    const qrImg = document.getElementById('coffee-qr-img');
+    if (!container || !qrImg) return;
+
+    const enforceOfficialState = () => {
+      const currentSrc = qrImg.getAttribute('src');
+      if (currentSrc !== this.SECURITY.IMG_PATH && !currentSrc.startsWith('data:image/webp')) {
+        console.warn('[SECURITY] QR tampering detected! Reverting to verified official QR.');
+        qrImg.src = this.SECURITY.IMG_PATH;
+        Toast.show('🛡️ Tamper attempt blocked: Verified Ganesh Chapagain eSewa QR restored', 'error', 5000);
+      }
+      qrImg.setAttribute('alt', `Official eSewa QR for ${this.SECURITY.RECIPIENT_NAME} (${this.SECURITY.ESEWA_ID})`);
+    };
+
+    if ('MutationObserver' in window) {
+      this._observer = new MutationObserver((mutations) => {
+        for (const m of mutations) {
+          if (m.type === 'attributes' || m.type === 'childList') {
+            enforceOfficialState();
           }
         }
       });
+      this._observer.observe(container, { attributes: true, subtree: true, childList: true });
     }
   },
+
   open() {
-    if (this.modal) this.modal.classList.remove('hidden');
+    if (this.modal) {
+      this.modal.classList.remove('hidden');
+      const nameEl = document.getElementById('coffee-acc-name');
+      const idEl = document.getElementById('coffee-acc-id');
+      if (nameEl) nameEl.textContent = this.SECURITY.RECIPIENT_NAME;
+      if (idEl) idEl.textContent = this.SECURITY.ESEWA_ID;
+    }
   },
+
   close() {
     if (this.modal) this.modal.classList.add('hidden');
   }
@@ -1231,8 +1248,7 @@ async function init() {
   GPSTracker.init(map);
   MarkerManager.init(map);
   initFilterBar();
-  DirectionsManager.init();
-  SilamModal.init();
+  BuyCoffeeModal.init();
   WhyCharrateModal.init();
 
   // 3. Fit route button

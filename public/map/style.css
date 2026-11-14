@@ -219,6 +219,13 @@ html, body {
 #map {
   width: 100%;
   height: 100%;
+  background: #0f172a !important;
+}
+.leaflet-container {
+  background: #0f172a !important;
+}
+.leaflet-tile {
+  filter: brightness(0.98) contrast(1.02);
 }
 
 /* ================================================================
@@ -1013,432 +1020,9 @@ html, body {
   }
 }
 
-/* ================================================================
-   SILAM SAKMA QR POSTER MODAL & BUTTON
-   ================================================================ */
-.btn-silam {
-  border-color: rgba(245, 158, 11, 0.5) !important;
-  background: rgba(245, 158, 11, 0.18) !important;
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.25) !important;
-  transition: all 0.2s ease;
-}
-.btn-silam:hover {
-  background: rgba(245, 158, 11, 0.35) !important;
-  transform: scale(1.05);
-}
-.silam-icon {
-  font-size: 18px;
-  line-height: 1;
-}
 
-.silam-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 4000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  animation: fadeIn 0.25s ease;
-}
-.silam-modal.hidden {
-  display: none !important;
-}
 
-.silam-modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(3, 7, 18, 0.88);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
 
-.silam-modal-dialog {
-  position: relative;
-  z-index: 10;
-  max-width: 460px;
-  width: 100%;
-  max-height: 92vh;
-  overflow-y: auto;
-  background: #0f172a;
-  border: 1.5px solid rgba(245, 158, 11, 0.5);
-  border-radius: 20px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(245, 158, 11, 0.2);
-  padding: 24px 20px;
-  text-align: center;
-  color: #fff;
-  animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes scaleUp {
-  from { opacity: 0; transform: scale(0.92); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-.silam-close-btn {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #e2e8f0;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.silam-close-btn:hover {
-  background: rgba(239, 68, 68, 0.8);
-  color: #fff;
-}
-
-.silam-culture-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 20px;
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.4);
-  color: #f59e0b;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  margin-bottom: 8px;
-}
-
-.silam-dialog-title {
-  font-size: 20px;
-  font-weight: 800;
-  color: #ffffff;
-  margin: 0 0 4px 0;
-  letter-spacing: 0.3px;
-}
-
-.silam-dialog-sub {
-  font-size: 13px;
-  color: #94a3b8;
-  margin: 0 0 16px 0;
-}
-
-.silam-poster-preview {
-  margin: 0 auto 18px auto;
-  max-width: 320px;
-}
-.silam-poster-img {
-  width: 100%;
-  height: auto;
-  border-radius: 12px;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-  display: block;
-}
-
-.silam-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.btn-silam-dl {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 16px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 700;
-  text-decoration: none;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s ease;
-}
-.btn-silam-dl.primary {
-  background: #d72638;
-  color: #ffffff;
-  border: 1px solid rgba(245, 158, 11, 0.6);
-  box-shadow: 0 4px 14px rgba(215, 38, 56, 0.4);
-}
-.btn-silam-dl.primary:hover {
-  background: #b71c1c;
-  transform: translateY(-1px);
-}
-.btn-silam-dl.secondary {
-  background: rgba(30, 41, 59, 0.9);
-  color: #f59e0b;
-  border: 1px solid rgba(245, 158, 11, 0.4);
-}
-.btn-silam-dl.secondary:hover {
-  background: rgba(51, 65, 85, 0.9);
-  color: #fbbf24;
-}
-.btn-silam-dl.share {
-  background: rgba(16, 185, 129, 0.18);
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.4);
-}
-.btn-silam-dl.share:hover {
-  background: rgba(16, 185, 129, 0.3);
-}
-
-.silam-dialog-footer {
-  font-size: 12px;
-  color: #94a3b8;
-  line-height: 1.5;
-  border-top: 1px solid rgba(51, 65, 85, 0.6);
-  padding-top: 12px;
-  margin-top: 4px;
-}
-
-/* ================================================================
-   GOOGLE MAPS STYLE DIRECTIONS BUTTON & CARD
-   ================================================================ */
-.btn-directions {
-  display: flex !important;
-  align-items: center;
-  gap: 5px;
-  background: rgba(16, 185, 129, 0.2) !important;
-  border-color: rgba(16, 185, 129, 0.5) !important;
-  color: #10b981 !important;
-  padding: 0 10px !important;
-  width: auto !important;
-  border-radius: 20px !important;
-  font-weight: 700;
-  font-size: 12px;
-  transition: all 0.2s ease;
-}
-.btn-directions:hover {
-  background: rgba(16, 185, 129, 0.35) !important;
-  transform: scale(1.04);
-}
-.btn-dir-label {
-  display: inline-block;
-  letter-spacing: 0.3px;
-}
-
-.directions-card {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 1500;
-  max-width: 390px;
-  width: calc(100% - 24px);
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1.5px solid rgba(245, 158, 11, 0.45);
-  border-radius: 18px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 20px rgba(245, 158, 11, 0.15);
-  padding: 16px;
-  color: #fff;
-  animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.dir-header {
-  margin-bottom: 12px;
-}
-.dir-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.dir-badge {
-  font-size: 11px;
-  font-weight: 700;
-  color: #f59e0b;
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  padding: 3px 10px;
-  border-radius: 12px;
-  letter-spacing: 0.5px;
-}
-.dir-close-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: #cbd5e1;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  cursor: pointer;
-}
-.dir-close-btn:hover {
-  background: rgba(239, 68, 68, 0.8);
-  color: #fff;
-}
-
-/* 2D Silhouette Vector Travel Mode Selector */
-.dir-mode-selector {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  background: rgba(30, 41, 59, 0.8);
-  padding: 4px;
-  border-radius: 12px;
-  border: 1px solid rgba(51, 65, 85, 0.6);
-}
-.dir-mode-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 8px 4px;
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  color: #94a3b8;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.dir-mode-btn .mode-2d-svg {
-  fill: currentColor;
-  margin-bottom: 2px;
-}
-.dir-mode-btn small {
-  font-size: 10px;
-  font-weight: 600;
-  color: #64748b;
-}
-.dir-mode-btn.active {
-  background: #2563eb;
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
-}
-.dir-mode-btn.active small {
-  color: #bfdbfe;
-}
-
-/* Waypoints List */
-.dir-waypoints {
-  background: rgba(30, 41, 59, 0.5);
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 12px;
-  border: 1px solid rgba(51, 65, 85, 0.4);
-}
-.dir-stop {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-.stop-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  margin-top: 4px;
-  flex-shrink: 0;
-}
-.stop-dot.dot-start {
-  background: #10b981;
-  box-shadow: 0 0 8px #10b981;
-}
-.stop-dot.dot-end {
-  background: #ef4444;
-  box-shadow: 0 0 8px #ef4444;
-}
-.stop-info {
-  display: flex;
-  flex-direction: column;
-}
-.stop-role {
-  font-size: 10px;
-  text-transform: uppercase;
-  color: #94a3b8;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-.stop-name {
-  font-size: 13px;
-  font-weight: 800;
-  color: #ffffff;
-}
-.stop-rl {
-  font-size: 11px;
-  font-weight: 700;
-  color: #f59e0b;
-}
-
-.dir-line-connector {
-  margin: 6px 0 6px 5px;
-  padding-left: 17px;
-  border-left: 2px dashed rgba(245, 158, 11, 0.5);
-}
-.via-badge {
-  font-size: 10px;
-  color: #fbbf24;
-  background: rgba(245, 158, 11, 0.12);
-  padding: 2px 8px;
-  border-radius: 10px;
-  display: inline-block;
-  border: 1px solid rgba(245, 158, 11, 0.25);
-}
-
-.dir-footer {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.dir-stats {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
-  font-weight: 800;
-  padding: 0 4px;
-}
-.dir-dist {
-  color: #ffffff;
-}
-.dir-elev {
-  color: #f59e0b;
-  font-size: 12px;
-}
-.dir-buttons {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 8px;
-}
-.btn-dir-action {
-  padding: 10px 12px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s ease;
-  text-align: center;
-}
-.btn-dir-action.primary {
-  background: #10b981;
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
-}
-.btn-dir-action.primary:hover {
-  background: #059669;
-}
-.btn-dir-action.secondary {
-  background: rgba(51, 65, 85, 0.8);
-  color: #e2e8f0;
-}
-.btn-dir-action.secondary:hover {
-  background: rgba(71, 85, 105, 0.9);
-}
 
 /* ================================================================
    SHOP QUICK ORDER / CATEGORY DRAWER
@@ -2002,6 +1586,359 @@ html, body {
 }
 .mnl-elev {
   color: #f59e0b;
+  font-size: 10px;
+}
+
+/* ================================================================
+   BUY A COFFEE BUTTON & MODAL (eSewa Ganesh Chapagain)
+   ================================================================ */
+.btn-coffee {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #d97706, #b45309);
+  color: #fff !important;
+  border: 1px solid rgba(251, 191, 36, 0.6);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(180, 83, 9, 0.4);
+}
+.btn-coffee:hover {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.5);
+}
+.btn-coffee-icon {
+  font-size: 14px;
+}
+@media (max-width: 480px) {
+  .btn-coffee-text { display: none; }
+  .btn-coffee { padding: 7px 10px; border-radius: 50%; }
+}
+
+/* Buy a Coffee Modal */
+.coffee-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease;
+}
+.coffee-modal.hidden { display: none !important; }
+.coffee-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.coffee-modal-dialog {
+  position: relative;
+  z-index: 10;
+  max-width: 420px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: #0f172a;
+  border: 1.5px solid rgba(245, 158, 11, 0.6);
+  border-radius: 24px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(245, 158, 11, 0.25);
+  padding: 24px 20px;
+  color: #fff;
+  animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+}
+.coffee-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #94a3b8;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.coffee-close-btn:hover {
+  background: rgba(239, 68, 68, 0.8);
+  color: #fff;
+}
+.coffee-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  color: #f59e0b;
+  letter-spacing: 1px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  padding: 4px 12px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+.coffee-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+}
+.coffee-sub {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0 0 16px 0;
+  line-height: 1.4;
+}
+.coffee-qr-wrap {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  margin: 0 auto 16px auto;
+  max-width: 290px;
+}
+.coffee-qr-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.coffee-qr-img {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  display: block;
+  border-radius: 10px;
+}
+.coffee-badge-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  justify-content: center;
+}
+.esewa-pill {
+  background: #60bb46;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.tamper-lock-pill {
+  background: #0f172a;
+  color: #fbbf24;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(251, 191, 36, 0.4);
+}
+.coffee-details-card {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(51, 65, 85, 0.8);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
+  text-align: left;
+}
+.coffee-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 10px;
+}
+.coffee-detail-item:last-child {
+  margin-bottom: 0;
+}
+.detail-label {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+.detail-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+.detail-value.highlight {
+  color: #60a5fa;
+  font-size: 16px;
+}
+.detail-value.code {
+  font-family: monospace;
+  letter-spacing: 1px;
+  font-size: 16px;
+  color: #34d399;
+}
+.detail-val-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+.btn-copy-id {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.5);
+  color: #93c5fd;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-copy-id:hover {
+  background: #3b82f6;
+  color: #fff;
+}
+.coffee-security-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: left;
+  margin-bottom: 16px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #fca5a5;
+}
+.coffee-security-notice .sec-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.coffee-security-notice strong {
+  color: #fff;
+}
+.btn-coffee-done {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  background: #334155;
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-coffee-done:hover {
+  background: #475569;
+}
+
+/* ================================================================
+   YAK LODGE CHARRATE SPOTLIGHT (Inside Bottom Sheet)
+   ================================================================ */
+.sheet-why-section {
+  margin: 16px 0;
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+  border: 1.5px solid rgba(245, 158, 11, 0.5);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+.sheet-why-head {
+  margin-bottom: 12px;
+}
+.sheet-why-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  color: #f59e0b;
+  letter-spacing: 0.8px;
+  margin-bottom: 4px;
+}
+.sheet-why-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.3;
+}
+.sheet-why-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 12px 0;
+}
+.sheet-why-img {
+  width: 100%;
+  height: 85px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  transition: transform 0.2s;
+}
+.sheet-why-img:hover {
+  transform: scale(1.04);
+}
+.sheet-why-p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #cbd5e1;
+  margin: 0 0 10px 0;
+}
+.sheet-border-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: rgba(30, 58, 138, 0.3);
+  border-left: 3px solid #3b82f6;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 12px 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #dbeafe;
+}
+.sheet-border-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.sheet-border-text strong {
+  color: #60a5fa;
+  display: block;
+  margin-bottom: 2px;
+}
+.sheet-why-highlights {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+.sheet-hl-card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(51, 65, 85, 0.6);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 11px;
+}
+.sheet-hl-card .hl-ico {
+  font-size: 14px;
+  margin-right: 4px;
+}
+.sheet-hl-card strong {
+  color: #f59e0b;
+  display: block;
+  margin: 2px 0;
+}
+.sheet-hl-card p {
+  color: #94a3b8;
+  margin: 0;
   font-size: 10px;
 }
 

@@ -46,21 +46,10 @@
     </div>
   </div>
   <div class="top-bar-right">
-    <!-- Why Charrate Spotlight Button -->
-    <button id="btn-why-charrate" class="btn-icon btn-why" aria-label="Why Charrate Info" title="किन चारराते? / Why Charrate?">
-      <span class="btn-why-icon">🏔️</span>
-      <span class="btn-why-text">Why Charrate?</span>
-    </button>
-    <!-- Google Maps-style Directions Button -->
-    <button id="btn-directions" class="btn-icon btn-directions" aria-label="Get Directions" title="Directions / दिशानिर्देश">
-      <svg class="dir-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-        <path d="M22.43 10.59l-9.01-9.01c-.75-.75-2.07-.75-2.83 0l-9 9c-.78.78-.78 2.04 0 2.82l9 9c.39.39.9.58 1.41.58.51 0 1.02-.2 1.41-.59l9.01-9.01c.8-.8.8-2.05.02-2.82zm-8.42 4.4v-2.5H9.5c-.55 0-1-.45-1-1V8.5h2v2h3.51V8l4 3.5-4 3.49z"/>
-      </svg>
-      <span class="btn-dir-label">Route</span>
-    </button>
-    <!-- Silam Sakma QR Poster Button -->
-    <button id="btn-silam-qr" class="btn-icon btn-silam" aria-label="सिलम साक्मा QR पोस्टर" title="सिलम साक्मा QR">
-      <span class="silam-icon" aria-hidden="true">🪬</span>
+    <!-- Buy a Coffee Button (eSewa Ganesh Chapagain) -->
+    <button id="btn-buy-coffee" class="btn-icon btn-coffee" aria-label="Buy Me a Coffee" title="Buy a Coffee ☕ / सहयोग गर्नुहोस्">
+      <span class="btn-coffee-icon">☕</span>
+      <span class="btn-coffee-text">Buy a Coffee</span>
     </button>
     <!-- Appears once map is saved offline -->
     <div id="offline-badge" class="offline-badge hidden" aria-live="polite">
@@ -106,79 +95,7 @@
 <main id="map-container" role="main" aria-label="Interactive trekking route map">
   <div id="map" aria-label="Map"></div>
 
-  <!-- ===== GOOGLE MAPS STYLE DIRECTIONS PANEL ===== -->
-  <section id="directions-card" class="directions-card hidden" aria-label="Route Directions">
-    <div class="dir-header">
-      <div class="dir-title-row">
-        <span class="dir-badge">🧭 Google Maps Style Navigation</span>
-        <button id="btn-close-directions" class="dir-close-btn" aria-label="Close directions">✕</button>
-      </div>
 
-      <!-- Real 2D Vector Silhouette Mode Selector (Foot, Bike, Car) -->
-      <div class="dir-mode-selector" role="tablist">
-        <button class="dir-mode-btn active" data-mode="foot" role="tab" aria-selected="true" title="Trekking / Walking">
-          <svg class="mode-2d-svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-            <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/>
-          </svg>
-          <span>Foot</span>
-          <small id="time-foot">~15h</small>
-        </button>
-        <button class="dir-mode-btn" data-mode="bike" role="tab" aria-selected="false" title="Motorcycle / Bike">
-          <svg class="mode-2d-svg" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-            <path d="M5 17c0-2.21 1.79-4 4-4s4 1.79 4 4-1.79 4-4 4-4-1.79-4-4zm4 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm10-2c0-2.21 1.79-4 4-4s4 1.79 4 4-1.79 4-4 4-4-1.79-4-4zm4 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-5.65-8.83l-2.03-3.05c-.35-.52-.93-.84-1.56-.84H9.42c-.85 0-1.61.54-1.89 1.34L6.16 11.5H3v2h4.54l1.1-3.32.74 1.11C8.2 12.06 7.42 13.43 7.15 15h2.05c.5-1.74 2.07-3 3.93-3 1.11 0 2.12.45 2.87 1.18l2.12-2.12c-.22-.32-.47-.61-.74-.89zM18.8 6.5l-1.37-2.05c-.37-.56-.98-.95-1.66-1.07l-2.07-.38-.36 1.97 2.07.38c.2.04.38.16.49.33l1.19 1.79-2.29 2.29 1.41 1.41 2.59-2.67z"/>
-          </svg>
-          <span>Bike</span>
-          <small id="time-bike">~3.5h</small>
-        </button>
-        <button class="dir-mode-btn" data-mode="car" role="tab" aria-selected="false" title="4WD Jeep / Car">
-          <svg class="mode-2d-svg" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.04 3H5.81l1.04-3zM19 17H5v-4.66l.12-.34h13.77l.11.34V17zM7.5 15c.83 0 1.5-.67 1.5-1.5S8.33 12 7.5 12 6 12.67 6 13.5 6.67 15 7.5 15zm9 0c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5z"/>
-          </svg>
-          <span>Jeep / Car</span>
-          <small id="time-car">~4.5h</small>
-        </button>
-      </div>
-    </div>
-
-    <!-- Waypoints List -->
-    <div class="dir-waypoints">
-      <div class="dir-stop">
-        <span class="stop-dot dot-start"></span>
-        <div class="stop-info">
-          <span class="stop-role">Starting Point</span>
-          <span class="stop-name">Phidim Bazar Trailhead</span>
-          <span class="stop-rl">RL 1,180m</span>
-        </div>
-      </div>
-      <div class="dir-line-connector">
-        <span class="via-badge">via Ganesh Varieties, Pulbhanjyang (1,800m)</span>
-      </div>
-      <div class="dir-stop">
-        <span class="stop-dot dot-end"></span>
-        <div class="stop-info">
-          <span class="stop-role">Destination (Charrate)</span>
-          <span class="stop-name">Yak Lodge, Charrate</span>
-          <span class="stop-rl">RL 3,450m</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Stats & Action Footer -->
-    <div class="dir-footer">
-      <div class="dir-stats">
-        <span class="dir-dist">57.44 km</span>
-        <span class="dir-elev">▲ +2,270m Climb</span>
-      </div>
-      <div class="dir-buttons">
-        <button id="btn-start-nav" class="btn-dir-action primary">
-          <span>🚀 Start GPS Track</span>
-        </button>
-        <button id="btn-dir-view-route" class="btn-dir-action secondary">
-          <span>📍 View Full Route</span>
-        </button>
-      </div>
-    </div>
-  </section>
 
   <!-- ===== SHOP QUICK ORDER / CATEGORY DRAWER ===== -->
   <aside id="shop-quick-drawer" class="shop-quick-drawer hidden" aria-label="Verified Shop Information">
@@ -362,37 +279,59 @@
 </div>
 
 <!-- ===================================================================
-     SILAM SAKMA QR POSTER MODAL
-     Cultural QR Code framed inside traditional Limbu Silam Sakma
+     BUY A COFFEE (ESEWA QR) MODAL
+     Secure, verified payment QR for Ganesh Chapagain (9817921231)
+     Tamper-proof with cryptographic signature & MutationObserver lock
      =================================================================== -->
-<div id="silam-modal" class="silam-modal hidden" role="dialog" aria-modal="true" aria-label="सिलम साक्मा QR पोस्टर">
-  <div class="silam-modal-backdrop" id="silam-modal-backdrop"></div>
-  <div class="silam-modal-dialog">
-    <button id="btn-close-silam" class="silam-close-btn" aria-label="बन्द गर्नुहोस्">✕</button>
-    <div class="silam-dialog-header">
-      <span class="silam-culture-badge">🪬 KIRAT CULTURAL SYMBOL • SILAM SAKMA</span>
-      <h2 class="silam-dialog-title">सिलम साक्मा पदमार्ग QR</h2>
-      <p class="silam-dialog-sub">Phidim to Charrate Trek (57.44 km)</p>
+<div id="coffee-modal" class="coffee-modal hidden" role="dialog" aria-modal="true" aria-label="Buy Me a Coffee">
+  <div class="coffee-modal-backdrop" id="coffee-modal-backdrop"></div>
+  <div class="coffee-modal-dialog">
+    <button id="btn-close-coffee" class="coffee-close-btn" aria-label="बन्द गर्नुहोस्">✕</button>
+    <div class="coffee-header">
+      <span class="coffee-badge">☕ SUPPORT THIS PROJECT</span>
+      <h2 class="coffee-title">Buy Me a Coffee</h2>
+      <p class="coffee-sub">Phidim → Charrate Trail Map नि:शुल्क र खुला राख्न सहयोग गर्नुहोस्</p>
     </div>
 
-    <div class="silam-poster-preview">
-      <img src="images/silam-sakma-qr.png" alt="Silam Sakma QR Poster" class="silam-poster-img" id="silam-poster-img" />
+    <!-- Verified QR Container with Anti-Tamper Guard -->
+    <div class="coffee-qr-wrap" id="coffee-qr-container">
+      <div class="coffee-qr-card">
+        <img id="coffee-qr-img" src="images/esewa-qr.webp" alt="eSewa QR Code for Ganesh Chapagain" class="coffee-qr-img" />
+        <div class="coffee-badge-row">
+          <span class="esewa-pill">eSewa Verified</span>
+          <span class="tamper-lock-pill">🔒 Tamper-Proof Protected</span>
+        </div>
+      </div>
     </div>
 
-    <div class="silam-actions">
-      <a href="images/silam-sakma-qr.png" download="Silam-Sakma-Phidim-Charrate-Map-QR.png" class="btn-silam-dl primary">
-        <span>⬇️ Download Poster (PNG)</span>
-      </a>
-      <a href="images/silam-sakma-qr.svg" download="Silam-Sakma-Phidim-Charrate-Map-QR.svg" class="btn-silam-dl secondary">
-        <span>🖨️ Vector for Print (SVG)</span>
-      </a>
-      <button id="btn-share-silam-link" class="btn-silam-dl share">
-        <span>🔗 Share Map Link</span>
-      </button>
+    <!-- Account Details with One-Click Copy -->
+    <div class="coffee-details-card">
+      <div class="coffee-detail-item">
+        <span class="detail-label">खातावालाको नाम (Account Holder):</span>
+        <span class="detail-value highlight" id="coffee-acc-name">Ganesh Chapagain</span>
+      </div>
+      <div class="coffee-detail-item">
+        <span class="detail-label">eSewa ID (Mobile Number):</span>
+        <div class="detail-val-action">
+          <span class="detail-value code" id="coffee-acc-id">9817921231</span>
+          <button id="btn-copy-esewa-id" class="btn-copy-id" type="button" aria-label="Copy eSewa ID">
+            📋 Copy ID
+          </button>
+        </div>
+      </div>
     </div>
 
-    <div class="silam-dialog-footer">
-      <p>💡 स्थानीय पसल, होटल, वा पदयात्रीहरूले यो QR स्क्यान गरेर सिधै लाइभ GPS अफलाइन म्याप खोल्न सक्नुहुन्छ।</p>
+    <!-- Security Warning & Human-Verification Notice -->
+    <div class="coffee-security-notice">
+      <div class="sec-icon">🔐</div>
+      <div class="sec-text">
+        <strong>सुरक्षा सतर्कता (Security Verification):</strong>
+        ह्याकर वा मालवेयरबाट सुरक्षित रहन, भुक्तानी गर्दा आफ्नो eSewa एपमा खातावालाको नाम <strong>Ganesh Chapagain</strong> नै रहेको अनिवार्य रुजु गर्नुहोस्।
+      </div>
+    </div>
+
+    <div class="coffee-footer">
+      <button id="btn-done-coffee" class="btn-coffee-done" type="button">बन्द गर्नुहोस् (Close)</button>
     </div>
   </div>
 </div>
