@@ -4,7 +4,7 @@
    Offline-first caching for Leaflet tiles, GeoJSON, and UI
    ============================================================ */
 
-const CACHE_VERSION = 'v1.0.0';
+const CACHE_VERSION = 'v2.0.0';
 const STATIC_CACHE = `trek-map-static-${CACHE_VERSION}`;
 const TILE_CACHE = `trek-map-tiles-${CACHE_VERSION}`;
 
@@ -33,10 +33,10 @@ const STATIC_ASSETS = [
   './images/places/charrate-yak-lodge_2.webp',
   './images/places/charrate-yak-lodge_3.webp',
   '/map/images/places/charrate-yak-lodge.webp',
-  './images/silam-sakma-qr.png',
-  './images/silam-sakma-qr.svg',
-  '/map/images/silam-sakma-qr.png',
-  '/map/images/silam-sakma-qr.svg',
+  './images/esewa-qr.webp',
+  './images/esewa-qr.png',
+  '/map/images/esewa-qr.webp',
+  '/map/images/esewa-qr.png',
   './images/direct-route-qr.png',
   '/map/images/direct-route-qr.png',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
@@ -83,7 +83,7 @@ self.addEventListener('fetch', event => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // 1. Map Tiles: Cache-First (essential for offline trek)
+  // 1. Map Tiles: Cache-First with seamless offline persistence
   if (isTileRequest(url)) {
     event.respondWith(
       caches.open(TILE_CACHE).then(async cache => {
@@ -91,13 +91,14 @@ self.addEventListener('fetch', event => {
         if (cached) return cached;
 
         try {
-          const networkRes = await fetch(request, { mode: 'cors' });
-          if (networkRes && networkRes.ok) {
+          // Standard fetch without forcing mode: 'cors' so opaque tiles (Google, Esri, Carto) work
+          const networkRes = await fetch(request);
+          if (networkRes && (networkRes.ok || networkRes.type === 'opaque')) {
             cache.put(request, networkRes.clone());
           }
           return networkRes;
         } catch (err) {
-          // Offline and tile not cached: return transparent empty 200 SVG or empty response
+          // If offline and tile not yet in cache, return 404 (Leaflet will display errorTileUrl fallback)
           return new Response('', { status: 404, statusText: 'Tile not cached offline' });
         }
       })
@@ -160,10 +161,14 @@ self.addEventListener('fetch', event => {
 
 // Helper filters
 function isTileRequest(url) {
+  const h = url.hostname.toLowerCase();
   return (
-    url.hostname.includes('tile.openstreetmap.org') ||
-    url.hostname.includes('opentopomap.org') ||
-    url.hostname.includes('arcgisonline.com')
+    h.includes('google.com') ||
+    h.includes('googleapis.com') ||
+    h.includes('arcgisonline.com') ||
+    h.includes('tile.openstreetmap.org') ||
+    h.includes('opentopomap.org') ||
+    h.includes('cartocdn.com')
   );
 }
 
